@@ -1,5 +1,7 @@
 # ORGANIZAÇÃO REPOSITÓRIO GIT
+
 ## BRANCHS
+
 * No repositório git terá as seguintes branchs:
 
 NOME DA BRANCH|DESCRIÇÃO
@@ -15,8 +17,9 @@ TEST|branch onde o terá o código que será testado e validado
 
 * A **TEST** é onde o código que o colaborador escreveu irá ser colocado para testes. É sempre essencial que `antes de fazer qualquer merge das alterações na branch principal (MAIN), as alterações devem ser passadas para a branch de testes (TEST) para que minimizar possíveis erros com os demais códigos já funcionais`.
 
-* A branch com o nome do colaborador é de responsabilidade única e exclusiva dele no quesito de organização dos commits, visto que será onde os colaboradores irão trbalhar apartir delas. Mas é recomendado utilize o padrão de commits do projeto para não confundir e que também tenha uma sub-branch de testes para a sua própria branch para manter a organização, caso venha a criar uma branch de testes só para os códigos que está trabalhando por favor utilize a seguinte nomeclatura `<nome_colaborador/TEST>` para evitar que confunda a branch pessoal de testes com a do projeto.
-
+* A branch com o nome do colaborador é de responsabilidade única e exclusiva dele no quesito de organização
+dos commits, visto que será onde os colaboradores irão trbalhar apartir delas.
+Mas é recomendado que utilize o padrão de commits do projeto para se acustumar com esse padrão.
 
 ## COMMITS
 
@@ -30,19 +33,22 @@ CREATE|Utilizado quando há a criação de um novo arquivo
 UPDATE|Utilizado quando há alguma alteração no código trabalhado
 DELETE|Utilizado quando é deletado um arquivo
 MERGE/\<nome_branch_destino\>| Utilizado quando é feito algum merge
+
 <hr>
 
 * A razão dessa categoriação se deve para manter o histórico git de forma organizada e fácil de ser lida. Para que assim possa ser mais fácil de fazer reversões caso necessário
 
 ### EX DE COMMITS
+
 1. git commit -m "MERGE/teste: app.js" -m "Inserção das routers no aqrquivo principal para que a aplicação possa rodar normalmente"
 2. git commit -m "CREATE: usuarioService.js" -m "Criação do service de usuários"
 
-* É recomendável que faça commit de alterações significativas e que não sejam muito grandes.
+* É recomendável que faça commit de alterações que não sejam muito grandes e que façam sentido.
 
 * Caso em algum momento você esteja mexendo em um arquivo e de repente você perceb que vai precisar fazer alterações em um outro, verifique se as alterações feitas possam ser commitadas antes de começar a mexer no outro arquivo.
 
 ## COMANDOS GIT
+
 COMANDO|FUNÇÃO
 :----|:----:
 `git status`|Rode esse comando para saber quais arquivos foram alterados, criados, deletados ou que estejam prontos para commit
@@ -53,16 +59,19 @@ COMANDO|FUNÇÃO
 `git branch [--remote] [--list]`|Utilize para saber o nome da branch que está trabalhando. Caso deseje ver as branchs locais disponíveis coloque a flag `--list`, agora deseja ver quais as branchs que há no repositório do github utilize junto da flag `--list` a `--remote`
 `git clone <url_repositório>`|Clona o repositório remoto
 `git merge <nome_branch>`|Faz a junção dos commits da branch passada em `<nome_branch>` na branch em que está
+
 <hr>
 
-### OBSERVAÇÃO!
+### OBSERVAÇÃO
+
 * Ao fazer o pull de uma branch do repositório remoto é importante ressaltar que você precisa ter ela criada no seu repositório local. (Ex: se você tentar executar o comando `git pull branch_1` sem ter a branch um no seu repositório local irá dar erro).
 
 * Para fazer o pull de branch que está no repositório remoto mas que não está criada no seu repositório local deve ser utilizado o seguinte comando: `git checkout --track -b <nome_branch_local> <nome_remote>/<nome_branch_remota>`.
 
 * A flag `--track` liga o repositório local com o remoto enquanto a flag `-b` cria uma a branch com o nome providenciado em `<nome_branch_local>` igual a do repositório remoto (recomenda-se que crie com o mesmo nome que a da branch remota para facilitar em futuros pulls).
 
-    * EX:
+  * EX:
+
         ~~~~git
         git checkout --track -b TEST origin/TEST
         ~~~~
