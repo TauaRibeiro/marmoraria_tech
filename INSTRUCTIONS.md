@@ -52,6 +52,7 @@ COMANDO|FUNÇÃO
 `git pull <nome_remote> [nome_branch]`|Utilize esse comando para fazer o pull das alterações de uma branch que está no repositório remoto para a branch do repositório local. Caso o nome da branch não seja passada, será feito o pull da branch principal (main)
 `git branch [--remote] [--list]`|Utilize para saber o nome da branch que está trabalhando. Caso deseje ver as branchs locais disponíveis coloque a flag `--list`, agora deseja ver quais as branchs que há no repositório do github utilize junto da flag `--list` a `--remote`
 `git clone <url_repositório>`|Clona o repositório remoto
+`git merge <nome_branch>`|Faz a junção dos commits da branch passada em `<nome_branch>` na branch em que está
 <hr>
 
 ### OBSERVAÇÃO!
@@ -66,4 +67,4 @@ COMANDO|FUNÇÃO
         git checkout --track -b TEST origin/TEST
         ~~~~
 
-* Outra coisa importanto a ser mencionado é que não será necessário se preocupar com a criação de um remote para o repositório, visto que ao fazer o `git clone` o remote já virá criado com o nome **origin**
+* Outra coisa importante a ser mencionado é que não será necessário se preocupar com a criação de um remote para o repositório, visto que ao fazer o `git clone` o remote já virá criado com o nome **origin**
