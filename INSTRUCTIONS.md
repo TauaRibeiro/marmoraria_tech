@@ -77,3 +77,25 @@ COMANDO|FUNÇÃO
         ~~~~
 
 * Outra coisa importante a ser mencionado é que não será necessário se preocupar com a criação de um remote para o repositório, visto que ao fazer o `git clone` o remote já virá criado com o nome **origin**
+
+# COMO RODAR O BACKEND
+
+* Antes de rodar o backend do projeto será nessário criar um arquivo chamado `.env` dentro da pasta `backend`.
+
+* Nesse arquivo deve conter as seguintes informações:
+
+~~~~js
+DATABASE_URL = "<URL_DATABASE>"
+PORT = 3000
+~~~~
+
+* Após a criação do arquivo basta rodar o seguinte comando `npm run backend`, e o servidor será inicializado no seguinte endereço `http://127.0.0.1:3000/`
+
+## AVISO
+
+* A razão pela qual é necessário a criação desse arquivo se deve por questão de segurança, visto que esse repositório está público e qualquer um além dos colaboradores e avaliadores
+da banco podem ter acesso à ele. **SOMENTE** o arquivo `.env` deve ser exposto à URL do banco de dados e outros dados sensíves *(chaves privadas, senhas e etc)* e nenhuma outro arquivo deve conter essas informação diretamente neles, eles deverão puxar desse arquivo através do seguinte comando `process.env.<NOME_ITEM>`.
+
+## COMO RODAR O FRONTEND
+
+* Para rodar o frontend basta rodar o seguinte comando `npm run dev`
