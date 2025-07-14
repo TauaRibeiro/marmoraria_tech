@@ -15,17 +15,19 @@ exports.criarStatus = async (nome) => {
     }
 }
 
-exports.getStatus() = async () => {
+exports.getStatus = async () => {
     try{
         const result = await Status.find();
 
         return {status: 200, result}
     }catch(err){
-        console
+        console.error('Erro ao pegar todos os status')
+
+        return {status: 500, message: "Erro ao pegar todos os status"}
     }
 }
 
-exports.getStatusByID() = async (id) => {
+exports.getStatusByID = async (id) => {
     try{
         if(id.trim().length === 0){
             return {status: 400, message: "Id inválido"}
