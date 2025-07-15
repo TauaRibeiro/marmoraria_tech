@@ -83,6 +83,8 @@ exports.deleteStatus = async (id) => {
 
         return {status: 200}
     }catch(error){
-        console.error(`Erro ao `)
+        console.error(`Erro ao deletar os Status: ${id}`)
+
+        return {status: 500, message: "Erro ao deletar os status"}
     }
 }
