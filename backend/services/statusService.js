@@ -29,7 +29,7 @@ exports.getStatus = async () => {
 
 exports.getStatusByID = async (id) => {
     try{
-        if(id.trim().length === 0){
+        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
             return {status: 400, message: "Id inválido"}
         }
         const result = await Status.findById(id);
@@ -48,7 +48,7 @@ exports.getStatusByID = async (id) => {
 
 exports.updateStatus = async (id, novoNome) => {
     try {
-        if(id.trim().length){
+        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
             return {status: 400, message: "Id inválido"}
         }
 
@@ -56,7 +56,7 @@ exports.updateStatus = async (id, novoNome) => {
             return {status: 400, message: "Nome inválido"}
         }
         
-        const statusAtualizado = Status.findByIdAndUpdate(id, {nome: novoNome})
+        const statusAtualizado = await Status.findByIdAndUpdate(id, {nome: novoNome})
         
         if(!statusAtualizado){
             return {status: 404, message: `Status com id ${id} não encontrado`}
@@ -71,14 +71,14 @@ exports.updateStatus = async (id, novoNome) => {
 
 exports.deleteStatus = async (id) => {
     try {
-        if(id.trim().legth === 0){
-            return {status: 400, message: "id inválido"}
+        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+            return {status: 400, message: "Id inválido"}
         }
 
         const statusDeletado = await Status.findByIdAndDelete(id)
         
         if(!statusDeletado){
-            return {status: 404}
+            return {status: 404, message: "Status não encontrado"}
         }
 
         return {status: 200}

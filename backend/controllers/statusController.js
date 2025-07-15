@@ -1,23 +1,25 @@
 const statusService = require('../services/statusService')
 
-exports.getAll = (req, res) => {
-    const resultService = statusService.getStatus();
+exports.getAll = async (req, res) => {
+    const resultService = await statusService.getStatus();
 
     if(resultService.status === 200){
         return res.status(200).json({result: resultService.result})
     }
 
+    console.log('Deu erro!!')
+    console.log(resultService)
     return res.status(resultService.status).json({message: resultService.message})
 }
 
-exports.getById = (req, res) => {
+exports.getById = async (req, res) => {
     const {id} = req.params
 
     if(!id){
         return res.status(400).json({message: "O id é necessário"})
     }
 
-    const resultService = statusService.getStatusByID(id)
+    const resultService = await statusService.getStatusByID(id)
 
     if(resultService.status === 200){
         return res.status(200).json({result: resultService.result})
@@ -30,23 +32,23 @@ exports.getById = (req, res) => {
     return res.status(resultService.status).json({message: resultService.message})
 }
 
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
     const {nome} = req.body;
 
     if(!nome){
         return res.status(400).json({message: "Nome é necessário"})
     }
 
-    const resultService = statusService.criarStatus(nome)
+    const resultService = await statusService.criarStatus(nome)
 
     if(resultService.status === 201){
         return res.sendStatus(201)
     }
 
-    return res.status(resultService.status).json({message: resultService.res})
+    return res.status(resultService.status).json({message: resultService.message})
 }
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
     const {id} = req.params
     const {nome} = req.body
 
@@ -54,7 +56,7 @@ exports.update = (req, res) => {
         return res.status(400).json({message: "id e nome são necessários"})
     }
 
-    const resultService = statusService.updateStatus(id, nome)
+    const resultService = await statusService.updateStatus(id, nome)
 
     if(resultService.status === 200){
        return res.sendStatus(200)
@@ -63,14 +65,14 @@ exports.update = (req, res) => {
     return res.status(resultService.status).json({message: resultService.message})
 }
 
-exports.delete = (req, res) => {
+exports.delete = async (req, res) => {
     const {id} = req.params
 
     if(!id){
         return res.status(400).json({message: "id é necessário"})
     }
 
-    const resultService = statusService.delete(id)
+    const resultService = await statusService.deleteStatus(id)
 
     if(!resultService.status === 200){
         return res.sendStatus(200);

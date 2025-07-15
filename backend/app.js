@@ -8,10 +8,13 @@ const { init } = require('./models/Status');
 const app = express();
 const port = process.env.PORT
 
+const routerStatus = require('./routes/statusRoutes')
+
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(cors())
 
+app.use('/status', routerStatus)
 
 app.listen(port, () => {
     try{
