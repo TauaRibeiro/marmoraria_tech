@@ -20,6 +20,16 @@ exports.getAll = async (_, res) => {
     return res.status(resultService.status).json({message: resultService.message})
 }
 
+exports.getById = async (req, res) => {
+    const resultService = await enderecoService.getEnderecoByID(req.params.id)
+
+    if(resultService.status == 200){
+        return res.status(200).json({result: resultService.result})
+    }
+
+    return res.status(resultService.status).json({message: resultService.message})
+}
+
 exports.update = async (req, res) => {
     const resultService = await enderecoService.updateEndereco(req.params.id, req.body)
 
