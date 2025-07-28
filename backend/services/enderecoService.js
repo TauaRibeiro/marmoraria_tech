@@ -7,6 +7,12 @@ exports.criarEndereco = async (enderecoData) => {
         if(!cep || !cidade || !rua || !numero || !bairro){
             return {status: 400, message: "Dados de cep, cidade, rua, número e bairro são obrigatórios"}
         }
+
+        for(let i = 0; i < numero.length; i++){
+            if(isNaN(parseInt(numero[i]))){
+                return {status: 400, message: "Número inválido"}
+            }
+        }
     
         cep = cep.replace('-', '').trim()
         rua = rua.trim()
@@ -15,18 +21,23 @@ exports.criarEndereco = async (enderecoData) => {
         complemento = (complemento) ? complemento.trim() : null
         
         if(cep.length != 8 || isNaN(parseInt(cep))){
-            return {staus: 400, message: "CEP inválido"}
+            return {status: 400, message: "CEP inválido"}
         }
-    
+        
         if(isNaN(numero)){
             return {status: 400, message: "Número inválido"}
         }
     
         if(bairro.length == 0 || rua.length == 0){
-            return {status: 400, message: "Rua e/ou bairro inválido(os)"}
+            return {status: 400, message: "Rua ou bairro inválido(os)"}
         }
-    
-        Endereco.create({cep, cidade, rua, numero, bairro, complemento})
+        
+        if((await Endereco.find({cep})).length != 0){
+            console.log(await Endereco.find({cep}))
+            return {status: 400, message: "Já existe um endereço com este CEP"}
+        }
+
+        await Endereco.create({cep, cidade, rua, numero, bairro, complemento})
 
         return {status: 201}
     }catch(error){
@@ -92,7 +103,6 @@ exports.updateEndereco = async (id, data) => {
         cep = (cep) ? cep.replace('-', '').trim() : null
         cidade = (cidade) ? cidade.trim() : null
         rua = (rua) ? rua.trim() : null
-        numero = (numero) ? parseInt(rua.trim()) : null
         bairro = (bairro) ? bairro.trim() : null
         complemento = (complemento) ? complemento.trim() : null
         
@@ -108,12 +118,27 @@ exports.updateEndereco = async (id, data) => {
             return {status: 400, message: "Rua inválida"}
         }
     
-        if(!numero && isNaN(numero)){
-            return {status: 400, message: "Número inválido"}
+        if(!numero){
+            for(let i = 0; i < numero.length; i++){
+                if(isNaN(parseInt(numero[i]))){
+                    return {status: 400, message: "Número inválido"}
+                }
+            }
+
+            numero = parseInt(numero.trim())
+        }else{
+            numero = null
         }
     
         if(!bairro && bairro.length == 0){
             return {status: 400, message: "Bairro inválido"}
+        }
+
+        const duplicata = (await Endereco.find({cep}))[0]
+
+        if(duplicata && duplicata._id != id){
+            console.log(await Endereco.find({cep}))
+            return {status: 400, message: "Já existe um endereço com este CEP"}
         }
 
         await Endereco.findByIdAndUpdate(id, {
@@ -127,7 +152,7 @@ exports.updateEndereco = async (id, data) => {
 
         return {status: 200}
     } catch (error) {
-        console.error(`Erro ao atualizar endereço de ID ${id} e com os seguitnes valores ${data}`)
+        console.error(`Erro ao atualizar endereço de ID ${id} e com os seguitnes valores ${JSON.stringify(data)}`)
 
         return {status: 500, message: 'Erro ao atualizar o endereço'}
     }

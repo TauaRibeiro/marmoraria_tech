@@ -14,7 +14,7 @@ exports.getAll = async (_, res) => {
     const resultService = await enderecoService.getEndereco()
 
     if(resultService.status == 200){
-        return res.status(200).json({result: resultService})
+        return res.status(200).json({result: resultService.result})
     }
 
     return res.status(resultService.status).json({message: resultService.message})
