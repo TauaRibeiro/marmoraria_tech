@@ -35,16 +35,9 @@ exports.criarEndereco = async (enderecoData) => {
     }
 }
 
-exports.getEndereco = async (enderecoData) => {
+exports.getEndereco = async () => {
     try{
-        const { cep, cidade, rua, numero, bairro, complemento } = enderecoData
-        
-        if(cep || cidade){}
-        
-        const result = await Endereco.find();
-
-
-        return {status: 200, result}
+        return {status: 200, result: await Endereco.find()}
     }catch(error){
         console.error('Erro ao pegar os dados de endereço: ', error)
         return {status: 500, message: "Erro ao pegar os dados de endereço"}
@@ -53,6 +46,14 @@ exports.getEndereco = async (enderecoData) => {
 
 exports.getEnderecoByID = async (id) => {
     try {
+        if(!id){
+            return {status: 400, message: "Id é obrigatório"}
+        }
+
+        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+            return {status: 400, message: "Id inválido"}
+        }
+
         const result = await Endereco.findById(id)
 
         if(!result){
@@ -68,6 +69,10 @@ exports.getEnderecoByID = async (id) => {
 
 exports.updateEndereco = async (id, data) => {
     try {
+        if(!id){
+            return {status: 400, message: "Id é obrigatório"}
+        }
+
         if(id.trim().length === 0 || id.length < 24 || id.length > 24){
             return {status: 400, message: "Id inválido"}
         }
@@ -131,6 +136,10 @@ exports.updateEndereco = async (id, data) => {
 
 exports.deleteEndereco = async (id) => {
     try {
+        if(!id){
+            return {status: 400, message: "Id é obrigatório"}
+        }
+
         if(id.trim().length === 0 || id.length < 24 || id.length > 24){
             return {status: 400, message: "Id inválido"}
         }
