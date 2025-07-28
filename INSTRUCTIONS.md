@@ -91,6 +91,10 @@ PORT = 3000
 
 * Após a criação do arquivo basta rodar o seguinte comando `npm run backend`, e o servidor será inicializado no seguinte endereço `http://127.0.0.1:3000/`
 
+* Caso o comando acima dê errado, por favor verifique se o node está na versão `v22.17.0` e o npm na `10.9.2`.
+
+* Se mesmo assim causar ao rodar, basta utilizar o seguinte comando `node app.js`
+
 ## AVISO
 
 * A razão pela qual é necessário a criação desse arquivo se deve por questão de segurança, visto que esse repositório está público e qualquer um além dos colaboradores e avaliadores
