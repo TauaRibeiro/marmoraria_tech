@@ -101,7 +101,7 @@ exports.updateEndereco = async (id, data) => {
         }
     
         if(!cidade && cidade.length == 0){
-            return {stauts: 400, message: "Cidade inválida"}
+            return {status: 400, message: "Cidade inválida"}
         }
     
         if(!rua && rua.length == 0){
@@ -147,7 +147,7 @@ exports.deleteEndereco = async (id) => {
         const enderecoAntigo = Endereco.findByIdAndDelete(id)
 
         if(!enderecoAntigo){
-            return {staus: 404, message: "Endereço não encontrado"}
+            return {status: 404, message: "Endereço não encontrado"}
         }
 
         return {status: 200}
