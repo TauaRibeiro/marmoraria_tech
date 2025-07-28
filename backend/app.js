@@ -12,6 +12,7 @@ const port = process.env.PORT
 const routerStatus = require('./routes/statusRoutes')
 const routerTipoMaterial = require('./routes/tipoMaterialRoutes')
 const routerAmbiente = require('./routes/ambienteRoutes')
+const routerEndereco = require('./routes/enderecoRoutes')
 
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -20,6 +21,7 @@ app.use(cors())
 app.use('/status', routerStatus)
 app.use('/tipoMaterial', routerTipoMaterial)
 app.use('/ambientes', routerAmbiente)
+app.use('/endereco', routerEndereco)
 
 app.listen(port, () => {
     try{
