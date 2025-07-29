@@ -68,7 +68,7 @@ exports.getEnderecoByID = async (id) => {
         const result = await Endereco.findById(id)
 
         if(!result){
-            return {status: 404, message: `O endereço de id ${id} não foi encontrado`}
+            return {status: 404, message: `O endereço não foi encontrado`}
         }
 
         return {status: 200, result}
@@ -87,38 +87,50 @@ exports.updateEndereco = async (id, data) => {
         if(id.trim().length === 0 || id.length < 24 || id.length > 24){
             return {status: 400, message: "Id inválido"}
         }
-
+        
         const antigoEndereco = await Endereco.findById(id)
-
+        
         if(!antigoEndereco){
             return {status: 404, message: "Endereço não encontrado"}
         }
         
         let {cep, cidade, rua, numero, bairro, complemento} = data
-    
+        
         if(!cep && !cidade && !numero && !rua && !bairro && !complemento){
             return {status: 400, message: "É preciso ser passado pelo menos um dos campos de endereço (cep, cidade, rua, numero, bairro, complemento)"}
         }
-    
-        cep = (cep) ? cep.replace('-', '').trim() : null
-        cidade = (cidade) ? cidade.trim() : null
-        rua = (rua) ? rua.trim() : null
-        bairro = (bairro) ? bairro.trim() : null
-        complemento = (complemento) ? complemento.trim() : null
         
-        if(!cep && cep.length == 0 && isNaN(parseInt(cep))){
+        cep = (cep != null && cep != undefined) ? cep.replace('-', '').trim() : null
+
+        const duplicata = (await Endereco.find({cep}))[0]
+
+        if(duplicata && duplicata._id != id){
+            console.log(await Endereco.find({cep}))
+            return {status: 400, message: "Já existe um endereço com este CEP"}
+        }
+
+        cidade = (cidade != null && cidade != undefined) ? cidade.trim() : null
+        rua = (rua != null && cidade != undefined) ? rua.trim() : null
+        bairro = (bairro != null && cidade != undefined) ? bairro.trim() : null
+        complemento = (complemento != null && complemento != undefined) ? complemento.trim() : null
+        
+        if(cep != null && (cep.length != 8 || isNaN(parseInt(cep)))){
             return {status: 400, message:"CEP inválido"}
         }
     
-        if(!cidade && cidade.length == 0){
+        if(cidade != null && cidade.length == 0){
             return {status: 400, message: "Cidade inválida"}
         }
     
-        if(!rua && rua.length == 0){
+        if(rua != null && rua.length == 0){
             return {status: 400, message: "Rua inválida"}
         }
     
-        if(!numero){
+        if(numero != null){
+            if(numero.length == 0){
+                return {status: 400, message: "Número inválido"}
+            }
+
             for(let i = 0; i < numero.length; i++){
                 if(isNaN(parseInt(numero[i]))){
                     return {status: 400, message: "Número inválido"}
@@ -130,15 +142,14 @@ exports.updateEndereco = async (id, data) => {
             numero = null
         }
     
-        if(!bairro && bairro.length == 0){
+        if(bairro != null && bairro.length == 0){
             return {status: 400, message: "Bairro inválido"}
         }
-
-        const duplicata = (await Endereco.find({cep}))[0]
-
-        if(duplicata && duplicata._id != id){
-            console.log(await Endereco.find({cep}))
-            return {status: 400, message: "Já existe um endereço com este CEP"}
+        
+        if(complemento != null && complemento.length == 0){
+            complemento = null
+        }else if(!complemento){
+            complemento = antigoEndereco.complemento 
         }
 
         await Endereco.findByIdAndUpdate(id, {
@@ -147,7 +158,7 @@ exports.updateEndereco = async (id, data) => {
             rua: rua ?? antigoEndereco.rua,
             numero: numero ?? antigoEndereco.numero,
             bairro: bairro ?? antigoEndereco.bairro,
-            complemento: complemento ?? antigoEndereco.complemento,
+            complemento
         })
 
         return {status: 200}
@@ -169,7 +180,7 @@ exports.deleteEndereco = async (id) => {
             return {status: 400, message: "Id inválido"}
         }
 
-        const enderecoAntigo = Endereco.findByIdAndDelete(id)
+        const enderecoAntigo = await Endereco.findByIdAndDelete(id)
 
         if(!enderecoAntigo){
             return {status: 404, message: "Endereço não encontrado"}
