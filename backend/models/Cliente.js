@@ -9,7 +9,7 @@ const clienteSchema = new database.Schema({
     nome: { type: String, required: true},
     email: { type: String, required: true, unique: true},
     dataNasciemnto: { type: Date, required: true},
-    telefone: { type: String, required: true},
+    telefone: { type: String, required: true, unique: true},
     cpf: {type: String, required: true},
     cnpj: {type: String, required: true}
 }, {timestamps: true})
