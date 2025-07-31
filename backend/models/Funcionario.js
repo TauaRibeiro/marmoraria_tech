@@ -9,4 +9,4 @@ const funcionarioSchema = new database.Schema({
     senha: {type:String, required: true}
 }); 
 
-module.exports = new database.model('Funcionario', funcionarioSchema);
+module.exports = database.model('Funcionario', funcionarioSchema);
