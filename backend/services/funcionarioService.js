@@ -217,3 +217,26 @@ exports.updateFuncionario = async (data) => {
         return {status: 500, message: "Erro ao atualizar funcionario"}
     }
 }
+
+exports.deleteFuncionario = async (id) => {
+    try {
+        if(!data.id){
+            return {status: 400, message: "Id é obrigatório"}
+        }
+    
+        if(data.id.trim().length === 0 || data.id.length < 24 || data.id.length > 24){
+            return {status: 400, message: "Id inválido"}
+        }
+
+        const antigoFuncionario = await Funcionario.findByIdAndDelete(id)
+
+        if(!antigoFuncionario){
+            return {status: 404, message: "Funcionario não encontrado"}
+        }
+
+        return {status: 200}
+    } catch (error) {
+        console.error(`Erro ao deletar funcionario de id ${id}: `, error)
+        return {status: 500, message: "Erro ao deletar funcionario"}
+    }
+}
