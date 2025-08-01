@@ -13,6 +13,7 @@ const routerStatus = require('./routes/statusRoutes')
 const routerTipoMaterial = require('./routes/tipoMaterialRoutes')
 const routerAmbiente = require('./routes/ambienteRoutes')
 const routerEndereco = require('./routes/enderecoRoutes')
+const routerFuncionario = require('./routes/funcionarioRoutes')
 
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -20,8 +21,9 @@ app.use(cors())
 
 app.use('/status', routerStatus)
 app.use('/tipoMaterial', routerTipoMaterial)
-app.use('/ambientes', routerAmbiente)
+app.use('/ambiente', routerAmbiente)
 app.use('/endereco', routerEndereco)
+app.use('/funcionario', routerFuncionario)
 
 app.listen(port, () => {
     try{

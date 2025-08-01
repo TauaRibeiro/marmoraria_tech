@@ -4,7 +4,7 @@ const validarEmail = require('../utils/validarEmail')
 
 exports.createFuncionario = async (data) => {
     try {
-        let {cpf, nome, dataNascimento, telefone, email, senha} = data
+        var {cpf, nome, dataNascimento, telefone, email, senha} = data
     
         if(!cpf || !dataNascimento || !telefone || !email || !senha){
             return {status: 400, message: "Os dados (cpf, dataNascimento, telefone, email, senha) são obrigatórios"}
@@ -53,7 +53,7 @@ exports.createFuncionario = async (data) => {
         return {status: 201, result}
     } catch (error) {
         console.log("Erro ao criar Funcionario: \b")
-        if(error.name === 'ValidationError'){
+        if(error.codeName == 'DuplicateKey' || error.code === 11000){
             let duplicata = await Funcionario.findOne({cpf})
 
             if(duplicata){
@@ -94,6 +94,7 @@ exports.getFuncionario = async () => {
 
 exports.getFuncionarioById = async (id) => {
     try {
+        console.log(id.trim().length === 0 || id.length < 24 || id.length > 24)
         if(!id){
             return {status: 400, message: "Id é obrigatório"}
         }
@@ -102,7 +103,7 @@ exports.getFuncionarioById = async (id) => {
             return {status: 400, message: "Id inválido"}
         }
     
-        const result = Funcionario.findById(id)
+        const result = await Funcionario.findById(id)
     
         if(!result){
             return {status: 404, message: "Funcionario não encontrado"}
@@ -125,7 +126,7 @@ exports.updateFuncionario = async (data) => {
             return {status: 400, message: "Id inválido"}
         }
 
-        let {id, nome, cpf, dataNascimento, telefone, email, senha} = data
+        var {id, nome, cpf, dataNascimento, telefone, email, senha} = data
 
         if(!nome && !cpf && !dataNascimento && !telefone && !email && !senha){
             return {status: 400, message: "Pelo menos um dos capos de Funcionario é necessário para atualizar"}
@@ -139,8 +140,8 @@ exports.updateFuncionario = async (data) => {
             return {status: 404, message: "Funcionario não encontrado"}
         }
 
-        cpf = (cpf.trim().length != 11) ? null : cpf.trim()
-        dataNascimento = (dataNascimento) ? validarData(dataNascimento.trim()) : null
+        cpf = (cpf == null || cpf == undefined) ? null : cpf.trim()
+        dataNascimento = (dataNascimento !== null || dataNascimento !== undefined) ? validarData(dataNascimento.trim()) : null
         telefone = (telefone.trim().length == 11) ? telefone.trim() : null
         email = (validarEmail(email.trim())) ? email.trim() : null
         senha = (senha.trim().length >= 4) ? senha.trim() : null
@@ -150,7 +151,7 @@ exports.updateFuncionario = async (data) => {
             return {status: 400, message: "Nome inválido"}
         }
 
-        if(!cpf){
+        if(cpf && cpf.trim().length != 11){
             return {status: 400, message: "CPF inválido"}
         }
 
@@ -158,13 +159,15 @@ exports.updateFuncionario = async (data) => {
             return {status: 400, message: "Data de nascimento inválida"}
         }
 
-        if(telefone){
+        if(telefone && telefone.trim().length == 11){
             for (let i = 0; i < telefone.length; i++) {
                 if(isNaN(parseInt(telefone[i]))){
                     return {status: 400, message: "Telefone inválido"}
                 }
                 
             }
+
+            telefone = telefone.trim()
         }else{
             return {status: 400, message: "Telefone inválido"}
         }
@@ -190,7 +193,7 @@ exports.updateFuncionario = async (data) => {
         return {status: 200}
     } catch (error) {
         console.log("Erro ao criar Funcionario: \b")
-        if(error.name === 'ValidationError'){
+        if(error.codeName == 'DuplicateKey'){
             let duplicata = await Funcionario.findOne({cpf})
 
             if(duplicata){

@@ -27,7 +27,7 @@ exports.getById = async (req, res) => {
         return res.status(200).json({result: resultado.result})
     }
 
-    return res.status(resultado.status).json({result: resultado.result})
+    return res.status(resultado.status).json({message: resultado.message})
 }
 
 exports.update = async (req, res) => {
