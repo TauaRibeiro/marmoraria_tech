@@ -4,7 +4,7 @@ const validarEmail = require('../utils/validarEmail')
 
 exports.createFuncionario = async (data) => {
     try {
-        let {cpf, dataNascimento, telefone, email, senha} = data
+        let {cpf, nome, dataNascimento, telefone, email, senha} = data
     
         if(!cpf || !dataNascimento || !telefone || !email || !senha){
             return {status: 400, message: "Os dados (cpf, dataNascimento, telefone, email, senha) são obrigatórios"}
@@ -15,7 +15,12 @@ exports.createFuncionario = async (data) => {
         telefone = (telefone.trim().length == 11) ? telefone.trim() : null
         email = (validarEmail(email.trim())) ? email.trim() : null
         senha = (senha.trim().length >= 4) ? senha.trim() : null
-        
+        nome = (nome.trim().length > 2) ? nome.trim() : null
+
+        if(!nome){
+            return {status: 400, message: "Nome inválido"}
+        }
+
         if(!cpf){
             return {status: 400, message: "CPF inválido"}
         }
@@ -43,7 +48,7 @@ exports.createFuncionario = async (data) => {
             return {status: 400, message: "Senha inválida"}
         }
         
-        const result = await Funcionario.create({cpf, senha, dataNascimento, telefone, email, senha})
+        const result = await Funcionario.create({cpf, nome, senha, dataNascimento, telefone, email, senha})
 
         return {status: 201, result}
     } catch (error) {
@@ -107,5 +112,108 @@ exports.getFuncionarioById = async (id) => {
     } catch (error) {
         console.error(`Erro ao fazer o get de Funcionario de id ${id}: `, error)
         return {status: 500, message: "Erro fazer o get de funcionario"}
+    }
+}
+
+exports.updateFuncionario = async (data) => {
+    try {
+        if(!data.id){
+            return {status: 400, message: "Id é obrigatório"}
+        }
+    
+        if(data.id.trim().length === 0 || data.id.length < 24 || data.id.length > 24){
+            return {status: 400, message: "Id inválido"}
+        }
+
+        let {id, nome, cpf, dataNascimento, telefone, email, senha} = data
+
+        if(!nome && !cpf && !dataNascimento && !telefone && !email && !senha){
+            return {status: 400, message: "Pelo menos um dos capos de Funcionario é necessário para atualizar"}
+        }
+
+        id = id.trim()
+
+        const antigoFuncionario = Funcionario.findById(id)
+
+        if(!antigoFuncionario){
+            return {status: 404, message: "Funcionario não encontrado"}
+        }
+
+        cpf = (cpf.trim().length != 11) ? null : cpf.trim()
+        dataNascimento = (dataNascimento) ? validarData(dataNascimento.trim()) : null
+        telefone = (telefone.trim().length == 11) ? telefone.trim() : null
+        email = (validarEmail(email.trim())) ? email.trim() : null
+        senha = (senha.trim().length >= 4) ? senha.trim() : null
+        nome = (nome.trim().length > 2) ? nome.trim() : null
+
+        if(!nome){
+            return {status: 400, message: "Nome inválido"}
+        }
+
+        if(!cpf){
+            return {status: 400, message: "CPF inválido"}
+        }
+
+        if(!dataNascimento && dataNascimento != null){
+            return {status: 400, message: "Data de nascimento inválida"}
+        }
+
+        if(telefone){
+            for (let i = 0; i < telefone.length; i++) {
+                if(isNaN(parseInt(telefone[i]))){
+                    return {status: 400, message: "Telefone inválido"}
+                }
+                
+            }
+        }else{
+            return {status: 400, message: "Telefone inválido"}
+        }
+
+        if(!email){
+            return {status: 400, message: "Email inválido"}
+        }
+
+        if(!senha){
+            return {status: 400, message: "Senha inválida"}
+        }
+
+
+        await Funcionario.findByIdAndUpdate({
+            cpf: cpf ?? antigoFuncionario.cpf,
+            nome: nome ?? antigoFuncionario.nome,
+            dataNascimento: dataNascimento ?? antigoFuncionario.dataNascimento,
+            telefone: telefone ?? antigoFuncionario.telefone,
+            email: email ?? antigoFuncionario.email,
+            senha: senha ?? antigoFuncionario.senha
+        })
+
+        return {status: 200}
+    } catch (error) {
+        console.log("Erro ao criar Funcionario: \b")
+        if(error.name === 'ValidationError'){
+            let duplicata = await Funcionario.findOne({cpf})
+
+            if(duplicata){
+                console.error(`CPF ${cpf} já existente`)
+                return {status:400, message: "CPF inválido"}
+            }
+
+            duplicata = await Funcionario.findOne({telefone})
+
+            if(duplicata){
+                console.error(`Telefone ${telefone} já existente`)
+                return {status: 400, message: "Telefone inválido"}
+            }
+
+            duplicata = await Funcionario.findOne({email})
+
+            if(duplicata){
+                console.error(`email ${email} já existente`)
+                return {status: 400, message: "email inválido"}
+            }
+        }
+
+        console.error(error)
+        return {status: 500, message: "Erro ao atualizar funcionario"}
     }
 }
