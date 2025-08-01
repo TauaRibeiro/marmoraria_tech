@@ -6,9 +6,9 @@ exports.criarTipoMaterial = async (nome) => {
             return {status: 400, message: "Nome inválido"}
         }
     
-        await TipoMaterial.create({nome})
+        const result = await TipoMaterial.create({nome})
 
-        return {status: 201}
+        return {status: 201, result}
     }catch(error){
         console.error(`Erro ao criar TipoMaterial ${nome}: ${error}`);
         return {status: 500, message: `Erro ao criar status ${nome}`}

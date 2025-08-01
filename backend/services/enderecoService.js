@@ -37,9 +37,9 @@ exports.criarEndereco = async (enderecoData) => {
             return {status: 400, message: "Já existe um endereço com este CEP"}
         }
 
-        await Endereco.create({cep, cidade, rua, numero, bairro, complemento})
+        const result = await Endereco.create({cep, cidade, rua, numero, bairro, complemento})
 
-        return {status: 201}
+        return {status: 201, result}
     }catch(error){
         console.error(`Erro ao criar o endereço: `, error)
         return {status: 500, message: "Erro ao criar endereço"}

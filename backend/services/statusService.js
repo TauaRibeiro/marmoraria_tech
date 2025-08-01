@@ -6,7 +6,7 @@ exports.criarStatus = async (nome) => {
             return {status: 400, message: "Nome inválido"}
         }
     
-        await Status.create({nome})
+        const result = await Status.create({nome})
 
         return {status: 201}
     }catch(error){

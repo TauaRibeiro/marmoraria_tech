@@ -6,9 +6,9 @@ exports.criarAmbiente = async (nome) => {
             return {status: 400, message: "Nome inválido"}
         }
     
-        await Ambiente.create({nome})
+        const result = await Ambiente.create({nome})
 
-        return {status: 201}
+        return {status: 201, result}
     }catch(error){
         console.error(`Erro ao criar ambiente ${nome}: ${error}`);
         return {status: 500, message: `Erro ao criar ambiente ${nome}`}
