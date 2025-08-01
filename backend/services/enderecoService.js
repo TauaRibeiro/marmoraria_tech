@@ -94,21 +94,13 @@ exports.updateEndereco = async (id, data) => {
             return {status: 404, message: "Endereço não encontrado"}
         }
         
-        let {cep, cidade, rua, numero, bairro, complemento} = data
+        var {cep, cidade, rua, numero, bairro, complemento} = data
         
         if(!cep && !cidade && !numero && !rua && !bairro && !complemento){
             return {status: 400, message: "É preciso ser passado pelo menos um dos campos de endereço (cep, cidade, rua, numero, bairro, complemento)"}
         }
         
         cep = (cep != null && cep != undefined) ? cep.replace('-', '').trim() : null
-
-        const duplicata = (await Endereco.find({cep}))[0]
-
-        if(duplicata && duplicata._id != id){
-            console.log(await Endereco.find({cep}))
-            return {status: 400, message: "Já existe um endereço com este CEP"}
-        }
-
         cidade = (cidade != null && cidade != undefined) ? cidade.trim() : null
         rua = (rua != null && cidade != undefined) ? rua.trim() : null
         bairro = (bairro != null && cidade != undefined) ? bairro.trim() : null
@@ -163,7 +155,18 @@ exports.updateEndereco = async (id, data) => {
 
         return {status: 200}
     } catch (error) {
-        console.error(`Erro ao atualizar endereço de ID ${id} e com os seguitnes valores ${JSON.stringify(data)}`)
+        console.error("Erro ao atualizar o endereço: \b")
+
+        if(error.codeName == 'DuplicateKey'){
+            const duplicata = await Endereco.find({cep})
+
+            if(duplicata.length === 1){
+                console.error(`Já existe um endereço de CEP ${cep}`)
+                return {status: 400, message: "Já existe um endereço com este CEP"}
+            }
+        }
+
+        console.error(error)
 
         return {status: 500, message: 'Erro ao atualizar o endereço'}
     }
