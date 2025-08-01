@@ -5,7 +5,7 @@ const funcionarioSchema = new database.Schema({
     cpf: {type: String, required: true, unique: true},
     dataNascimento: {type:Date, required: true},
     telefone: {type:String, requied: true, unique: true},
-    email: {type: String, required: true, unique},
+    email: {type: String, required: true, unique: true},
     senha: {type:String, required: true}
 }); 
 
