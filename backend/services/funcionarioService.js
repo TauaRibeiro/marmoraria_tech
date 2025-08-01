@@ -1,5 +1,3 @@
-const { Mongoose, MongooseError } = require('mongoose')
-const Endereco = require('../models/Endereco')
 const Funcionario = require('../models/Funcionario')
 const validarData = require('../utils/validarData')
 const validarEmail = require('../utils/validarEmail')
@@ -45,9 +43,9 @@ exports.createFuncionario = async (data) => {
             return {status: 400, message: "Senha inválida"}
         }
         
-        await Funcionario.create({cpf, senha, dataNascimento, telefone, email, senha})
+        const result = await Funcionario.create({cpf, senha, dataNascimento, telefone, email, senha})
 
-        return {status: 201}
+        return {status: 201, result}
     } catch (error) {
         console.log("Erro ao criar Funcionario: \b")
         if(error.name === 'ValidationError'){
@@ -78,3 +76,36 @@ exports.createFuncionario = async (data) => {
     }
 }
 
+exports.getFuncionario = async () => {
+    try {
+        const result = await Funcionario.find()
+
+        return {status: 200, result}
+    } catch (error) {
+        console.error(`Erro ao fazer o get de funcionario: `, error)
+        return {status: 500, message: "Erro ao efetuar o get de Funcionario"}
+    }
+}
+
+exports.getFuncionarioById = async (id) => {
+    try {
+        if(!id){
+            return {status: 400, message: "Id é obrigatório"}
+        }
+    
+        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+            return {status: 400, message: "Id inválido"}
+        }
+    
+        const result = Funcionario.findById(id)
+    
+        if(!result){
+            return {status: 404, message: "Funcionario não encontrado"}
+        }
+    
+        return {status: 200, result}   
+    } catch (error) {
+        console.error(`Erro ao fazer o get de Funcionario de id ${id}: `, error)
+        return {status: 500, message: "Erro fazer o get de funcionario"}
+    }
+}
