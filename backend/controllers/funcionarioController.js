@@ -41,7 +41,7 @@ exports.update = async (req, res) => {
 }
 
 exports.delete = async (req, res) => {
-    const resultado = await funcionarioService.updateFuncionario(req.params.id)
+    const resultado = await funcionarioService.deleteFuncionario(req.params.id)
 
     if(resultado.status === 200){
         return res.sendStatus(200)

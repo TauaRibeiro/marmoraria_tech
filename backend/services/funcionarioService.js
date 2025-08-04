@@ -94,7 +94,6 @@ exports.getFuncionario = async () => {
 
 exports.getFuncionarioById = async (id) => {
     try {
-        console.log(id.trim().length === 0 || id.length < 24 || id.length > 24)
         if(!id){
             return {status: 400, message: "Id é obrigatório"}
         }
@@ -134,24 +133,24 @@ exports.updateFuncionario = async (data) => {
 
         id = id.trim()
 
-        const antigoFuncionario = Funcionario.findById(id)
+        const antigoFuncionario = await Funcionario.findById(id)
 
         if(!antigoFuncionario){
             return {status: 404, message: "Funcionario não encontrado"}
         }
 
-        cpf = (cpf == null || cpf == undefined) ? null : cpf.trim()
-        dataNascimento = (dataNascimento !== null || dataNascimento !== undefined) ? validarData(dataNascimento.trim()) : null
-        telefone = (telefone.trim().length == 11) ? telefone.trim() : null
-        email = (validarEmail(email.trim())) ? email.trim() : null
-        senha = (senha.trim().length >= 4) ? senha.trim() : null
-        nome = (nome.trim().length > 2) ? nome.trim() : null
+        cpf = (cpf !== null && cpf !== undefined) ? cpf.trim() : null
+        dataNascimento = (dataNascimento !== null && dataNascimento !== undefined) ? validarData(dataNascimento.trim()) : null
+        telefone = (telefone !== null && telefone !== undefined) ? telefone.trim() : null
+        email = (email !== null && email !== undefined) ? email.trim() : null
+        senha = (senha !== null && senha !== undefined) ? senha.trim() : null
+        nome = (nome !== null && nome !== undefined) ? nome.trim() : null
 
-        if(!nome){
+        if(nome && nome.length < 2){
             return {status: 400, message: "Nome inválido"}
         }
 
-        if(cpf && cpf.trim().length != 11){
+        if(cpf && cpf.length != 11){
             return {status: 400, message: "CPF inválido"}
         }
 
@@ -159,29 +158,27 @@ exports.updateFuncionario = async (data) => {
             return {status: 400, message: "Data de nascimento inválida"}
         }
 
-        if(telefone && telefone.trim().length == 11){
+        if(telefone && telefone.length == 11){
             for (let i = 0; i < telefone.length; i++) {
                 if(isNaN(parseInt(telefone[i]))){
                     return {status: 400, message: "Telefone inválido"}
                 }
                 
             }
-
-            telefone = telefone.trim()
-        }else{
+        }else if(telefone){
             return {status: 400, message: "Telefone inválido"}
         }
 
-        if(!email){
+        if(email && !validarEmail(email)){
             return {status: 400, message: "Email inválido"}
         }
 
-        if(!senha){
+        if(senha && senha.length < 4){
             return {status: 400, message: "Senha inválida"}
         }
 
 
-        await Funcionario.findByIdAndUpdate({
+        await Funcionario.findByIdAndUpdate(id, {
             cpf: cpf ?? antigoFuncionario.cpf,
             nome: nome ?? antigoFuncionario.nome,
             dataNascimento: dataNascimento ?? antigoFuncionario.dataNascimento,
@@ -223,11 +220,11 @@ exports.updateFuncionario = async (data) => {
 
 exports.deleteFuncionario = async (id) => {
     try {
-        if(!data.id){
+        if(!id){
             return {status: 400, message: "Id é obrigatório"}
         }
     
-        if(data.id.trim().length === 0 || data.id.length < 24 || data.id.length > 24){
+        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
             return {status: 400, message: "Id inválido"}
         }
 
