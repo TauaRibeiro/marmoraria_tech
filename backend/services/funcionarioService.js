@@ -218,7 +218,7 @@ exports.updateFuncionario = async (data) => {
     }
 }
 
-exports.deleteFuncionario = async (id) => {
+exports.deleteFuncionario = async (data) => {
     try {
         if(!data.idUsuario){
             return {status: 400, message: "Id do usuário é obrigatório"}
@@ -240,7 +240,7 @@ exports.deleteFuncionario = async (id) => {
             return {status: 403, message: "Não é possível remover usuário do sistema estando logado como ele"}
         }
 
-        const antigoFuncionario = await Funcionario.findByIdAndDelete(id)
+        const antigoFuncionario = await Funcionario.findByIdAndDelete(data.idFuncionario)
 
         if(!antigoFuncionario){
             return {status: 404, message: "Funcionario não encontrado"}

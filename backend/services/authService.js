@@ -5,14 +5,6 @@ const validarEmail = require('../utils/validarEmail')
 
 exports.login = async (data) => {
     try{
-        if(!data.id){
-            return {status: 400, message: "Id é obrigatório"}
-        }
-    
-        if(data.id.trim().length === 0 || data.id.length < 24 || data.id.length > 24){
-            return {status: 400, message: "Id inválido"}
-        }
-    
         const {email, senha} = data
     
         if(!email || !senha){
