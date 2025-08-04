@@ -7,6 +7,6 @@ router.get('/', autenticarToken, funcionarioController.getAll)
 router.get('/:id', autenticarToken, funcionarioController.getById)
 router.post('/', autenticarToken, funcionarioController.create)
 router.patch('/:id', autenticarToken, funcionarioController.update)
-router.delete('/:id', autenticarToken, funcionarioController.delete)
+router.delete('/:idUsuario/:idFuncionario', autenticarToken, funcionarioController.delete)
 
 module.exports = router
