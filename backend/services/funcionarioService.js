@@ -220,12 +220,24 @@ exports.updateFuncionario = async (data) => {
 
 exports.deleteFuncionario = async (id) => {
     try {
-        if(!id){
-            return {status: 400, message: "Id é obrigatório"}
+        if(!data.idUsuario){
+            return {status: 400, message: "Id do usuário é obrigatório"}
         }
     
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
-            return {status: 400, message: "Id inválido"}
+        if(data.idUsuario.trim().length === 0 || data.idUsuario.length < 24 || data.idUsuario.length > 24){
+            return {status: 400, message: "Id do usuário inválido"}
+        }
+    
+        if(!data.idFuncionario){
+            return {status: 400, message: "Id do funcionário é obrigatório"}
+        }
+    
+        if(data.idFuncionario.trim().length === 0 || data.idFuncionario.length < 24 || data.idFuncionario.length > 24){
+            return {status: 400, message: "Id do funcionário inválido"}
+        }
+
+        if(data.idFuncionario === data.idUsuario){
+            return {status: 403, message: "Não é possível remover usuário do sistema estando logado como ele"}
         }
 
         const antigoFuncionario = await Funcionario.findByIdAndDelete(id)
