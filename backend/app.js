@@ -4,7 +4,6 @@ const cors = require('cors')
 require('dotenv').config()
 
 const initDatabase = require('./config/mongooseConfig');
-const { init } = require('./models/Status');
 
 const app = express();
 const port = process.env.PORT
