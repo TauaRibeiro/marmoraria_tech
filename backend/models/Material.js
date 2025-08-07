@@ -13,7 +13,8 @@ const materialSchema = new database.Schema({
     },
     nome: {type: String, required: true},
     estoqueMin: {type: Number, required: true},
-    estoqueMax: {type: Number, required: true}
+    estoqueMax: {type: Number, required: true},
+    estoque: {type: Number, required: true},
 }, {timestamps: true});
 
 module.exports = database.model('Material', materialSchema)
