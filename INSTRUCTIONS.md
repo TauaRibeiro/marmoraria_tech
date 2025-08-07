@@ -87,6 +87,7 @@ COMANDO|FUNÇÃO
 ~~~~js
 DATABASE_URL = "<URL_DATABASE>"
 PORT = 3000
+SECRET = "<STRING_CHAVE_PRIVADA>"
 ~~~~
 
 * Após a criação do arquivo basta rodar o seguinte comando `npm run backend`, e o servidor será inicializado no seguinte endereço `http://127.0.0.1:3000/`
