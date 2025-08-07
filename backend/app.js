@@ -15,6 +15,7 @@ const routerAmbiente = require('./routes/ambienteRoutes')
 const routerEndereco = require('./routes/enderecoRoutes')
 const routerFuncionario = require('./routes/funcionarioRoutes')
 const routerAuth = require('./routes/authRoutes')
+const routerMaterial = require('./routes/materialRoutes')
 
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -26,6 +27,7 @@ app.use('/ambiente', routerAmbiente)
 app.use('/endereco', routerEndereco)
 app.use('/funcionario', routerFuncionario)
 app.use('/auth', routerAuth)
+app.use('/material', routerMaterial)
 
 app.listen(port, () => {
     try{
