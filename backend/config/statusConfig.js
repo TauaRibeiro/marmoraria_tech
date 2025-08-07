@@ -1,20 +1,15 @@
 const Status = require('../models/Status')
 
 module.exports = async () => {
-    let result = await Status.findOne({nome: "Ok"})
-
-    if(result.length === 0){
-        result = await Status.create({nome: "Ok"});
-    }
+    const statusPadroes = ['Ok', 'Estoque Baixo', 'Estoque Cheio', 'Estoque Transbordando', 'Aguardando Pagamento', 'Cancelado']
     
-    process.env.ID_OK = result._id
+    statusPadroes.map(async (padrao) => {
+        let result = await Status.findOne({nome: padrao})
 
-    result = Status.findOne({nome: "Estoque Baixo"})
+        if(!result){
+           result = await Status.create({nome: padrao}) 
+        }
 
-    if(result.length === 0){
-        result = await Status.create({nome: "Estoque Baixo"})
-    }
-
-    process.env.ID_ESTOQUE_BAIXO = result._id
-
+        process.env[padrao.toUpperCase()] = padrao
+    })
 }
