@@ -10,6 +10,6 @@ module.exports = async () => {
            result = await Status.create({nome: padrao}) 
         }
 
-        process.env[padrao.toUpperCase()] = padrao
+        process.env[padrao.toUpperCase().replace(' ', '_')] = padrao
     })
 }
