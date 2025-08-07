@@ -3,7 +3,8 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 require('dotenv').config()
 
-const initDatabase = require('./config/mongooseConfig');
+const initDatabase = require('./config/mongooseConfig')
+const configStatus = require('./config/statusConfig')
 
 const app = express();
 const port = process.env.PORT
@@ -29,6 +30,7 @@ app.use('/auth', routerAuth)
 app.listen(port, () => {
     try{
         initDatabase()
+        configStatus()
         console.log(`Servidor rodando em http://127.0.0.1:${port}/`)    
     }catch(error){
         console.error("Erro ao inicializar o servidor...")
