@@ -1,24 +1,24 @@
 const Material = require('../models/Material')
 const validarId = require('../utils/validarIdMongoose')
 const tipoMateiralService = require('./tipoMaterialService')
-
+const serviceStatus = require('../services/statusService')
 
 exports.createMaterial = async (data) => {
-    let {idTipo, nome, estoque, estoqueMin, estoqueMax} = data 
+    let {idTipo, nome, estoque, estoqueMin, estoqueMax, idStatus} = data 
 
     try{
         if(!idTipo || !estoque || !nome || !estoqueMin || !estoqueMax){
             return {status: 400, message: "Id de tipo, estoque, nome, estoque mínimo, estoque máximo"}
         }
     
-        if(!validarId(idTipo)){
-            const invalidos = []
-    
-            if(!validarId(idTipo)) invalidos.push(idTipo);
-    
-            return {status: 400, message: `Id inválido! ${invalidos}`}
+        if(!validarId(idTipo)){    
+            return {status: 400, message: `Id de tipo inválido`}
         }
         
+        if(idStatus && !validarId(idStatus)){
+            return {status: 400, message: 'Id de status inválido'}
+        }
+
         const resultadoServiceTipoMaterial = await tipoMateiralService.getTipoMaterialByID(idTipo)
         
         if(resultadoServiceTipoMaterial.status !== 200){
@@ -46,9 +46,9 @@ exports.createMaterial = async (data) => {
         if(estoqueMax < 0 || estoqueMin < 0 || estoque < 0){
             const invalidos = []
     
-            if(isNaN(estoqueMax)) invalidos.push('estoqueMax');
-            if(isNaN(estoqueMin)) invalidos.push('estoqueMin');
-            if(isNaN(estoque)) invalidos.push('estoque');
+            if(estoqueMax < 0) invalidos.push('estoqueMax');
+            if(estoqueMin < 0) invalidos.push('estoqueMin');
+            if(estoque < 0) invalidos.push('estoque');
     
             return {status: 400, message: `O valor para ${invalidos} deve ser maior ou igual á zero`}
         }
@@ -57,9 +57,13 @@ exports.createMaterial = async (data) => {
             return {status: 400, message: "O estoque máximo não pode ser menos que o estoque mínimo"}
         }
 
-        let idStatus
-        
-        if(estoque > estoqueMax){
+        if(idStatus){
+            const resultadoServiceStatus = await serviceStatus.getStatusByID(idStatus)
+
+            if(resultadoServiceStatus.status !== 200){
+                return {status: resultadoServiceStatus.status, message: resultadoServiceStatus.message}
+            }
+        }else if(estoque > estoqueMax){
             idStatus = process.env.ESTOQUE_TRANSBORDANDO    
         }else if(estoque === estoqueMax){
             idStatus = process.env.ESTOQUE_CHEIO
