@@ -6,12 +6,19 @@ exports.criarStatus = async (nome) => {
             return {status: 400, message: "Nome inválido"}
         }
     
-        const result = await Status.create({nome})
+        await Status.create({nome})
 
         return {status: 201}
     }catch(error){
-        console.error(`Erro ao criar status ${nome}: ${error}`);
-        return {status: 500, message: `Erro ao criar status ${nome}`}
+        console.error(`Erro ao criar status: `);
+
+        if(error.code === 11000){
+            console.error(`Já existe um status com nome ${nome}`)
+            return {status: 400, message: "Já existe um endereço com este CEP"}
+        }
+
+        console.error(error)
+        return {status: 500, message: `Erro ao criar status`}
     }
 }
 
@@ -73,6 +80,12 @@ exports.deleteStatus = async (id) => {
     try {
         if(id.trim().length === 0 || id.length < 24 || id.length > 24){
             return {status: 400, message: "Id inválido"}
+        }
+
+        const statusParaDelete = await Status.findById(id)
+
+        if(process.env[statusParaDelete.nome.toUpperCase().replace(' ', '_')]){
+            return {status: 400, message: "Não é possível deletar um status padrão"}
         }
 
         const statusDeletado = await Status.findByIdAndDelete(id)
