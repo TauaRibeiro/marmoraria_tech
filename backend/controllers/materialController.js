@@ -34,8 +34,8 @@ exports.delete = async (req, res) => {
     const resultado = await serviceMaterial.deleteMaterial(req.params.id)
 
     if(resultado.status === 200){
-        return res.sendSatus()
+        return res.sendStatus(200)
     }
 
-    return res.status(res.status).json({message: resultado.message})
+    return res.status(resultado.status).json({message: resultado.message})
 }
