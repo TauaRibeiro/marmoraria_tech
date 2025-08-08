@@ -88,3 +88,49 @@ exports.getMaterial = async () => {
         return {status: 500, message: "Erro ao fazer get Material"}
     }
 }
+
+exports.getMaterialById = async (id) => {
+    try{
+        if(!id){
+            return {status: 400, message: "Id é obrigatório"}
+        }
+    
+        if(!validarId(id)){
+            return {status: 400, message: "Id inválido"}
+        }
+    
+        const result = await Material.findById(id)
+    
+        if(!result){
+            return {status: 404, message: "Material não encontrado"}
+        }
+    
+        return {status: 200, result}
+    }catch(error){
+        console.error('Ocorreu um erro ao pegar material por Id: ', error)
+        return {status: 500, result}
+    }
+}
+
+exports.deleteMaterial = async (id) => {
+    try{
+        if(!id){
+            return {status: 400, message: "Id é obrigatório"}
+        }
+    
+        if(!validarId(id)){
+            return {status: 400, message: "Id inválido"}
+        }
+    
+        const materialAntigo = await Material.findByIdAndDelete(id)
+    
+        if(!materialAntigo){
+            return {status: 404, message: "Material não encontrado"}
+        }
+    
+        return {status: 200}
+    }catch(error){
+        console.log('Erro ao deletar material: ', error)
+        return {status: 500, message: "Erro ao deletar material"}
+    }
+}
