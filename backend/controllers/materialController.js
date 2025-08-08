@@ -10,6 +10,16 @@ exports.getAll = async (_, res) => {
     return res.status(resultado.status).json({message: resultado.message})
 }
 
+exports.getById = async (req, res) => {
+    const resultado = await serviceMaterial.getMaterialById(req.params.id)
+
+    if(resultado.status === 200){
+        return res.status(200).json({result: resultado.result})
+    }
+
+    return res.status(resultado.status).json({message: resultado.message})
+}
+
 exports.create = async (req, res) => {
     const resultado = await serviceMaterial.createMaterial(req.body)
 
@@ -18,4 +28,14 @@ exports.create = async (req, res) => {
     }
 
     return res.status(resultado.status).json({message: resultado.message})
+}
+
+exports.delete = async (req, res) => {
+    const resultado = await serviceMaterial.deleteMaterial(req.params.id)
+
+    if(resultado.status === 200){
+        return res.sendSatus()
+    }
+
+    return res.status(res.status).json({message: resultado.message})
 }
