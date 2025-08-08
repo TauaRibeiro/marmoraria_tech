@@ -1,7 +1,7 @@
 const Status = require('../models/Status')
 
 module.exports = async () => {
-    const statusPadroes = ['Ok', 'Estoque Baixo', 'Estoque Cheio', 'Estoque Transbordando', 'Aguardando Pagamento', 'Cancelado', 'Sem Status']
+    const statusPadroes = ['Ok', 'Estoque Baixo', 'Estoque Cheio', 'Estoque Transbordando', 'Aguardando Pagamento', 'Cancelado', 'Status Deletado']
     
     statusPadroes.map(async (padrao) => {
         let result = await Status.findOne({nome: padrao})
