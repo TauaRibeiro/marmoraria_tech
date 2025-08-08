@@ -1,10 +1,10 @@
-const serviceMaterial = require('../services/serviceMaterial')
+const serviceMaterial = require('../services/materialService')
 
 exports.getAll = async (_, res) => {
     const resultado = await serviceMaterial.getMaterial()
 
     if(resultado.status === 200){
-        return res.sendStatus(200).json({result: resultado.result})
+        return res.status(200).json({result: resultado.result})
     }
 
     return res.status(resultado.status).json({message: resultado.message})

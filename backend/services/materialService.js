@@ -1,6 +1,6 @@
 const Material = require('../models/Material')
 const validarId = require('../utils/validarIdMongoose')
-const tipoMateiralService = require('../services/tipoMaterialService')
+const tipoMateiralService = require('./tipoMaterialService')
 
 
 exports.createMaterial = async (data) => {
@@ -8,7 +8,7 @@ exports.createMaterial = async (data) => {
 
     try{
         if(!idTipo || !estoque || !nome || !estoqueMin || !estoqueMax){
-            return {status: 400, message: "Id de tipo, id de status, "}
+            return {status: 400, message: "Id de tipo, estoque, nome, estoque mínimo, estoque máximo"}
         }
     
         if(!validarId(idTipo)){
@@ -18,10 +18,10 @@ exports.createMaterial = async (data) => {
     
             return {status: 400, message: `Id inválido! ${invalidos}`}
         }
-    
+        
         const resultadoServiceTipoMaterial = await tipoMateiralService.getTipoMaterialByID(idTipo)
-    
-        if(resultadoServiceTipoMaterial!== 200){
+        
+        if(resultadoServiceTipoMaterial.status !== 200){
             return {status: 404, message: `Tipo não encontrado`}
         }
         
