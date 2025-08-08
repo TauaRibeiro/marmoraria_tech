@@ -93,6 +93,24 @@ exports.getMaterial = async () => {
     }
 }
 
+exports.getMaterialByStatusId = async (id) => {
+    if(!id){
+        return {status: 400, message: "O id do status é necessário"}
+    }
+
+    if(!validarId(id)){
+        return {status: 400, message: "Id inválido"}
+    }
+
+    const result = await Material.find({idStatus: id})
+
+    if(result.length === 0){
+        return {status: 404, message: "Não foi encontrado nenhum material com esse id"}
+    }
+
+    return {status: 200, result}
+}
+
 exports.getMaterialById = async (id) => {
     try{
         if(!id){
