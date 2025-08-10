@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Marmoraria Tech</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f8f9fa;
+      }
+      .sidebar {
+        height: 100vh;
+        background-color: #ffffff;
+        border-right: 1px solid #dee2e6;
+        padding: 20px;
+      }
+      .sidebar .nav-link {
+        color: #000;
+        margin-bottom: 10px;
+      }
+      .sidebar .nav-link:hover {
+        background-color: #f1f1f1;
+        border-radius: 8px;
+      }
+      .status-badge {
+        padding: 0.25em 0.6em;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #fff;
+      }
+      .bg-status-aberto {
+        background-color: #fce88d;
+        color: #7c6b00;
+      }
+      .bg-status-andamento {
+        background-color: #a5c8ff;
+        color: #0b3d91;
+      }
+      .bg-status-finalizado {
+        background-color: #a8e6cf;
+        color: #1a7f5a;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 sidebar">
+          <h4 class="mb-4">Marmoraria Tech</h4>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="#">Dashboard</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Orçamentos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Clientes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Materiais</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Status</a>
+            </li>
+          </ul>
+          <div class="mt-auto pt-5">
+            <a href="#" class="nav-link text-danger">Sair</a>
+          </div>
+        </nav>
+
+        <!-- Conteúdo Principal -->
+        <main class="col-md-10 p-5">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Dashboard</h2>
+            <a href="#" class="btn btn-dark">Novo Orçamento</a>
+          </div>
+
+          <!-- Cards de Status -->
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <h6>Orçamentos Abertos</h6>
+                  <h3>2</h3>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <h6>Em Andamento</h6>
+                  <h3>1</h3>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <h6>Finalizados</h6>
+                  <h3>1</h3>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card text-center">
+                <div class="card-body">
+                  <h6>Total de Orçamentos</h6>
+                  <h3>4</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabela de Orçamentos Recentes -->
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Orçamentos Recentes</h5>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Data</th>
+                    <th>Status</th>
+                    <th>Valor</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>#1</td>
+                    <td>João Silva</td>
+                    <td>2023-10-15</td>
+                    <td>
+                      <span class="status-badge bg-status-aberto">Aberto</span>
+                    </td>
+                    <td>R$ 2.500,00</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary">
+                        Ver
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary">
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>#2</td>
+                    <td>Maria Oliveira</td>
+                    <td>2023-10-14</td>
+                    <td>
+                      <span class="status-badge bg-status-andamento"
+                        >Em Andamento</span
+                      >
+                    </td>
+                    <td>R$ 3.200,00</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary">
+                        Ver
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary">
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>#3</td>
+                    <td>Carlos Santos</td>
+                    <td>2023-10-12</td>
+                    <td>
+                      <span class="status-badge bg-status-finalizado"
+                        >Finalizado</span
+                      >
+                    </td>
+                    <td>R$ 1.800,00</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary">
+                        Ver
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary">
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>#4</td>
+                    <td>Ana Ferreira</td>
+                    <td>2023-10-10</td>
+                    <td>
+                      <span class="status-badge bg-status-aberto">Aberto</span>
+                    </td>
+                    <td>R$ 4.100,00</td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary">
+                        Ver
+                      </button>
+                      <button class="btn btn-sm btn-outline-secondary">
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
