@@ -1,4 +1,5 @@
 const Status = require('../models/Status')
+const materialService = require('../services/materialService')
 
 exports.criarStatus = async (nome) => {
     try{
@@ -81,22 +82,26 @@ exports.deleteStatus = async (id) => {
         if(id.trim().length === 0 || id.length < 24 || id.length > 24){
             return {status: 400, message: "Id inválido"}
         }
-
-        const statusParaDelete = await Status.findById(id)
-
-        if(process.env[statusParaDelete.nome.toUpperCase().replace(' ', '_')]){
-            return {status: 400, message: "Não é possível deletar um status padrão"}
-        }
-
+        
         const statusDeletado = await Status.findByIdAndDelete(id)
         
         if(!statusDeletado){
             return {status: 404, message: "Status não encontrado"}
         }
 
+        if(process.env[statusDeletado.nome.toUpperCase().replace(' ', '_')]){
+            return {status: 400, message: "Não é possível deletar um status padrão"}
+        }
+
+        const resultadoMaterialService = await materialService.updateMaterialByStatusId({id, idStatus: process.env.STATUS_DELETADO})
+                
+        if(resultadoMaterialService.status !== 200){
+            return {status: resultadoMaterialService.status, message: resultadoMaterialService.message} 
+        }
+
         return {status: 200}
     }catch(error){
-        console.error(`Erro ao deletar os Status: ${id}`)
+        console.error(`Erro ao deletar os Status: `, error)
 
         return {status: 500, message: "Erro ao deletar os status"}
     }

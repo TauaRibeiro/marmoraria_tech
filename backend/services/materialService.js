@@ -214,7 +214,7 @@ exports.updateMaterial = async (data) => {
             return {status: 404, message: "Material não encontrado"}
         }
 
-        if(nome.length === 0){
+        if(nome && nome.length === 0){
             return {status: 400, message: "Nome inválido"}
         }
     
@@ -311,5 +311,162 @@ exports.updateMaterial = async (data) => {
     } catch (error) {
        console.log("Erro ao autalizar material", error)
        return {status: 500, message: "Erro ao atualizar material"} 
+    }
+}
+
+exports.updateMaterialByStatusId = async (data) => {
+    try {
+        let {id, nome, estoqueMin, estoqueMax, estoque, idStatus, idTipo} = data;
+    
+        if(!id){
+            return {status: 400, message: "Id do material é obrigatório"}
+        }
+    
+        if(!validarId(id)){
+            return {status: 400, message: "Id do material inválido"}
+        }
+    
+        if(!nome && !estoqueMin && estoqueMax && estoque && idStatus && idTipo){
+            return {status: 400, message: "É necessário passar pelo menos algum dos campos (idTipo, idStatus, nome, estoqueMin, estoqueMax, estoque)"}
+        }
+    
+        if(idStatus && !validarId(idStatus)){
+            return {status: 400, message: "Id de status inválido"}
+        }
+    
+        if(idTipo && !validarId(idTipo)){
+            return {status: 400, message: "Id de tipo inválido"}
+        }
+        
+        nome = (nome !== null && nome !== undefined) ? nome.trim():null
+        
+        if(estoqueMin !== null && estoqueMin !== undefined){
+            if(typeof(estoqueMin) !== 'number'){
+                estoqueMin = parseInt(estoqueMin.trim())
+            }
+        }else{
+            estoqueMin = null
+        }
+        
+        if(estoqueMax !== null && estoqueMax !== undefined){
+            if(typeof(estoqueMax) !== 'number'){
+                estoqueMax = parseInt(estoqueMax.trim())
+            }
+        }else{
+            estoqueMax = null
+        }
+        
+        if(estoque !== null && estoque !== undefined){
+            if(typeof(estoque) !== 'number'){
+                estoque = parseInt(estoque.trim())
+            }
+        }else{
+            estoque = null
+        }
+        
+    
+        const materialAntigo = await Material.find({idStatus: id})
+        
+        if(!materialAntigo){
+            return {status: 404, message: "Material não encontrado"}
+        }
+
+        if(nome && nome.length === 0){
+            return {status: 400, message: "Nome inválido"}
+        }
+    
+        if(estoqueMax){
+            if(isNaN(estoqueMax)){
+                return {status: 400, message: "O valor para o estoque máximo deve ser um número inteiro válido"}
+            }
+    
+            if(estoqueMax < 0){
+                return {status: 400, message: "O valor para o estoque máximo deve ser maior ou igual à zero"}    
+            }
+        }
+    
+        if(estoqueMin){
+            if(isNaN(estoqueMin)){
+                return {status: 400, message: "O valor para o estoque mínimo deve ser um número inteiro válido"}
+            }
+    
+            if(estoqueMin < 0){
+                return {status: 400, message: "O valor para o estoque mínimo deve ser maior ou igual à zero"}    
+            }
+        }
+    
+        if(estoqueMin){
+            if(isNaN(estoqueMin)){
+                return {status: 400, message: "O valor para o estoque mínimo deve ser um número inteiro válido"}
+            }
+    
+            if(estoqueMin < 0){
+                return {status: 400, message: "O valor para o estoque mínimo deve ser maior ou igual à zero"}    
+            }
+        }
+    
+        if(estoque){
+            if(isNaN(estoque)){
+                return {status: 400, message: "O valor para o estoque deve ser um número inteiro válido"}
+            }
+    
+            if(estoque < 0){
+                return {status: 400, message: "O valor para o estoque deve ser maior ou igual à zero"}    
+            }
+        }
+    
+        if(estoqueMax && estoqueMin){
+            if(estoqueMax < estoqueMin){
+                return {status: 400, message: "O estoque máximo não pode ser menor que o estoque mínimo"}
+            }
+        }
+    
+        if(estoqueMax && !estoqueMin){
+            if(estoqueMax < materialAntigo.estoqueMin){
+                return {status: 400, message: "O estoque máximo não pode ser menor que o estoque mínimo"}
+            }
+        }
+    
+        if(idStatus){
+            const resultadoServiceStatus = await serviceStatus.getStatusByID(idStatus)
+    
+            if(resultadoServiceStatus.status !== 200){
+                return {status: resultadoServiceStatus.status, message: resultadoServiceStatus.message}
+            }
+        }else if(estoque > estoqueMax){
+            idStatus = process.env.ESTOQUE_TRANSBORDANDO    
+        }else if(estoque === estoqueMax){
+            idStatus = process.env.ESTOQUE_CHEIO
+        }else if(estoque <= estoqueMin){
+            idStatus = process.env.ESTOQUE_BAIXO
+        }else{
+            idStatus = process.env.OK
+        }
+    
+        if(idTipo){
+            const resultadoServiceTipo = await tipoMateiralService.getTipoMaterialByID(idTipo)
+    
+            if(resultadoServiceTipo.status !== 200){
+                return {status: resultadoServiceTipo.status, message: resultadoServiceTipo.message}
+            }
+        }
+    
+        const result = await Material.updateMany({idStatus: id}, {
+            idTipo: idTipo ?? materialAntigo.idTipo,
+            idStatus: idStatus ?? materialAntigo.idStatus,
+            nome: nome ?? materialAntigo.nome,
+            estoqueMin: estoqueMin ?? materialAntigo.estoqueMin,
+            estoqueMax: estoqueMax ?? materialAntigo.estoqueMax,
+            estoque: estoque ?? materialAntigo.estoque
+        })
+    
+        if(!result){
+            return {status: 404, message: "Material não encontrado"}
+        }
+    
+        return {status: 200}
+    } catch (error) {
+        console.log("Erro ao autalizar material", error)
+        return {status: 500, message: "Erro ao atualizar material"} 
     }
 }
