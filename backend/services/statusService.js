@@ -93,7 +93,7 @@ exports.deleteStatus = async (id) => {
             return {status: 400, message: "Não é possível deletar um status padrão"}
         }
 
-        const resultadoMaterialService = await materialService.updateMaterialByStatusId({id, idStatus: process.env.STATUS_DELETADO})
+        const resultadoMaterialService = await materialService.updateMaterialByStatusId({idStatus: id},{idStatus: process.env.STATUS_DELETADO})
                 
         if(resultadoMaterialService.status !== 200){
             return {status: resultadoMaterialService.status, message: resultadoMaterialService.message} 

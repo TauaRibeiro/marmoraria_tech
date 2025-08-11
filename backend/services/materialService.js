@@ -314,17 +314,9 @@ exports.updateMaterial = async (data) => {
     }
 }
 
-exports.updateMaterialByStatusId = async (data) => {
+exports.updateMaterialBy = async (filtro, data) => {
     try {
-        let {id, nome, estoqueMin, estoqueMax, estoque, idStatus, idTipo} = data;
-    
-        if(!id){
-            return {status: 400, message: "Id do material é obrigatório"}
-        }
-    
-        if(!validarId(id)){
-            return {status: 400, message: "Id do material inválido"}
-        }
+        let {nome, estoqueMin, estoqueMax, estoque, idStatus, idTipo} = data;
     
         if(!nome && !estoqueMin && estoqueMax && estoque && idStatus && idTipo){
             return {status: 400, message: "É necessário passar pelo menos algum dos campos (idTipo, idStatus, nome, estoqueMin, estoqueMax, estoque)"}
@@ -365,7 +357,7 @@ exports.updateMaterialByStatusId = async (data) => {
         }
         
     
-        const materialAntigo = await Material.find({idStatus: id})
+        const materialAntigo = await Material.find(filtro)
         
         if(!materialAntigo){
             return {status: 404, message: "Material não encontrado"}
@@ -451,7 +443,7 @@ exports.updateMaterialByStatusId = async (data) => {
             }
         }
     
-        const result = await Material.updateMany({idStatus: id}, {
+        const result = await Material.updateMany(filtro, {
             idTipo: idTipo ?? materialAntigo.idTipo,
             idStatus: idStatus ?? materialAntigo.idStatus,
             nome: nome ?? materialAntigo.nome,

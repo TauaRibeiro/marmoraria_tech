@@ -1,4 +1,5 @@
 const TipoMaterial = require('../models/TipoMaterial')
+const materialService = require('../services/materialService')
 
 exports.criarTipoMaterial = async (nome) => {
     try{
@@ -81,6 +82,12 @@ exports.deleteTipoMaterial = async (id) => {
             return {status: 404, message: "TipoMaterial não encontrado"}
         }
 
+        const resultadoMaterialService = await materialService.updateMaterialBy({idTipo: id}, {idTipo: process.env.TIPO_DELETADO})
+
+        if(resultadoMaterialService.status !== 200){
+            return {status: resultadoMaterialService.status, message: resultadoMaterialService.message}
+        }
+        
         return {status: 200}
     }catch(error){
         console.error(`Erro ao deletar TipoMaterial ${id}`)
