@@ -180,14 +180,40 @@ exports.updateMaterial = async (data) => {
         if(idTipo && !validarId(idTipo)){
             return {status: 400, message: "Id de tipo inválido"}
         }
-    
-        nome = (nome !== null || nome !== undefined) ? nome.trim():null
-        estoqueMin = (estoqueMin !== null || estoqueMin !== undefined) ? parseInt(estoqueMin.trim()):null
-        estoqueMax = (estoqueMax !== null || estoqueMax !== undefined) ? parseInt(estoqueMax.trim()):null
-        estoque = (estoque !== null || estoque !== undefined) ? parseInt(estoque.trim()):null
+        
+        nome = (nome !== null && nome !== undefined) ? nome.trim():null
+        
+        if(estoqueMin !== null && estoqueMin !== undefined){
+            if(typeof(estoqueMin) !== 'number'){
+                estoqueMin = parseInt(estoqueMin.trim())
+            }
+        }else{
+            estoqueMin = null
+        }
+        
+        if(estoqueMax !== null && estoqueMax !== undefined){
+            if(typeof(estoqueMax) !== 'number'){
+                estoqueMax = parseInt(estoqueMax.trim())
+            }
+        }else{
+            estoqueMax = null
+        }
+        
+        if(estoque !== null && estoque !== undefined){
+            if(typeof(estoque) !== 'number'){
+                estoque = parseInt(estoque.trim())
+            }
+        }else{
+            estoque = null
+        }
+        
     
         const materialAntigo = await Material.findById(id)
-    
+        
+        if(!materialAntigo){
+            return {status: 404, message: "Material não encontrado"}
+        }
+
         if(nome.length === 0){
             return {status: 400, message: "Nome inválido"}
         }
@@ -273,7 +299,8 @@ exports.updateMaterial = async (data) => {
             idStatus: idStatus ?? materialAntigo.idStatus,
             nome: nome ?? materialAntigo.nome,
             estoqueMin: estoqueMin ?? materialAntigo.estoqueMin,
-            estoque: estoque ?? materialAntigo.estoqueMin
+            estoqueMax: estoqueMax ?? materialAntigo.estoqueMax,
+            estoque: estoque ?? materialAntigo.estoque
         })
     
         if(!result){
