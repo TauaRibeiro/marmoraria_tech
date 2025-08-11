@@ -35,7 +35,7 @@ exports.getTipoMaterialByID = async (id) => {
         const result = await TipoMaterial.findById(id);
 
         if(!result){
-            return {status: 404}
+            return {status: 404, message: "Tipo de material não encontrado"}
         }
 
         return {status: 200, result}

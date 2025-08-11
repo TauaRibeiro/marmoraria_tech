@@ -42,7 +42,7 @@ exports.getStatusByID = async (id) => {
         const result = await Status.findById(id);
 
         if(!result){
-            return {status: 404}
+            return {status: 404, message: "Status não encontrado"}
         }
 
         return {status: 200, result}
