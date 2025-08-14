@@ -6,7 +6,7 @@ module.exports = (input) => {
             return false
         }
 
-        for(let i = 0; i < input.length; i++){
+        for(let i = 0; i < input.trim().length; i++){
             if(isNaN(parseInt(input[i]))){
                 return false
             }
