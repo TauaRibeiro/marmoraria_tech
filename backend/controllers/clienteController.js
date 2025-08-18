@@ -4,7 +4,7 @@ exports.getAll = async (_, res) => {
     const resultadoService = await clienteService.getCliente()
 
     if(resultadoService.status === 200){
-        return {status: 200, result: resultadoService.result}
+        return res.status(200).json({result: resultadoService.result})
     }
 
     return {status: resultadoService.status, message: resultadoService.message}

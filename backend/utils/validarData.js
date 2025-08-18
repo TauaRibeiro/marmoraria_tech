@@ -16,6 +16,9 @@ module.exports = (date) => {
     const data = new Date(ano, mes, dia);
     
     if(data.getDate() == dia && data.getMonth() == mes && data.getFullYear() == ano){
+        if(data > Date.now()){
+            return false
+        }
         return data
     }
 

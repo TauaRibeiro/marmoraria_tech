@@ -3,6 +3,7 @@ const validarId = require('../utils/validarIdMongoose')
 const validarData = require('../utils/validarData')
 const validarTelefone = require('../utils/validarTelefone')
 const enderecoService = require('../services/enderecoService')
+const validarEmail = require('../utils/validarEmail')
 const eNumerico = require('../utils/eNumerico')
 
 exports.getCliente = async () => {
@@ -34,6 +35,10 @@ exports.createCliente = async (data) => {
         if(resultadoService.status !== 200){
             return {status: resultadoService.status, message: resultadoService.message}
         }
+
+        if(nome.trim().length === 0){
+            return {status: 400, message: "Nome inválido"}
+        }
     
         if(!validarData(dataNascimento)){
             return {status: 400, message: "Data de nascimento inválida"}
@@ -59,27 +64,47 @@ exports.createCliente = async (data) => {
             return {status: 400, message: "Telefone inválido"}
         }
 
-        await Cliente.create({idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj})
+        await Cliente.create({
+            idEndereco: idEndereco.trim(), 
+            nome: nome.trim(), 
+            email: email.trim(), 
+            dataNascimento, 
+            telefone: telefone.trim(), 
+            cpf: (cpf) ? cpf.trim(): null, 
+            cnpj: (cnpj) ? cnpj.trim():null})
 
         return {status: 201}
     } catch (error) {
         console.error('Erro ao criar cliente')
         
         if(error.codeName == 'DuplicateKey' || error.code === 11000){
-            let duplicata = await Cliente.findOne({email})
+            let duplicata = await Cliente.findOne({email: data.email.trim()})
 
             if(duplicata){
                 return {status: 400, message: "O email providenciado já pertence à um outro cliente"}
             }
 
-            duplicata = await Cliente.findOne({telefone})
+            duplicata = await Cliente.findOne({telefone: data.telefone.trim()})
 
             if(duplicata){
                 return {status: 400, message: "O telefone providenciado já pertence à um outro cliente"}
             }
-        }
 
-        console.log(error)
+            duplicata = await Cliente.findOne({cpf: data.cpf.trim()})
+
+            if(duplicata){
+                return {status: 400, message: "O CPF providenciado já pertence à um outro cliente"}
+            }
+
+            duplicata = await Cliente.findOne({cnpj: data.cnpj.trim()})
+
+            if(duplicata){
+                return {status: 400, message: "O CNPJ providenciado já pertence à um outro cliente"}
+            }
+            
+        }
+        
+        console.error(error)
         return {status: 500, message: "Erro ao criar cliente"}
     }
     
