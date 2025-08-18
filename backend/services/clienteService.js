@@ -5,6 +5,18 @@ const validarTelefone = require('../utils/validarTelefone')
 const enderecoService = require('../services/enderecoService')
 const eNumerico = require('../utils/eNumerico')
 
+exports.getCliente = async () => {
+    try{
+        const result = await Cliente.find()
+
+        return {status: 200, result}
+    }catch(error){
+        console.error('Erro ao fazer o get de cliente', error)
+
+        return {status: 500, message: "Erro ao fazer get de cliente"}
+    }
+}
+
 exports.createCliente = async (data) => {
     try {
         const {idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj} = data
