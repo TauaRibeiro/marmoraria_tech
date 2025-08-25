@@ -39,3 +39,13 @@ exports.delete = async (req, res) => {
 
     return res.status(resultadoService.status).json({message: resultadoService.message})
 }
+
+exports.update = async (req, res) => {
+    const resultadoService = await clienteService.updateCliente({...req.params, ...req.body})
+
+    if(resultadoService.status === 200){
+        return res.sendStatus(200)
+    }
+
+    return res.status(resultadoService.status).json({message: resultadoService.message})
+}

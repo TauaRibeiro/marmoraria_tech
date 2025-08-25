@@ -213,17 +213,6 @@ exports.updateCliente = async (data) => {
 
         return {status: 200}
     } catch (error) {
-        if(error.codeName == 'DuplicateKey' || error.code === 11000){
-            let duplicata = await Cliente.find({email})
-
-            if(duplicata.length > 1){
-                return {status: 400, message: "Já existe um cliente com esse email"}
-            }
-            
-            duplicata = await Cliente.find({telefone})
-            
-            if(duplicata){}
-        }
         console.error('Erro ao atualizar cliente: ', error)
     }
 }
