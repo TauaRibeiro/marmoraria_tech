@@ -41,7 +41,7 @@ exports.getClienteByID = async (id) => {
 
 exports.createCliente = async (data) => {
     try {
-        const {idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj} = data
+        let {idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj} = data
         
         if(!idEndereco || !nome || !email || !dataNascimento || !telefone || (!cpf && !cnpj)){
             return {status: 400, message: "Os campos de idEndereco, nome, email, dataNascimento, telefone, cpf e cnpj são obrigatórios"}
@@ -57,11 +57,13 @@ exports.createCliente = async (data) => {
             return {status: resultadoService.status, message: resultadoService.message}
         }
 
+        dataNascimento = validarData(dataNascimento)
+        
         if(nome.trim().length === 0){
             return {status: 400, message: "Nome inválido"}
         }
-    
-        if(!validarData(dataNascimento)){
+        
+        if(!dataNascimento){
             return {status: 400, message: "Data de nascimento inválida"}
         }
     
