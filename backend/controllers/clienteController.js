@@ -11,7 +11,7 @@ exports.getAll = async (_, res) => {
 }
 
 exports.getByID = async (req, res) => {
-    const resultadoService = await clienteService.getByID(req.params.id)
+    const resultadoService = await clienteService.getClienteByID(req.params.id)
     
     if(resultadoService.status === 200){
         return res.status(200).json({result: resultadoService.result})
