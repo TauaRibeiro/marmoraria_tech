@@ -5,6 +5,7 @@ const validarTelefone = require('../utils/validarTelefone')
 const enderecoService = require('../services/enderecoService')
 const validarEmail = require('../utils/validarEmail')
 const eNumerico = require('../utils/eNumerico')
+const serviceEndereco = require('../services/enderecoService')
 
 exports.getCliente = async () => {
     try{
@@ -149,4 +150,80 @@ exports.deleteCliente = async (id) => {
         return {status: 500, message: "Erro ao deletar o cliente"}
     }
         
+}
+
+exports.updateCliente = async (data) => {
+    try {
+        if(!validarId(data.id)){
+            return {status: 400, message: "Id de cliente inválido"}
+        }
+    
+        if(!validarId(data.idEndereco)){
+            return {status: 400, message: "Id de endereco inválido"}
+        }
+    
+        const resultadoService = await serviceEndereco.getEnderecoByID(data.idEndereco.trim())
+    
+        if(resultadoService.status !== 200){
+            return {status: resultadoService.status, message: resultadoService.message}
+        }
+    
+        var {id, idEndereco, nome, email, telefone, cpf, cnpj} = data
+    
+        if(!nome || !email || !telefone || (!cpf && !cnpj)){
+            return {status: 400, message: "Os campos de nome, email, telefone e (cpf ou cnpj) são obrigatórios"}
+        }
+
+        if(nome.trim().length === 0){
+            return {status: 400, message: "Nome inválido"}
+        }
+    
+        if(!validarData(dataNascimento)){
+            return {status: 400, message: "Data de nascimento inválida"}
+        }
+    
+        if(!validarEmail(email)){
+            return {status: 400, message: "Email inválido"}
+        }
+    
+        if(cpf && (cpf.trim().length !== 11 || !eNumerico(cpf.trim()))){
+            return {status: 400, message: "CPF inválido"}
+        }
+    
+        if(cnpj && (cnpj.length !== 14 || !eNumerico(cnpj.trim()))){
+            return {status: 400, message: "CNPJ inválido"}
+        }
+    
+        if(!validarTelefone(telefone)){
+            return {status: 400, message: "Telefone inválido"}
+        }
+
+        const clienteAtualizado = await Cliente.findByIdAndUpdate(id, {
+            nome,
+            dataNascimento,
+            email,
+            cpf: (cpf) ? cpf.trim() : null,
+            cnpj: (cnpj) ? cnpj.trim() : null,
+            telefone
+        })
+
+        if(!clienteAtualizado){
+            return {status: 404, message: "Cliente atualizado"}
+        }
+
+        return {status: 200}
+    } catch (error) {
+        if(error.codeName == 'DuplicateKey' || error.code === 11000){
+            let duplicata = await Cliente.find({email})
+
+            if(duplicata.length > 1){
+                return {status: 400, message: "Já existe um cliente com esse email"}
+            }
+            
+            duplicata = await Cliente.find({telefone})
+            
+            if(duplicata){}
+        }
+        console.error('Erro ao atualizar cliente: ', error)
+    }
 }
