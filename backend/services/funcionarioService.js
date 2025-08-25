@@ -1,6 +1,9 @@
 const Funcionario = require('../models/Funcionario')
 const validarData = require('../utils/validarData')
 const validarEmail = require('../utils/validarEmail')
+const validarId = require('../utils/validarIdMongoose')
+const eNumerico = require('../utils/eNumerico')
+const validarTelefone = require('../utils/validarTelefone')
 
 exports.createFuncionario = async (data) => {
     try {
@@ -10,18 +13,13 @@ exports.createFuncionario = async (data) => {
             return {status: 400, message: "Os dados (cpf, dataNascimento, telefone, email, senha) são obrigatórios"}
         }
         
-        cpf = (cpf.trim().length != 11) ? null : cpf.trim()
         dataNascimento = validarData(dataNascimento.trim())
-        telefone = (telefone.trim().length == 11) ? telefone.trim() : null
-        email = (validarEmail(email.trim())) ? email.trim() : null
-        senha = (senha.trim().length >= 4) ? senha.trim() : null
-        nome = (nome.trim().length > 2) ? nome.trim() : null
 
-        if(!nome){
+        if(nome.trim().length === 0){
             return {status: 400, message: "Nome inválido"}
         }
 
-        if(!cpf){
+        if(!eNumerico(cpf) || cpf.trim().length != 11){
             return {status: 400, message: "CPF inválido"}
         }
 
@@ -29,26 +27,27 @@ exports.createFuncionario = async (data) => {
             return {status: 400, message: "Data de nascimento inválida"}
         }
 
-        if(telefone){
-            for (let i = 0; i < telefone.length; i++) {
-                if(isNaN(parseInt(telefone[i]))){
-                    return {status: 400, message: "Telefone inválido"}
-                }
-                
-            }
-        }else{
+        if(!validarTelefone(telefone)){
             return {status: 400, message: "Telefone inválido"}
         }
 
-        if(!email){
+        if(!validarEmail(email.trim())){
             return {status: 400, message: "Email inválido"}
         }
 
-        if(!senha){
+        if(senha.trim().length < 4){
             return {status: 400, message: "Senha inválida"}
         }
         
-        const result = await Funcionario.create({cpf, nome, senha, dataNascimento, telefone, email, senha})
+        const result = await Funcionario.create({
+            cpf: cpf.trim(), 
+            nome: nome.trim(), 
+            senha: senha.trim(), 
+            dataNascimento, 
+            telefone: telefone.trim(), 
+            email: email.trim(), 
+            senha: senha.trim()
+        })
 
         return {status: 201, result}
     } catch (error) {
@@ -102,7 +101,7 @@ exports.getFuncionarioById = async (id) => {
             return {status: 400, message: "Id inválido"}
         }
     
-        const result = await Funcionario.findById(id)
+        const result = await Funcionario.findById(id.trim())
     
         if(!result){
             return {status: 404, message: "Funcionario não encontrado"}
@@ -121,70 +120,50 @@ exports.updateFuncionario = async (data) => {
             return {status: 400, message: "Id é obrigatório"}
         }
     
-        if(data.id.trim().length === 0 || data.id.length < 24 || data.id.length > 24){
+        if(!validarId(data.id)){
             return {status: 400, message: "Id inválido"}
         }
 
         var {id, nome, cpf, dataNascimento, telefone, email, senha} = data
 
-        if(!nome && !cpf && !dataNascimento && !telefone && !email && !senha){
+        if(!nome || !cpf || !dataNascimento || !telefone || !email || !senha){
             return {status: 400, message: "Pelo menos um dos capos de Funcionario é necessário para atualizar"}
         }
 
-        id = id.trim()
+        dataNascimento = validarData(dataNascimento)
 
-        const antigoFuncionario = await Funcionario.findById(id)
-
-        if(!antigoFuncionario){
-            return {status: 404, message: "Funcionario não encontrado"}
-        }
-
-        cpf = (cpf !== null && cpf !== undefined) ? cpf.trim() : null
-        dataNascimento = (dataNascimento !== null && dataNascimento !== undefined) ? validarData(dataNascimento.trim()) : null
-        telefone = (telefone !== null && telefone !== undefined) ? telefone.trim() : null
-        email = (email !== null && email !== undefined) ? email.trim() : null
-        senha = (senha !== null && senha !== undefined) ? senha.trim() : null
-        nome = (nome !== null && nome !== undefined) ? nome.trim() : null
-
-        if(nome && nome.length < 2){
+        if(nome.trim().length === 0){
             return {status: 400, message: "Nome inválido"}
         }
 
-        if(cpf && cpf.length != 11){
+        if(!eNumerico(cpf) || cpf.trim().length != 11){
             return {status: 400, message: "CPF inválido"}
         }
 
-        if(!dataNascimento && dataNascimento != null){
+        if(!dataNascimento){
             return {status: 400, message: "Data de nascimento inválida"}
         }
 
-        if(telefone && telefone.length == 11){
-            for (let i = 0; i < telefone.length; i++) {
-                if(isNaN(parseInt(telefone[i]))){
-                    return {status: 400, message: "Telefone inválido"}
-                }
-                
-            }
-        }else if(telefone){
+        if(!validarTelefone(telefone)){
             return {status: 400, message: "Telefone inválido"}
         }
 
-        if(email && !validarEmail(email)){
+        if(!validarEmail(email.trim())){
             return {status: 400, message: "Email inválido"}
         }
 
-        if(senha && senha.length < 4){
+        if(senha.trim().length < 4){
             return {status: 400, message: "Senha inválida"}
         }
 
 
         await Funcionario.findByIdAndUpdate(id, {
-            cpf: cpf ?? antigoFuncionario.cpf,
-            nome: nome ?? antigoFuncionario.nome,
-            dataNascimento: dataNascimento ?? antigoFuncionario.dataNascimento,
-            telefone: telefone ?? antigoFuncionario.telefone,
-            email: email ?? antigoFuncionario.email,
-            senha: senha ?? antigoFuncionario.senha
+            cpf: cpf.trim(),
+            nome: nome.trim(),
+            dataNascimento,
+            telefone: telefone.trim(),
+            email: email.trim(),
+            senha: senha.trim()
         })
 
         return {status: 200}
@@ -193,21 +172,21 @@ exports.updateFuncionario = async (data) => {
         if(error.codeName == 'DuplicateKey'){
             let duplicata = await Funcionario.findOne({cpf})
 
-            if(duplicata){
+            if(duplicata && duplicata._id != id){
                 console.error(`CPF ${cpf} já existente`)
                 return {status:400, message: "CPF inválido"}
             }
 
             duplicata = await Funcionario.findOne({telefone})
 
-            if(duplicata){
+            if(duplicata && duplicata._id != id){
                 console.error(`Telefone ${telefone} já existente`)
                 return {status: 400, message: "Telefone inválido"}
             }
 
             duplicata = await Funcionario.findOne({email})
 
-            if(duplicata){
+            if(duplicata && duplicata._id != id){
                 console.error(`email ${email} já existente`)
                 return {status: 400, message: "email inválido"}
             }
@@ -220,27 +199,29 @@ exports.updateFuncionario = async (data) => {
 
 exports.deleteFuncionario = async (data) => {
     try {
-        if(!data.idUsuario){
+        const {idUsuario, idFuncionario} = data
+
+        if(!idUsuario){
             return {status: 400, message: "Id do usuário é obrigatório"}
         }
     
-        if(data.idUsuario.trim().length === 0 || data.idUsuario.length < 24 || data.idUsuario.length > 24){
+        if(validarId(idUsuario)){
             return {status: 400, message: "Id do usuário inválido"}
         }
     
-        if(!data.idFuncionario){
+        if(!idFuncionario){
             return {status: 400, message: "Id do funcionário é obrigatório"}
         }
     
-        if(data.idFuncionario.trim().length === 0 || data.idFuncionario.length < 24 || data.idFuncionario.length > 24){
+        if(!validarId(idFuncionario)){
             return {status: 400, message: "Id do funcionário inválido"}
         }
 
-        if(data.idFuncionario === data.idUsuario){
+        if(idFuncionario === idUsuario){
             return {status: 403, message: "Não é possível remover usuário do sistema estando logado como ele"}
         }
 
-        const antigoFuncionario = await Funcionario.findByIdAndDelete(data.idFuncionario)
+        const antigoFuncionario = await Funcionario.findByIdAndDelete(idFuncionario)
 
         if(!antigoFuncionario){
             return {status: 404, message: "Funcionario não encontrado"}

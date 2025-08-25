@@ -1,13 +1,14 @@
 const Status = require('../models/Status')
 const materialService = require('../services/materialService')
+const validarId = require('../utils/validarIdMongoose')
 
 exports.criarStatus = async (nome) => {
     try{
-        if(nome.trim().length === 0 || nome.length < 3){
+        if(nome.trim().length === 0){
             return {status: 400, message: "Nome inválido"}
         }
     
-        await Status.create({nome})
+        await Status.create({nome: nome.trim()})
 
         return {status: 201}
     }catch(error){
@@ -37,10 +38,10 @@ exports.getStatus = async () => {
 
 exports.getStatusByID = async (id) => {
     try{
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
-        const result = await Status.findById(id);
+        const result = await Status.findById(id.trim());
 
         if(!result){
             return {status: 404, message: "Status não encontrado"}
@@ -56,7 +57,7 @@ exports.getStatusByID = async (id) => {
 
 exports.updateStatus = async (id, novoNome) => {
     try {
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
 
@@ -64,7 +65,7 @@ exports.updateStatus = async (id, novoNome) => {
             return {status: 400, message: "Nome inválido"}
         }
         
-        const statusAtualizado = await Status.findByIdAndUpdate(id, {nome: novoNome})
+        const statusAtualizado = await Status.findByIdAndUpdate(id.trim(), {nome: novoNome.trim()})
         
         if(!statusAtualizado){
             return {status: 404, message: `Status com id ${id} não encontrado`}
@@ -79,11 +80,11 @@ exports.updateStatus = async (id, novoNome) => {
 
 exports.deleteStatus = async (id) => {
     try {
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
         
-        const statusDeletado = await Status.findByIdAndDelete(id)
+        const statusDeletado = await Status.findByIdAndDelete(id.trim())
         
         if(!statusDeletado){
             return {status: 404, message: "Status não encontrado"}
@@ -93,7 +94,7 @@ exports.deleteStatus = async (id) => {
             return {status: 400, message: "Não é possível deletar um status padrão"}
         }
 
-        const resultadoMaterialService = await materialService.updateMaterialByStatusId({idStatus: id},{idStatus: process.env.STATUS_DELETADO})
+        const resultadoMaterialService = await materialService.updateMaterialBy({idStatus: id.trim()},{idStatus: process.env.STATUS_DELETADO})
                 
         if(resultadoMaterialService.status !== 200){
             return {status: resultadoMaterialService.status, message: resultadoMaterialService.message} 

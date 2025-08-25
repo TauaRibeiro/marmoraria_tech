@@ -1,13 +1,14 @@
 const TipoMaterial = require('../models/TipoMaterial')
 const materialService = require('../services/materialService')
+const validarId = require('../utils/validarIdMongoose')
 
 exports.criarTipoMaterial = async (nome) => {
     try{
-        if(nome.trim().length === 0 || nome.length < 3){
+        if(nome.trim().length === 0){
             return {status: 400, message: "Nome inválido"}
         }
     
-        const result = await TipoMaterial.create({nome})
+        const result = await TipoMaterial.create({nome: nome.trim()})
 
         return {status: 201, result}
     }catch(error){
@@ -30,10 +31,10 @@ exports.getTipoMaterial = async () => {
 
 exports.getTipoMaterialByID = async (id) => {
     try{
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
-        const result = await TipoMaterial.findById(id);
+        const result = await TipoMaterial.findById(id.trim());
 
         if(!result){
             return {status: 404, message: "Tipo de material não encontrado"}
@@ -49,7 +50,7 @@ exports.getTipoMaterialByID = async (id) => {
 
 exports.updateTipoMaterial = async (id, novoNome) => {
     try {
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
 
@@ -57,7 +58,7 @@ exports.updateTipoMaterial = async (id, novoNome) => {
             return {status: 400, message: "Nome inválido"}
         }
         
-        const statusAtualizado = await TipoMaterial.findByIdAndUpdate(id, {nome: novoNome})
+        const statusAtualizado = await TipoMaterial.findByIdAndUpdate(id.trim(), {nome: novoNome.trim()})
         
         if(!statusAtualizado){
             return {status: 404, message: `TipoMaterial com id ${id} não encontrado`}
@@ -72,17 +73,17 @@ exports.updateTipoMaterial = async (id, novoNome) => {
 
 exports.deleteTipoMaterial = async (id) => {
     try {
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
 
-        const statusDeletado = await TipoMaterial.findByIdAndDelete(id)
+        const statusDeletado = await TipoMaterial.findByIdAndDelete(id.trim())
         
         if(!statusDeletado){
             return {status: 404, message: "TipoMaterial não encontrado"}
         }
 
-        const resultadoMaterialService = await materialService.updateMaterialBy({idTipo: id}, {idTipo: process.env.TIPO_DELETADO})
+        const resultadoMaterialService = await materialService.updateMaterialBy({idTipo: id.trim()}, {idTipo: process.env.TIPO_DELETADO})
 
         if(resultadoMaterialService.status !== 200){
             return {status: resultadoMaterialService.status, message: resultadoMaterialService.message}
