@@ -7,7 +7,17 @@ exports.getAll = async (_, res) => {
         return res.status(200).json({result: resultadoService.result})
     }
 
-    return {status: resultadoService.status, message: resultadoService.message}
+    return res.status(resultadoService.status).json({message: resultadoService.message})
+}
+
+exports.getByID = async (req, res) => {
+    const resultadoService = await clienteService.getByID(req.params.id)
+    
+    if(resultadoService.status === 200){
+        return res.status(200).json({result: resultadoService.result})
+    }
+
+    return res.status(resultadoService.status).json({message: resultadoService.message})
 }
 
 exports.create = async (req, res) => {
