@@ -1,46 +1,43 @@
 const Endereco = require('../models/Endereco')
+const eNumerico = require('../utils/eNumerico')
+const validarId = require('../utils/validarIdMongoose')
 
 exports.criarEndereco = async (enderecoData) => {
     try{
-        let { cep, cidade, rua, numero, bairro, complemento } = enderecoData
+        var { cep, cidade, rua, numero, bairro, complemento } = enderecoData
     
         if(!cep || !cidade || !rua || !numero || !bairro){
             return {status: 400, message: "Dados de cep, cidade, rua, número e bairro são obrigatórios"}
         }
-
-        for(let i = 0; i < numero.length; i++){
-            if(isNaN(parseInt(numero[i]))){
-                return {status: 400, message: "Número inválido"}
-            }
-        }
-    
-        cep = cep.replace('-', '').trim()
+        
+        cep = cep.trim()
         rua = rua.trim()
-        numero = parseInt(numero.trim())
         bairro = bairro.trim()
         complemento = (complemento) ? complemento.trim() : null
         
-        if(cep.length != 8 || isNaN(parseInt(cep))){
+        if(cep.length != 8 || !eNumerico(numero)){
             return {status: 400, message: "CEP inválido"}
         }
         
-        if(isNaN(numero)){
-            return {status: 400, message: "Número inválido"}
-        }
-    
         if(bairro.length == 0 || rua.length == 0){
             return {status: 400, message: "Rua ou bairro inválido(os)"}
         }
         
-        if((await Endereco.find({cep})).length != 0){
-            console.log(await Endereco.find({cep}))
-            return {status: 400, message: "Já existe um endereço com este CEP"}
+        if(!eNumerico(numero)){
+            return {status: 400, message: "Número do endereço inválido"}
         }
-
+        
         const result = await Endereco.create({cep, cidade, rua, numero, bairro, complemento})
 
         return {status: 201, result}
     }catch(error){
+        if(error.codeName == 'DuplicateKey' || error.code === 11000){
+            let duplicata = await Endereco.findOne({cep: numero.trim()})
+
+            if(duplicata){
+                return {status: 400, message: "Já existe um endereço com esse CEP"}
+            }
+        }
         console.error(`Erro ao criar o endereço: `, error)
         return {status: 500, message: "Erro ao criar endereço"}
     }
@@ -61,11 +58,11 @@ exports.getEnderecoByID = async (id) => {
             return {status: 400, message: "Id é obrigatório"}
         }
 
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
 
-        const result = await Endereco.findById(id)
+        const result = await Endereco.findById(id.trim())
 
         if(!result){
             return {status: 404, message: `O endereço não foi encontrado`}
@@ -84,11 +81,11 @@ exports.updateEndereco = async (id, data) => {
             return {status: 400, message: "Id é obrigatório"}
         }
 
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
         
-        const antigoEndereco = await Endereco.findById(id)
+        const antigoEndereco = await Endereco.findById(id.trim())
         
         if(!antigoEndereco){
             return {status: 404, message: "Endereço não encontrado"}
@@ -96,49 +93,35 @@ exports.updateEndereco = async (id, data) => {
         
         var {cep, cidade, rua, numero, bairro, complemento} = data
         
-        if(!cep && !cidade && !numero && !rua && !bairro && !complemento){
-            return {status: 400, message: "É preciso ser passado pelo menos um dos campos de endereço (cep, cidade, rua, numero, bairro, complemento)"}
+        if(!cep || !cidade || !numero || !rua || !bairro){
+            return {status: 400, message: "É os campos cep, cidade, rua, numero e bairro são obrigatórios"}
         }
         
-        cep = (cep != null && cep != undefined) ? cep.replace('-', '').trim() : null
-        cidade = (cidade != null && cidade != undefined) ? cidade.trim() : null
-        rua = (rua != null && cidade != undefined) ? rua.trim() : null
-        bairro = (bairro != null && cidade != undefined) ? bairro.trim() : null
-        complemento = (complemento != null && complemento != undefined) ? complemento.trim() : null
-        
-        if(cep != null && (cep.length != 8 || isNaN(parseInt(cep)))){
+        if(cep.length != 8 || !eNumerico(cep.trim())){
             return {status: 400, message:"CEP inválido"}
         }
     
-        if(cidade != null && cidade.length == 0){
+        if(cidade.trim().length == 0){
             return {status: 400, message: "Cidade inválida"}
         }
     
-        if(rua != null && rua.length == 0){
+        if(rua.trim().length == 0){
             return {status: 400, message: "Rua inválida"}
         }
     
-        if(numero != null){
-            if(numero.length == 0){
-                return {status: 400, message: "Número inválido"}
-            }
 
-            for(let i = 0; i < numero.length; i++){
-                if(isNaN(parseInt(numero[i]))){
-                    return {status: 400, message: "Número inválido"}
-                }
-            }
-
-            numero = parseInt(numero.trim())
-        }else{
-            numero = null
+        if(!eNumerico(numero)){
+            return {status: 400, message: "Número inválido"}
         }
+
+        numero = parseInt(numero.trim())
+        
     
-        if(bairro != null && bairro.length == 0){
+        if(bairro.trim().length == 0){
             return {status: 400, message: "Bairro inválido"}
         }
         
-        if(complemento != null && complemento.length == 0){
+        if(complemento && complemento.trim().length == 0){
             complemento = null
         }else if(!complemento){
             complemento = antigoEndereco.complemento 
@@ -158,9 +141,9 @@ exports.updateEndereco = async (id, data) => {
         console.error("Erro ao atualizar o endereço: \b")
 
         if(error.codeName == 'DuplicateKey'){
-            const duplicata = await Endereco.find({cep})
+            const duplicata = await Endereco.findOne({cep: cep.trim()})
 
-            if(duplicata.length === 1){
+            if(duplicata && duplicata._id != id){
                 console.error(`Já existe um endereço de CEP ${cep}`)
                 return {status: 400, message: "Já existe um endereço com este CEP"}
             }
@@ -179,11 +162,11 @@ exports.deleteEndereco = async (id) => {
             return {status: 400, message: "Id é obrigatório"}
         }
 
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
 
-        const enderecoAntigo = await Endereco.findByIdAndDelete(id)
+        const enderecoAntigo = await Endereco.findByIdAndDelete(id.trim())
 
         if(!enderecoAntigo){
             return {status: 404, message: "Endereço não encontrado"}

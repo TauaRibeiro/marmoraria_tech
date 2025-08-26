@@ -1,8 +1,9 @@
 const Ambiente = require('../models/Ambiente')
+const validarId = require('../utils/validarIdMongoose')
 
 exports.criarAmbiente = async (nome) => {
     try{
-        if(nome.trim().length === 0 || nome.length < 3){
+        if(nome.trim().length === 0){
             return {status: 400, message: "Nome inválido"}
         }
     
@@ -29,10 +30,10 @@ exports.getAmbiente = async () => {
 
 exports.getAmbienteByID = async (id) => {
     try{
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
-        const result = await Ambiente.findById(id);
+        const result = await Ambiente.findById(id.trim());
 
         if(!result){
             return {status: 404}
@@ -48,7 +49,7 @@ exports.getAmbienteByID = async (id) => {
 
 exports.updateAmbiente = async (id, novoNome) => {
     try {
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
 
@@ -56,7 +57,7 @@ exports.updateAmbiente = async (id, novoNome) => {
             return {status: 400, message: "Nome inválido"}
         }
         
-        const statusAtualizado = await Ambiente.findByIdAndUpdate(id, {nome: novoNome})
+        const statusAtualizado = await Ambiente.findByIdAndUpdate(id, {nome: novoNome.trim()})
         
         if(!statusAtualizado){
             return {status: 404, message: `Ambiente com id ${id} não encontrado`}
@@ -71,11 +72,11 @@ exports.updateAmbiente = async (id, novoNome) => {
 
 exports.deleteAmbiente = async (id) => {
     try {
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
+        if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
         }
 
-        const statusDeletado = await Ambiente.findByIdAndDelete(id)
+        const statusDeletado = await Ambiente.findByIdAndDelete(id.trim())
         
         if(!statusDeletado){
             return {status: 404, message: "Ambiente não encontrado"}
