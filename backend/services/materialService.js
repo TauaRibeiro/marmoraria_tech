@@ -2,55 +2,58 @@ const Material = require('../models/Material')
 const validarId = require('../utils/validarIdMongoose')
 const tipoMateiralService = require('./tipoMaterialService')
 const serviceStatus = require('../services/statusService')
+const eNumerico = require('../utils/eNumerico')
 
 exports.createMaterial = async (data) => {
-    let {idTipo, nome, estoque, estoqueMin, estoqueMax, idStatus} = data 
-
     try{
-        if(!idTipo || !estoque || !nome || !estoqueMin || !estoqueMax){
-            return {status: 400, message: "Id de tipo, estoque, nome, estoque mínimo, estoque máximo"}
+        let {nome, estoqueMin, estoqueMax, estoque, idStatus, idTipo} = data;
+
+        if(!nome || !estoqueMin || !estoqueMax || !estoque || !idTipo){
+            return {status: 400, message: "Os parâmetros, nome, estoqueMin, estoqueMax, estoque, idTipo são obrigatórios"}
         }
     
-        if(!validarId(idTipo)){    
-            return {status: 400, message: `Id de tipo inválido`}
-        }
-        
         if(idStatus && !validarId(idStatus)){
-            return {status: 400, message: 'Id de status inválido'}
+            return {status: 400, message: "Id de status inválido"}
         }
-
-        const resultadoServiceTipoMaterial = await tipoMateiralService.getTipoMaterialByID(idTipo)
-        
-        if(resultadoServiceTipoMaterial.status !== 200){
-            return {status: 404, message: `Tipo não encontrado`}
+    
+        if(!validarId(idTipo)){
+            return {status: 400, message: "Id de tipo inválido"}
         }
-        
-        if(nome.length < 2){
+    
+        if(nome.trim().length === 0){
             return {status: 400, message: "Nome inválido"}
         }
-    
-        estoqueMax = parseInt(estoqueMax)
-        estoqueMin = parseInt(estoqueMin)
-        estoque = parseInt(estoque)
-    
-        if(isNaN(estoqueMax) || isNaN(estoqueMin) || isNaN(estoque)){
-            const invalidos = []
-    
-            if(isNaN(estoqueMax)) invalidos.push('estoqueMax');
-            if(isNaN(estoqueMin)) invalidos.push('estoqueMin');
-            if(isNaN(estoque)) invalidos.push('estoque');
-    
-            return {status: 400, message: `O valor para ${invalidos} deve ser um número inteiro válido`}
+
+        if(!eNumerico(estoqueMin) || !eNumerico(estoqueMax) || !eNumerico(estoque)){
+            return {status: 400, message: "O valor de estoque mínimo, estoque máximo e estoque devem ser um número válido"}
         }
-    
-        if(estoqueMax < 0 || estoqueMin < 0 || estoque < 0){
-            const invalidos = []
-    
-            if(estoqueMax < 0) invalidos.push('estoqueMax');
-            if(estoqueMin < 0) invalidos.push('estoqueMin');
-            if(estoque < 0) invalidos.push('estoque');
-    
-            return {status: 400, message: `O valor para ${invalidos} deve ser maior ou igual á zero`}
+
+        estoqueMin = parseInt(estoqueMin.trim())
+        estoqueMax = parseInt(estoqueMax.trim())
+        estoque = parseInt(estoque.trim())
+        
+        if(isNaN(estoqueMax)){
+            return {status: 400, message: "O valor para o estoque máximo deve ser um número inteiro válido"}
+        }
+
+        if(estoqueMax < 0){
+            return {status: 400, message: "O valor para o estoque máximo deve ser maior ou igual à zero"}    
+        }
+        
+        if(isNaN(estoqueMin)){
+            return {status: 400, message: "O valor para o estoque mínimo deve ser um número inteiro válido"}
+        }
+
+        if(estoqueMin < 0){
+            return {status: 400, message: "O valor para o estoque mínimo deve ser maior ou igual à zero"}    
+        }
+
+        if(isNaN(estoque)){
+            return {status: 400, message: "O valor para o estoque deve ser um número inteiro válido"}
+        }
+
+        if(estoque < 0){
+            return {status: 400, message: "O valor para o estoque deve ser maior ou igual à zero"}    
         }
     
         if(estoqueMax < estoqueMin){
@@ -59,7 +62,7 @@ exports.createMaterial = async (data) => {
 
         if(idStatus){
             const resultadoServiceStatus = await serviceStatus.getStatusByID(idStatus)
-
+    
             if(resultadoServiceStatus.status !== 200){
                 return {status: resultadoServiceStatus.status, message: resultadoServiceStatus.message}
             }
@@ -176,26 +179,29 @@ exports.updateMaterial = async (data) => {
             return {status: 400, message: "Id do material inválido"}
         }
     
-        if(!nome || !estoqueMin || estoqueMax || estoque || idStatus || idTipo){
+        if(!nome || !estoqueMin || !estoqueMax || !estoque || !idTipo){
             return {status: 400, message: "Os parâmetros, nome, estoqueMin, estoqueMax, estoque, idStaus, idTipo são obrigatórios"}
         }
     
-        if(!validarId(idStatus)){
+        if(idStatus && !validarId(idStatus)){
             return {status: 400, message: "Id de status inválido"}
         }
     
         if(!validarId(idTipo)){
             return {status: 400, message: "Id de tipo inválido"}
         }
-        
-        
-        if(nome.length === 0){
+    
+        if(nome.trim().length === 0){
             return {status: 400, message: "Nome inválido"}
+        }
+
+        if(!eNumerico(estoqueMin) || !eNumerico(estoqueMax) || !eNumerico(estoque)){
+            return {status: 400, message: "O valor de estoque mínimo, estoque máximo e estoque devem ser um número válido"}
         }
 
         estoqueMin = parseInt(estoqueMin.trim())
         estoqueMax = parseInt(estoqueMax.trim())
-        estoque = parseInt(estoque.tirm())
+        estoque = parseInt(estoque.trim())
         
         if(isNaN(estoqueMax)){
             return {status: 400, message: "O valor para o estoque máximo deve ser um número inteiro válido"}
@@ -271,7 +277,7 @@ exports.updateMaterialBy = async (filtro, data) => {
     try {
         let {nome, estoqueMin, estoqueMax, estoque, idStatus, idTipo} = data;
     
-        if(!nome && !estoqueMin && estoqueMax && estoque && idStatus && idTipo){
+        if(!nome && !estoqueMin && !estoqueMax && !estoque && !idStatus && !idTipo){
             return {status: 400, message: "É necessário passar pelo menos algum dos campos (idTipo, idStatus, nome, estoqueMin, estoqueMax, estoque)"}
         }
     
@@ -340,16 +346,6 @@ exports.updateMaterialBy = async (filtro, data) => {
             }
         }
     
-        if(estoqueMin){
-            if(isNaN(estoqueMin)){
-                return {status: 400, message: "O valor para o estoque mínimo deve ser um número inteiro válido"}
-            }
-    
-            if(estoqueMin < 0){
-                return {status: 400, message: "O valor para o estoque mínimo deve ser maior ou igual à zero"}    
-            }
-        }
-    
         if(estoque){
             if(isNaN(estoque)){
                 return {status: 400, message: "O valor para o estoque deve ser um número inteiro válido"}
@@ -368,6 +364,12 @@ exports.updateMaterialBy = async (filtro, data) => {
     
         if(estoqueMax && !estoqueMin){
             if(estoqueMax < materialAntigo.estoqueMin){
+                return {status: 400, message: "O estoque máximo não pode ser menor que o estoque mínimo"}
+            }
+        }
+        
+        if(!estoqueMax && estoqueMin){
+            if(materialAntigo.estoqueMax < estoqueMin){
                 return {status: 400, message: "O estoque máximo não pode ser menor que o estoque mínimo"}
             }
         }
