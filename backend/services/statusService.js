@@ -12,13 +12,11 @@ exports.criarStatus = async (nome) => {
 
         return {status: 201}
     }catch(error){
-        console.error(`Erro ao criar status: `);
-
         if(error.code === 11000){
-            console.error(`Já existe um status com nome ${nome}`)
-            return {status: 400, message: "Já existe um endereço com este CEP"}
+            return {status: 400, message: "Já existe um status com esse nome"}
         }
-
+        
+        console.error(`Erro ao criar status: `);
         console.error(error)
         return {status: 500, message: `Erro ao criar status`}
     }
@@ -65,14 +63,26 @@ exports.updateStatus = async (id, novoNome) => {
             return {status: 400, message: "Nome inválido"}
         }
         
-        const statusAtualizado = await Status.findByIdAndUpdate(id.trim(), {nome: novoNome.trim()})
-        
-        if(!statusAtualizado){
+        const statusAntigo = await Status.findById(id.trim())
+
+        if(!statusAntigo){
             return {status: 404, message: `Status com id ${id} não encontrado`}
         }
+        
+        if(process.env[statusAntigo.nome.toUpperCase().replace(' ', '_')]){
+            return {status: 400, message: "Não é possível alterar um status padrão"}
+        }
+        
+        // const statusAtualizado = await Status.findByIdAndUpdate(id.trim(), {nome: novoNome.trim()})
+        
+        await statusAntigo.updateOne({nome: novoNome.trim()})
 
         return {status: 200}
     } catch (error) {
+        if(error.codeName == 'DuplicateKey' || error.code === 11000){
+            return {status: 400, message: "Já existe um status com esse nome"}
+        }
+
         console.error(`Erro ao atualizar status: `, error);
         return {status: 500, message: "Erro ao atualizar status" }
     }
@@ -84,8 +94,8 @@ exports.deleteStatus = async (id) => {
             return {status: 400, message: "Id inválido"}
         }
         
-        const statusDeletado = await Status.findByIdAndDelete(id.trim())
-        
+        const statusDeletado = await Status.findById(id.trim())
+              
         if(!statusDeletado){
             return {status: 404, message: "Status não encontrado"}
         }
@@ -93,12 +103,13 @@ exports.deleteStatus = async (id) => {
         if(process.env[statusDeletado.nome.toUpperCase().replace(' ', '_')]){
             return {status: 400, message: "Não é possível deletar um status padrão"}
         }
-
         const resultadoMaterialService = await materialService.updateMaterialBy({idStatus: id.trim()},{idStatus: process.env.STATUS_DELETADO})
-                
-        if(resultadoMaterialService.status !== 200){
+        
+        if(resultadoMaterialService.status !== 200 && resultadoMaterialService.status !== 404){
             return {status: resultadoMaterialService.status, message: resultadoMaterialService.message} 
         }
+        
+        await statusDeletado.deleteOne()
 
         return {status: 200}
     }catch(error){
