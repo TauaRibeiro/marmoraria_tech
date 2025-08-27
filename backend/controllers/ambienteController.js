@@ -1,4 +1,4 @@
-const ambienteService = require('../services/ambieteService')
+const ambienteService = require('../services/ambienteService')
 
 exports.getAll = async (req, res) => {
     const resultService = await ambienteService.getAmbiente();
