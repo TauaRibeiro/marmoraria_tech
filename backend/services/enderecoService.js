@@ -10,12 +10,16 @@ exports.criarEndereco = async (enderecoData) => {
             return {status: 400, message: "Dados de cep, cidade, rua, número e bairro são obrigatórios"}
         }
         
+        cidade = cidade.trim()
         cep = cep.trim()
         rua = rua.trim()
         bairro = bairro.trim()
         complemento = (complemento) ? complemento.trim() : null
         
-        if(cep.length != 8 || !eNumerico(numero)){
+        if(cidade.length === 0){
+            return {status: 400, message: "Cidade inválida"}
+        }
+        if(cep.length != 8 || !eNumerico(cep)){
             return {status: 400, message: "CEP inválido"}
         }
         
@@ -32,11 +36,7 @@ exports.criarEndereco = async (enderecoData) => {
         return {status: 201, result}
     }catch(error){
         if(error.codeName == 'DuplicateKey' || error.code === 11000){
-            let duplicata = await Endereco.findOne({cep: numero.trim()})
-
-            if(duplicata){
-                return {status: 400, message: "Já existe um endereço com esse CEP"}
-            }
+            return {status: 400, message: "Já existe um endereço com esse CEP"}
         }
         console.error(`Erro ao criar o endereço: `, error)
         return {status: 500, message: "Erro ao criar endereço"}
@@ -121,34 +121,28 @@ exports.updateEndereco = async (id, data) => {
             return {status: 400, message: "Bairro inválido"}
         }
         
-        if(complemento && complemento.trim().length == 0){
+        if(complemento !== undefined && complemento.trim().length == 0){
             complemento = null
         }else if(!complemento){
             complemento = antigoEndereco.complemento 
         }
 
         await Endereco.findByIdAndUpdate(id, {
-            cep: cep ?? antigoEndereco.cep,
-            cidade: cidade ?? antigoEndereco.cidade,
-            rua: rua ?? antigoEndereco.rua,
-            numero: numero ?? antigoEndereco.numero,
-            bairro: bairro ?? antigoEndereco.bairro,
+            cep: cep.trim(),
+            cidade: cidade.trim(),
+            rua: rua.trim(),
+            numero,
+            bairro: bairro.trim(),
             complemento
         })
 
         return {status: 200}
     } catch (error) {
-        console.error("Erro ao atualizar o endereço: \b")
-
-        if(error.codeName == 'DuplicateKey'){
-            const duplicata = await Endereco.findOne({cep: cep.trim()})
-
-            if(duplicata && duplicata._id != id){
-                console.error(`Já existe um endereço de CEP ${cep}`)
-                return {status: 400, message: "Já existe um endereço com este CEP"}
-            }
+        if(error.codeName == 'DuplicateKey' || error.code === 11000){
+            return {status: 400, message: "Já existe um endereço com este CEP"}
         }
-
+        
+        console.error("Erro ao atualizar o endereço:")
         console.error(error)
 
         return {status: 500, message: 'Erro ao atualizar o endereço'}

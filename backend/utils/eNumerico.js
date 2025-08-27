@@ -2,7 +2,7 @@ module.exports = (input) => {
     if(typeof(input) === 'number'){
         return true
     }else if(typeof(input) === 'string'){
-        if(input.length === 0){
+        if(input.trim().length === 0){
             return false
         }
 
