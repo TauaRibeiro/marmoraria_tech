@@ -74,7 +74,7 @@ exports.delete = async (req, res) => {
 
     const resultService = await ambienteService.deleteAmbiente(id)
 
-    if(!resultService.status === 200){
+    if(resultService.status === 200){
         return res.sendStatus(200);
     }
 

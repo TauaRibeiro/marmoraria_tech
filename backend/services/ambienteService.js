@@ -7,11 +7,14 @@ exports.criarAmbiente = async (nome) => {
             return {status: 400, message: "Nome inválido"}
         }
     
-        const result = await Ambiente.create({nome})
+        const result = await Ambiente.create({nome: nome.trim()})
 
         return {status: 201, result}
     }catch(error){
-        console.error(`Erro ao criar ambiente ${nome}: ${error}`);
+        if(error.codeName == 'DuplicateKey' || error.code === 11000){
+            return {status: 400, message: "Já existe um ambiente com esse nome"}
+        }
+        console.error(`Erro ao criar ambiente ${nome}: ${error}`)
         return {status: 500, message: `Erro ao criar ambiente ${nome}`}
     }
 }
@@ -65,6 +68,9 @@ exports.updateAmbiente = async (id, novoNome) => {
 
         return {status: 200}
     } catch (error) {
+        if(error.codeName == 'DuplicateKey' || error.code === 11000){
+            return {status: 400, message: "Já existe um ambiente com esse nome"}
+        }
         console.error(`Erro ao atualizar ambiente: `, error);
         return {status: 500, message: "Erro ao atualizar ambiente" }
     }
