@@ -3,10 +3,10 @@ const express = require('express')
 const router = express.Router()
 const autenticarToken = require('../middleware/auth')
 
-router.get('/', autenticarToken, statusController.getAll)
-router.get('/:id', autenticarToken, statusController.getById)
-router.post('/', autenticarToken, statusController.create)
-router.patch('/:id', autenticarToken, statusController.update)
-router.delete('/:id', autenticarToken, statusController.delete)
+router.get('/', statusController.getAll)
+router.get('/:id', statusController.getById)
+router.post('/', statusController.create)
+router.patch('/:id', statusController.update)
+router.delete('/:id', statusController.delete)
 
 module.exports = router
