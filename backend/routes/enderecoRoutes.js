@@ -6,7 +6,7 @@ const autenticarToken = require('../middleware/auth')
 router.get('/', controllerEndereco.getAll)
 router.get('/:id', controllerEndereco.getById)
 router.post('/', controllerEndereco.create)
-router.patch('/:id', controllerEndereco.update)
+router.put('/:id', controllerEndereco.update)
 router.delete('/:id', controllerEndereco.delete)
 
 module.exports = router

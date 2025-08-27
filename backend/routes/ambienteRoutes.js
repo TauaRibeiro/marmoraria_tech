@@ -6,7 +6,7 @@ const autenticarToken = require('../middleware/auth')
 router.get('/', ambienteController.getAll)
 router.get('/:id', ambienteController.getById)
 router.post('/', ambienteController.create)
-router.patch('/:id', ambienteController.update)
+router.put('/:id', ambienteController.update)
 router.delete('/:id', ambienteController.delete)
 
 module.exports = router

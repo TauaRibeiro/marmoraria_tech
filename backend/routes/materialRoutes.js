@@ -6,6 +6,6 @@ router.get('/', materialController.getAll)
 router.get('/:id', materialController.getById)
 router.post('/', materialController.create)
 router.delete('/:id', materialController.delete)
-router.patch('/:id', materialController.update)
+router.put('/:id', materialController.update)
 
 module.exports = router
