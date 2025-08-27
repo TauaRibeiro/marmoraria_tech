@@ -12,6 +12,10 @@ exports.criarTipoMaterial = async (nome) => {
 
         return {status: 201, result}
     }catch(error){
+        if(error.codeName == 'DuplicateKey' || error.code === 11000){
+            return {status: 400, message: "Já existe um tipo de material com esse nome"}
+        }
+        
         console.error(`Erro ao criar TipoMaterial ${nome}: ${error}`);
         return {status: 500, message: `Erro ao criar status ${nome}`}
     }
@@ -66,6 +70,10 @@ exports.updateTipoMaterial = async (id, novoNome) => {
 
         return {status: 200}
     } catch (error) {
+        if(error.codeName == 'DuplicateKey' || error.code === 11000){
+            return {status: 400, message: "Já existe um tipo de material com esse nome"}
+        }
+        
         console.error(`Erro ao atualizar TipoMaterial: `, error);
         return {status: 500, message: "Erro ao atualizar TipoMaterial" }
     }
@@ -77,17 +85,19 @@ exports.deleteTipoMaterial = async (id) => {
             return {status: 400, message: "Id inválido"}
         }
 
-        const statusDeletado = await TipoMaterial.findByIdAndDelete(id.trim())
+        const antigoTipoMaterial = await TipoMaterial.findById(id.trim())
         
-        if(!statusDeletado){
+        if(!antigoTipoMaterial){
             return {status: 404, message: "TipoMaterial não encontrado"}
         }
 
         const resultadoMaterialService = await materialService.updateMaterialBy({idTipo: id.trim()}, {idTipo: process.env.TIPO_DELETADO})
 
-        if(resultadoMaterialService.status !== 200){
+        if(resultadoMaterialService.status !== 200 && resultadoMaterialService.status !== 404){
             return {status: resultadoMaterialService.status, message: resultadoMaterialService.message}
         }
+
+        await antigoTipoMaterial.deleteOne()
         
         return {status: 200}
     }catch(error){
