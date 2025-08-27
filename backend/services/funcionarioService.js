@@ -57,22 +57,18 @@ exports.createFuncionario = async (data) => {
 
             if(duplicata){
                 console.error(`CPF ${cpf} já existente`)
-                return {status:400, message: "CPF inválido"}
+                return {status:400, message: "Já existe um funcionário com esse CPF"}
             }
 
             duplicata = await Funcionario.findOne({telefone})
 
             if(duplicata){
                 console.error(`Telefone ${telefone} já existente`)
-                return {status: 400, message: "Telefone inválido"}
+                return {status: 400, message: "Já existe um funcionário com esse número de telefone"}
             }
 
-            duplicata = await Funcionario.findOne({email})
-
-            if(duplicata){
-                console.error(`email ${email} já existente`)
-                return {status: 400, message: "email inválido"}
-            }
+        
+            return {status: 400, message: "Já existe um funcionário com esse email"}
         }
 
         console.error(error)
@@ -184,12 +180,7 @@ exports.updateFuncionario = async (data) => {
                 return {status: 400, message: "Telefone inválido"}
             }
 
-            duplicata = await Funcionario.findOne({email})
-
-            if(duplicata && duplicata._id != id){
-                console.error(`email ${email} já existente`)
-                return {status: 400, message: "email inválido"}
-            }
+            return {status: 400, message: "email inválido"}
         }
 
         console.error(error)
@@ -205,7 +196,7 @@ exports.deleteFuncionario = async (data) => {
             return {status: 400, message: "Id do usuário é obrigatório"}
         }
     
-        if(validarId(idUsuario)){
+        if(!validarId(idUsuario)){
             return {status: 400, message: "Id do usuário inválido"}
         }
     
