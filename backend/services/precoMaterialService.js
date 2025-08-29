@@ -47,3 +47,13 @@ exports.createPrecoMaterial = async (data) => {
         return {status: 500, message: "Erro ao criar preço material"}
     }
 }
+
+exports.getAllPrecoMaterial = async (data) => {
+    try{
+        return {status: 200, result: PrecoMaterial.find()}
+    }catch(error){
+        console.error('Erro ao pegar preços de materiais: ', error)
+
+        return {status: 500, message: "Erro ao pegar preços de materiais"}
+    }
+}
