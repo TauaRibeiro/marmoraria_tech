@@ -9,3 +9,13 @@ exports.create = async (req, res) => {
 
     return res.status(resultadoService.status).json({message: resultadoService.message})
 }
+
+exports.getAll = async (_, res) => {
+    const resultadoService = await precoMaterialService.getAllPrecoMaterial()
+
+    if(resultadoService.status === 200){
+        return res.status().json({result: resultadoService.result})
+    }
+
+    return res.status(resultadoService.status).json({message: resultadoService.message})
+}
