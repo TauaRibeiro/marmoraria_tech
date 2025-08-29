@@ -48,9 +48,9 @@ exports.createPrecoMaterial = async (data) => {
     }
 }
 
-exports.getAllPrecoMaterial = async (data) => {
+exports.getAllPrecoMaterial = async () => {
     try{
-        return {status: 200, result: PrecoMaterial.find()}
+        return {status: 200, result: await PrecoMaterial.find()}
     }catch(error){
         console.error('Erro ao pegar preços de materiais: ', error)
 
