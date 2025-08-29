@@ -6,7 +6,7 @@ const validarData = require('../utils/validarData')
 
 exports.createPrecoMaterial = async (data) => {
     try {
-        const {idMaterial, valorMaterial, dataAplicacao} = data
+        let {idMaterial, valorMaterial, dataAplicacao} = data
         
         if(!idMaterial || !valorMaterial){
             return {status: 400, message: "Id do material e valor do material são obrigatórios"}
@@ -22,6 +22,7 @@ exports.createPrecoMaterial = async (data) => {
             return {status: 404, message: "Material não encontrado"}
         }
 
+        valorMaterial = valorMaterial.replace(',', '.')
         if(!eNumerico(valorMaterial) || parseFloat(valorMaterial) <= 0){
             return {status: 400, message: "Valor de material precisa ser um número válido"}
         }
@@ -36,8 +37,8 @@ exports.createPrecoMaterial = async (data) => {
 
         await PrecoMaterial.create({
             idMaterial,
-            dataAplicacao,
-            valorMaterial: parseFloat(valorMaterial)
+            dataAplicacao: dataAplicacao ?? new Date(),
+            valorMaterial: parseFloat(valorMaterial).toFixed(2),
         })
 
         return {status: 201}
