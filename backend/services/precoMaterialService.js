@@ -57,3 +57,12 @@ exports.getAllPrecoMaterial = async () => {
         return {status: 500, message: "Erro ao pegar preços de materiais"}
     }
 }
+
+exports.getPrecoMaterial = async () => {
+    try {
+        const result = await PrecoMaterial.distinct('idMaterial').sort({dataAplicacao: -1})
+        return {status: 200, result}
+    } catch (error) {
+        
+    }
+}
