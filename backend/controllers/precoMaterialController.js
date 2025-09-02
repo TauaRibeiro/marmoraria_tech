@@ -20,7 +20,7 @@ exports.getAll = async (_, res) => {
     return res.status(resultadoService.status).json({message: resultadoService.message})
 }
 
-exports.getAll = async(_,res) => {
+exports.get = async(_,res) => {
     const resultadoService = await precoMaterialService.getPrecoMaterial()
 
     if(resultadoService.status === 200){

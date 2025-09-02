@@ -60,9 +60,27 @@ exports.getAllPrecoMaterial = async () => {
 
 exports.getPrecoMaterial = async () => {
     try {
-        const result = await PrecoMaterial.distinct('idMaterial').sort({dataAplicacao: -1})
+        const idsUnicos = await PrecoMaterial.distinct('idMaterial')
+        const allResults = await PrecoMaterial.find().sort({dataAplicacao: -1})
+        
+        const result = idsUnicos.map((id) => {
+            let resultado = null
+            console.log('Começou o loop')
+            for(let i = 0; i < allResults.length; i++){
+                if(id.toString() === allResults[i].idMaterial.toString()){
+                    console.log('Retornou: ', allResults[i])
+                    resultado = allResults[i]
+                    break
+                }
+            }
+            
+            return resultado
+        })
+        
+       
         return {status: 200, result}
     } catch (error) {
-        
+        console.error('Erro ao fazer o get de precoMaterial: ', error)
+        return {status: 500, message: "Erro ao pegar preços de materiais"}
     }
 }
