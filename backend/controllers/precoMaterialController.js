@@ -29,3 +29,13 @@ exports.get = async(_,res) => {
 
     return res.status(resultadoService.status).json({message: resultadoService.message})
 }
+
+exports.getById = async(req, res) => {
+    const resultadoService = await precoMaterialService.getPrecoMaterialById(req.params.id)
+
+    if(resultadoService.status === 200){
+        return res.status(200).json({result: resultadoService.result})
+    }
+
+    return res.status(resultadoService.status).json({message: resultadoService.message})
+}

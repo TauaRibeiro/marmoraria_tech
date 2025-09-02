@@ -85,7 +85,7 @@ exports.getPrecoMaterial = async () => {
     }
 }
 
-exports.getById = async (id) => {
+exports.getPrecoMaterialById = async (id) => {
     try{
         if(!validarId(id)){
             return {status: 400, message: "Id inválido"}
