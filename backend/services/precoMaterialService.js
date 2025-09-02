@@ -94,7 +94,7 @@ exports.getPrecoMaterialById = async (id) => {
         const result = await PrecoMaterial.findById(id)
     
         if(!result){
-            return {statuse: 404, message: "Preco não encontrado"}
+            return {status: 404, message: "Preco não encontrado"}
         }
     
         return {status: 200, result}
