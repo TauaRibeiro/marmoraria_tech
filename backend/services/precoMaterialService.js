@@ -84,3 +84,23 @@ exports.getPrecoMaterial = async () => {
         return {status: 500, message: "Erro ao pegar preços de materiais"}
     }
 }
+
+exports.getById = async (id) => {
+    try{
+        if(!validarId(id)){
+            return {status: 400, message: "Id inválido"}
+        }
+    
+        const result = await PrecoMaterial.findById(id)
+    
+        if(!result){
+            return {statuse: 404, message: "Preco não encontrado"}
+        }
+    
+        return {status: 200, result}
+    }catch(error){
+        console.error('Erro ao pegar preço por id: ', error)
+
+        return {status: 500, message: "Erro ao pegar preço por id"}
+    }
+}
