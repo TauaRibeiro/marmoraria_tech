@@ -1,6 +1,6 @@
 const orcamentoService = require('../services/orcamentoService')
 
-module.exports = async (req, res) => {
+exports.create = async (req, res) => {
     const resultado = await orcamentoService.createOrcamento(req.body)
 
     if(resultado.status === 201){
