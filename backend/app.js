@@ -19,6 +19,7 @@ const routerAuth = require('./routes/authRoutes')
 const routerMaterial = require('./routes/materialRoutes')
 const routerCliente = require('./routes/clienteRoutes')
 const routerPrecoMaterial = require('./routes/precoMaterialRoutes')
+const routerOrcamento = require('./routes/orcamentoRoutes')
 
 app.use(express.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -33,6 +34,7 @@ app.use('/auth', routerAuth)
 app.use('/material', routerMaterial)
 app.use('/cliente', routerCliente)
 app.use('/precoMaterial', routerPrecoMaterial)
+app.use('/orcamento', routerOrcamento)
 
 app.listen(port, () => {
     try{
