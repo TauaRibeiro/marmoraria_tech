@@ -54,3 +54,17 @@ exports.createOrcamento = async (data) => {
         return {status: 500, message: "Erro ao criar orcamento"}
     }
 }
+
+exports.getOrcamento = async () => {
+    try{
+        let result = await Orcamento.find()
+
+        result = {...result, valorTotal: result.valorPagamento+result.valorFrete+result.valorInstalacao}
+
+        return {status: 200, result}
+    }catch(error){
+        console.error('Erro ao fazer o get de Orcamentos: ', error)
+
+        return {status: 500, message: 'Erro ao fazer o get de Orcamentos'}
+    }
+}
