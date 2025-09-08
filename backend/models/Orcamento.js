@@ -13,11 +13,7 @@ const orcamentoSchema = new database.Schema({
     },
     valorPagamento: {type: Number, required: true},
     valorFrete: {type: Number, default: 0},
-    valorInstalacao: {type: Number, default: 0},
-});
-
-orcamentoSchema.virtual('valorTotal').get(function () {
-    return this.valorPagamento + this.valorFrete + this.valorInstalacao
+    valorInstalacao: {type: Number, default: 0}
 });
 
 module.exports = database.model('Orcamento', orcamentoSchema)

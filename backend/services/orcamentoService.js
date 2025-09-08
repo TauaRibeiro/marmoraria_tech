@@ -9,7 +9,7 @@ exports.createOrcamento = async (data) => {
     try {
         let {idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao} = data
 
-        if(!idCliente || !idStatus || !valorPagamento || (!valorFrete && !valorInstalacao)){
+        if(!idCliente || !idStatus || !valorPagamento){
             return {status: 400, message: "Os campos idCliente, idStatus, valorPagamento e valorFrete ou valorInstalacao são obrigatórios"}
         }
 
@@ -42,7 +42,7 @@ exports.createOrcamento = async (data) => {
 
         await Orcamento.create({
             idCliente: idCliente.trim(),
-            idStatsu: idStatus.trim(),
+            idStatus: idStatus.trim(),
             valorPagamento: valorPagamento.toFixed(2),
             valorFrete: valorFrete.toFixed(2),
             valorInstalacao: valorInstalacao.toFixed(2)
