@@ -120,9 +120,13 @@ exports.updateOrcamento = async (data) => {
         
         const antigoOrcamento = await Orcamento.findById(data.id)
 
+        if(!antigoOrcamento){
+            return {status: 404, message: "Orcamento não encontrado"}
+        }
+        
         let {idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao} = data
     
-        if(!idCliente || !idStatus || !valorPagamento){
+        if(!idCliente || !idStatus || !valorPagamento || !valorFrete || !valorInstalaca){
             return {status: 400, message: "Os campos idCliente, idStatus, valorPagamento e valorFrete ou valorInstalacao são obrigatórios"}
         }
     
