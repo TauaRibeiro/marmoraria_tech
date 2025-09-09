@@ -60,7 +60,17 @@ exports.getOrcamento = async () => {
         let result = await Orcamento.find()
 
         const newResult = result.map((orcamento) => {
-            return {...orcamento, valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + orcamento.valorInstalacao}
+            const {_id, idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao} = orcamento
+
+            return {
+                _id,
+                idCliente,
+                idStatus,
+                valorPagamento,
+                valorFrete,
+                valorInstalacao,
+                valorTotal: valorPagamento+valorFrete+valorInstalacao
+            }
         })
 
         return {status: 200, result: newResult}
@@ -83,7 +93,17 @@ exports.getOrcamentoById = async (id) => {
             return {status: 404, message: "Orcamento não encontrado"}
         }
 
-        return {status: 200, result: {...result, valorTotal: result.valorInstalacao + result.valorPagamento + result.valorFrete}}
+        const {_id, idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao} = result
+
+        return {status: 200, result: {
+            _id,
+            idCliente,
+            idStatus,
+            valorPagamento,
+            valorFrete,
+            valorInstalacao,
+            valorTotal: valorPagamento+valorFrete+valorInstalacao
+        }}
     }catch(error){
         console.error('Erro ao fazer o get por id de orcamento: ', error)
         
