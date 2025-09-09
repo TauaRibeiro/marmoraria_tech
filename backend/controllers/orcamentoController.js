@@ -29,3 +29,13 @@ exports.getById = async (req, res) => {
 
     return res.status(resultado.status).json({message: resultado.message})
 }
+
+exports.update = async (req, res) => {
+    const resultado = await orcamentoService.updateOrcamento({id: req.params.id, ...req.body})
+
+    if(resultado.status === 200){
+        return res.sendStatus(200)
+    }
+
+    return res.status(resultado.status).json({message: resultado.message})
+}
