@@ -4,5 +4,6 @@ const router = express.Router()
 
 router.post('/', orcamentoController.create)
 router.get('/', orcamentoController.getAll)
+router.get('/:id', orcamentoController.getById)
 
 module.exports = router

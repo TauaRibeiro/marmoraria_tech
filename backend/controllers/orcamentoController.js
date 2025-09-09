@@ -21,7 +21,7 @@ exports.getAll = async (_, res) => {
 }
 
 exports.getById = async (req, res) => {
-    const resultado = await orcamentoService.getById()
+    const resultado = await orcamentoService.getOrcamentoById(req.params.id)
 
     if(resultado.status === 200){
         return res.status(200).json({result: resultado.result})
