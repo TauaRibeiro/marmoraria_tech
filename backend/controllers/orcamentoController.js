@@ -10,8 +10,18 @@ exports.create = async (req, res) => {
     return res.status(resultado.status).json({message: resultado.message})
 }
 
-exports.getAll = async (req, res) => {
+exports.getAll = async (_, res) => {
     const resultado = await orcamentoService.getOrcamento()
+
+    if(resultado.status === 200){
+        return res.status(200).json({result: resultado.result})
+    }
+
+    return res.status(resultado.status).json({message: resultado.message})
+}
+
+exports.getById = async (req, res) => {
+    const resultado = await orcamentoService.getById()
 
     if(resultado.status === 200){
         return res.status(200).json({result: resultado.result})
