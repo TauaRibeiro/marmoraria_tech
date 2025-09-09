@@ -59,9 +59,11 @@ exports.getOrcamento = async () => {
     try{
         let result = await Orcamento.find()
 
-        result = {...result, valorTotal: result.valorPagamento+result.valorFrete+result.valorInstalacao}
+        const newResult = result.map((orcamento) => {
+            return {...orcamento, valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + orcamento.valorInstalacao}
+        })
 
-        return {status: 200, result}
+        return {status: 200, result: newResult}
     }catch(error){
         console.error('Erro ao fazer o get de Orcamentos: ', error)
 
