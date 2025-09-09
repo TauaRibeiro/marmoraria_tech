@@ -39,3 +39,13 @@ exports.update = async (req, res) => {
 
     return res.status(resultado.status).json({message: resultado.message})
 }
+
+exports.delete = async (req, res) => {
+    const resultado = await orcamentoService.deleteOrcamento(req.params.id)
+
+    if(resultado.status === 200){
+        return res.sendStatus(200)
+    }
+
+    return res.status(resultado.status).json({message: resultado.message})
+}
