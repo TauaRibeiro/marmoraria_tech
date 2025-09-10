@@ -37,19 +37,27 @@ exports.createItemOrcamento = async (data) => {
         if(!validarId(idMaterial)){
             return {status: 400, message: "idMaterial inválido"}
         }
-    
-        if(!(await Material.findById(idMaterial))){
+        
+        const material = await Material.findById(idMaterial) 
+        
+        if(!material){
             return {status: 404, message: "Material não encontrado"}
         }    
     
         if(!validarId(idPreco)){
             return {status: 400, message: "idPreco inválido"}
         }
-    
-        if(!(await PrecoMaterial.findById(idPreco))){
+        
+        const preco = await PrecoMaterial.findById(idPreco)
+
+        if(!preco){
             return {status: 404, message: "Preço não encontrado"}
         }
-    
+
+        if(material._id !== preco.idMaterial){
+            return {status: 400, message: 'O material não condiz com seu preço'}
+        }
+        
         quantidadeItem = quantidadeItem.replace(',', '.')
         comprimentoItem = comprimentoItem.replace(',', '.')
         larguraItem = larguraItem.replace(',', '.')
