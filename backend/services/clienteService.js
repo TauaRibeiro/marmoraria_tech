@@ -1,4 +1,4 @@
-const Cliente = require('../models/Cliente')
+const Cliente = require('../models/schemas/Cliente')
 const validarId = require('../utils/validarIdMongoose')
 const validarData = require('../utils/validarData')
 const validarTelefone = require('../utils/validarTelefone')

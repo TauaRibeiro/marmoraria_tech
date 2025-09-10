@@ -1,6 +1,6 @@
-const Orcamento = require('../models/Orcamento')
-const Cliente = require('../models/Cliente')
-const Status = require('../models/Status')
+const Orcamento = require('../models/schemas/Orcamento')
+const Cliente = require('../models/schemas/Cliente')
+const Status = require('../models/schemas/Status')
 const validarId = require('../utils/validarIdMongoose')
 const eNumerico = require('../utils/eNumerico')
 

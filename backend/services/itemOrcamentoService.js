@@ -1,8 +1,8 @@
-const ItemOrcamento = require('../models/ItemOrcamento')
-const Orcamento = require('../models/Orcamento')
-const Ambiente = require('../models/Ambiente')
-const Material = require('../models/Material')
-const PrecoMaterial = require('../models/PrecoMaterial')
+const ItemOrcamento = require('../models/schemas/ItemOrcamento')
+const Orcamento = require('../models/schemas/Orcamento')
+const Ambiente = require('../models/schemas/Ambiente')
+const Material = require('../models/schemas/Material')
+const PrecoMaterial = require('../models/schemas/PrecoMaterial')
 const validarId = require('../utils/validarIdMongoose')
 const eNumerico = require('../utils/eNumerico')
 

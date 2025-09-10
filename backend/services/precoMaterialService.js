@@ -1,5 +1,5 @@
-const PrecoMaterial = require('../models/PrecoMaterial')
-const Material = require('../models/Material')
+const PrecoMaterial = require('../models/schemas/PrecoMaterial')
+const Material = require('../models/schemas/Material')
 const validarId = require('../utils/validarIdMongoose')
 const eNumerico = require('../utils/eNumerico')
 const validarData = require('../utils/validarData')

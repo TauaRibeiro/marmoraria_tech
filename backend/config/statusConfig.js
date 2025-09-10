@@ -1,4 +1,4 @@
-const Status = require('../models/Status')
+const Status = require('../models/schemas/Status')
 
 module.exports = async () => {
     const statusPadroes = ['Ok', 'Estoque Baixo', 'Estoque Cheio', 'Estoque Transbordando', 'Aguardando Pagamento', 'Cancelado', 'Status Deletado']

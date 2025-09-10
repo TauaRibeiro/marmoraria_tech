@@ -1,4 +1,4 @@
-const TipoMaterial = require('../models/TipoMaterial')
+const TipoMaterial = require('../models/schemas/TipoMaterial')
 const materialService = require('../services/materialService')
 const validarId = require('../utils/validarIdMongoose')
 

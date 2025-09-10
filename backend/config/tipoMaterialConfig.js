@@ -1,4 +1,4 @@
-const TipoMaterial = require('../models/TipoMaterial')
+const TipoMaterial = require('../models/schemas/TipoMaterial')
 
 module.exports = async () => {
     const tiposPadroes = ['Tipo Deletado']
