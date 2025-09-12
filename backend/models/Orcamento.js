@@ -221,6 +221,7 @@ class Orcamento{
 
             this.id = novoOrcamento._id
 
+            return novoOrcamento
         }catch(error){
             console.error('Erro ao criar o orçamento no banco')
             throw new DataError('Internal Server Error', 500, 'Erro ao criar o orçamento no banco')
@@ -253,14 +254,21 @@ class Orcamento{
 
     async delete (){
         try{
-            const orcamentoDeletado = await Orcamento.database.findByIdAndDelete(this.id, {
-                idCliente: this.idCliente,
-                idStatus: this.idStatus,
-                valorPagamento: this.valorPagamento,
-                valorFrete: this.valorFrete,
-                valorInstalacao: this.valorInstalacao
-            })
-        }catch(error){}
+            const orcamentoDeletado = await Orcamento.database.findByIdAndDelete(this.id)
+
+            if(!orcamentoDeletado){
+                throw new DataError('Invalid ID', 404, 'Orcamento não encontrado')
+            }
+
+            return orcamentoDeletado
+        }catch(error){
+            if(error.name !== 'Invalid ID'){
+                console.error('Erro ao deletar orcamento: ', error)
+                throw new DataError('Internal Server Error', 500, 'Erro ao deletar orcamento')
+            }
+
+            throw error
+        }
     }
 }
 
