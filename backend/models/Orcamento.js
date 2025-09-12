@@ -24,10 +24,6 @@ class Orcamento{
 
     static async findOrcamento(id){
         try{
-            if(!validarId(id.trim())){
-                throw new DataError('Invalid ID', 400, 'O id do orçamento é inválido')
-            }
-    
             const orcamento = await Orcamento.database.findById(id.trim())
     
             if(!orcamento){
@@ -36,90 +32,26 @@ class Orcamento{
     
             return orcamento
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                console.error(error)
-                throw new DataError('Internal Server Error', 500, 'Erro interno do servidor')
-            }
-
-            throw error
+            console.error(error)
+            throw new DataError('Internal Server Error', 500, 'Erro interno do servidor')
         }
     }
 
     static async getAllOrcamentos(){
         try{
-            return Orcamento.database.find()
+            return await Orcamento.database.find()
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                console.error(error)
-                throw new DataError('Internal Server Error', 500, 'Erro interno do servidor')
-            }
-
-            throw error
+            console.error(error)
+            throw new DataError('Internal Server Error', 500, 'Erro interno do servidor')
         }
     }
 
     constructor (idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao){
-        if(!validarId(idCliente.trim())){
-            throw new DataError('Invalid ID', 400, 'O id de cliente é inválido')
-        }
-
-        this.idCliente = idCliente.trim()
-
-        if(!validarId(idStatus.trim())){
-            throw new DataError('Invalid ID', 400, 'O id de status é inválido')
-        }
-        
-        this.idStatus = idStatus.trim()
-
-        valorPagamento = valorPagamento.replace(',', '.').trim()
-
-        if(!eNumerico(valorPagamento)){
-            throw new DataError('Type Error', 400, 'O valor de pagamento deve ser do tipo númerico')
-        }
-
-        valorPagamento = parseFloat(valorPagamento).toFixed(2)
-
-        if(valorPagamento < 0){
-            throw new DataError('Validation Error', 400, 'O valor de pagamento deve ser um número maior ou igual a 0')
-        }
-
+        this.idCliente = idCliente
+        this.idStatus = idStatus
         this.valorPagamento = valorPagamento
-
-        if(valorFrete){
-            valorFrete = valorFrete.replace(',', '.').trim()
-            if(!eNumerico(valorFrete)){
-                throw new DataError('Type Error', 400, 'O valor de frete deve ser do tipo númerico')
-            }
-
-            valorFrete = parseFloat(valorFrete).toFixed(2)
-
-            if(valorFrete < 0){
-                throw new DataError('Validation Error', 400, 'O valor do frete deve ser um número maior ou igual a 0')
-            }
-
-            this.valorFrete = valorFrete
-        }else{
-            this.valorFrete = 0
-        }
-
-        if(valorInstalacao){
-            valorInstalacao = valorInstalacao.replace(',', '.').trim()
-            if(!eNumerico(valorInstalacao)){
-                throw new DataError('Type Error', 400, 'O valor da instalacao deve ser do tipo númerico')
-            }
-
-            valorInstalacao = parseFloat(valorInstalacao).toFixed(2)
-
-            if(valorInstalacao < 0){
-                throw new DataError('Validation Error', 400, 'O valor da instalacao deve ser um número maior ou igual a 0')
-            }
-
-            this.valorInstalacao = valorInstalacao
-        }else{
-            this.valorInstalacao = 0
-        }
-
-        this.valorInstalacao = valorInstalacao
+        this.valorInstalacao = (valorInstalacao) ? valorInstalacao : 0
+        this.valorFrete = (valorFrete) ? valorFrete : 0
         this.id = null
     }
     
