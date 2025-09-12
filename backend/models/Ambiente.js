@@ -1,6 +1,5 @@
 const DataError = require('./DataError')
 const database = require('mongoose')
-const validarId = require('../utils/validarIdMongoose')
 
 const ambienteSchema = new database.Schema({
     nome: {type: String, required: true, unique: true}
@@ -20,10 +19,6 @@ class Ambiente{
 
     static async findById(id){
         try{
-            if(!validarId(id)){
-                throw new DataError('Invalid ID', 400, 'Id inválido')
-            }
-
             const ambiente = Ambiente.database.findById(id)
 
             if(!ambiente){
@@ -32,10 +27,8 @@ class Ambiente{
 
             return ambiente
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                console.error('Erro ao encontrar por id ambiente: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao encontrar por id ambiente')
-            }
+            console.error('Erro ao encontrar por id ambiente: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao encontrar por id ambiente')
         }
     }
 
@@ -53,10 +46,6 @@ class Ambiente{
     }
 
     set nome(nome){
-        if(nome.trim().length === 0){
-            throw new DataError('Validation Error', 400, 'Nome do inválido')
-        }
-
         this.nome = nome.trim()
     }
 
