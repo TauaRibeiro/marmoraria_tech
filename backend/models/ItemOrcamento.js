@@ -32,76 +32,7 @@ const itemOrcamentoSchema = new database.Schema({
 class ItemOrcamento{
     static database = database.model('ItemOrcamento', itemOrcamentoSchema)
 
-    constructor(idOrcamento, idAmbiente, idMaterial, idPreco, quantidadeItem, comprimentoItem, larguraItem){
-        if(!validarId(idOrcamento.trim())){
-            throw new DataError('Invalid ID', 400, 'Id de orcamento inválido')
-        }
-
-        this.idOrcamento = idOrcamento.trim()
-
-        if(!validarId(idAmbiente.trim())){
-            throw new DataError('Invalid ID', 400, 'Id de ambiente inválido')
-        }
-
-        this.idAmbiente = idAmbiente.trim()
-
-        if(!validarId(idMaterial.trim())){
-            throw new DataError('Invalid ID', 400, 'Id de material inválido')
-        }
-
-        this.idMaterial = idMaterial.trim()
-
-        if(!validarId(idPreco.trim())){
-            throw new DataError('Invalid ID', 400, 'Id do preco do material é inválido')
-        }
-
-        this.idPreco = idPreco.trim()
-
-        quantidadeItem = quantidadeItem.trim()
-
-        if(!eNumerico(quantidadeItem)){
-            throw new DataError('Type Error', 400, 'A quantidade do item deve ser do tipo númerico')
-        }
-
-        quantidadeItem = parseInt(quantidadeItem)
-
-        if(quantidadeItem <= 0){
-            throw new DataError('Validation Error', 400, 'A quantidade do item deve ser maior do que zero')
-        }
-
-        this.quantidadeItem = quantidadeItem
-
-        comprimentoItem = comprimentoItem.replace(',', '.').trim()
-
-        if(!eNumerico(comprimentoItem)){
-            throw new DataError('Type Error', 400, 'O comprimento deve ser do tipo numérico')
-        }
-
-        comprimentoItem = parseFloat(comprimentoItem).toFixed(2)
-
-        if(comprimentoItem <= 0){
-            throw new DataError('Validation Error', 400, 'O comprimento do item deve ser maior do que zero')
-        }
-
-        this.comprimentoItem = comprimentoItem
-
-        larguraItem = larguraItem.replace(',', '.').trim()
-
-        if(!eNumerico(larguraItem)){
-            throw new DataError('Type Error', 400, 'A largura do item deve ser do tipo numérico')
-        }
-
-        larguraItem = parseFloat(larguraItem).toFixed(2)
-
-        if(larguraItem <= 0){
-            throw new DataError('Validation Error', 400, 'A largura do item deve ser maior do que zero')
-        }
-
-        this.larguraItem = larguraItem
-
-        this.id = null
-    }
-
+    
     static async findAll(){
         try{
             return await ItemOrcamento.database.find()
@@ -110,30 +41,33 @@ class ItemOrcamento{
             throw new DataError('Internal Server Error', 500, 'Erro ao fazr o find all de Item Orcamento')
         }
     }
-
+    
     static async findById(id){
-        try{
-            if(!validarId(id.trim())){
-                throw new DataError('Invalid ID', 400, 'Id inválido do item')
-            }
-
+        try{    
             const item = await ItemOrcamento.database.findById(id.trim())
-
+            
             if(!item){
                 throw new DataError('Invalid ID', 404, 'Item não encontrado')
             }
-
+            
             return item
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                console.error('Erro ao fazer o find por id de item de orcamento no banco: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find por id de item de orcamento no banco')
-            }
-
-            throw error
+            console.error('Erro ao fazer o find por id de item de orcamento no banco: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find por id de item de orcamento no banco')
         }
     }
-
+    
+    constructor(idOrcamento, idAmbiente, idMaterial, idPreco, quantidadeItem, comprimentoItem, larguraItem){
+        this.idOrcamento = idOrcamento
+        this.idAmbiente = idAmbiente
+        this.idMaterial = idMaterial
+        this.idPreco = idPreco
+        this.quantidadeItem = quantidadeItem
+        this.comprimentoItem = comprimentoItem
+        this.larguraItem = larguraItem
+        this.id = null
+    }
+    
     get idOrcamento(){
         return this.idOrcamento
     }
@@ -278,12 +212,8 @@ class ItemOrcamento{
                 throw new DataError('Invalid ID', 400, 'Item de orcamento não encontrado')
             }
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                console.error('Erro ao atualizar item de orcamento no banco: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao atualizar item de orcamento no banco')
-            }
-
-            throw error
+            console.error('Erro ao atualizar o item de orcamento no banco: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao atualizar o item de orcamento no banco')
         }
     }
 
@@ -295,12 +225,8 @@ class ItemOrcamento{
                 throw new DataError('Invalid ID', 404, 'Item não encontrado')
             }
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                console.error('Erro ao deletar item de orcamento do banco: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao deletar item de orcamento do banco')
-            }
-
-            throw error
+            console.error('Erro ao deletar o item de orcamento no banco: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao deletar o item de orcamento no banco')
         }
     }
 }
