@@ -44,6 +44,44 @@ class Orcamento{
         }
     }
 
+    static async findManyBy(filtro){
+        try{
+            const resultado = await Orcamento.database.find(filtro)
+
+            if(resultado.length === 0){
+                throw new DataError('Search Error', 404, 'Nenhum orçamento encontrado')
+            }
+
+            return resultado
+        }catch(error){
+            if(error.name === 'Search Error'){
+                console.error('Erro ao fazer o find many by de orçamento: ', error)
+                throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find many by de orçamento')
+            }
+
+            throw error
+        }
+    }
+
+    static async deleteManyBy(filtro){
+        try{
+            const resultado = await Orcamento.database.find(filtro)
+    
+            if(resultado.length === 0){
+                throw new DataError('Search Error', 404, 'Nenhum orçamento encontrado')
+            }
+    
+            resultado.map(async (orcamento) => await orcamento.deleteOne())
+        }catch(error){
+            if(error.name === 'Search Error'){
+                console.error('Erro ao fazer o find many by de orçamento: ', error)
+                throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find many by de orçamento')
+            }
+
+            throw error
+        }
+    }
+    
     constructor (idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao){
         this.idCliente = idCliente
         this.idStatus = idStatus
