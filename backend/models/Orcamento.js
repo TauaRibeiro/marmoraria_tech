@@ -65,13 +65,11 @@ class Orcamento{
 
     static async deleteManyBy(filtro){
         try{
-            const resultado = await Orcamento.database.find(filtro)
+            const resultado = await Orcamento.database.deleteMany(filtro)
     
-            if(resultado.length === 0){
+            if(resultado.deletedCount === 0){
                 throw new DataError('Search Error', 404, 'Nenhum orçamento encontrado')
             }
-    
-            resultado.map(async (orcamento) => await orcamento.deleteOne())
         }catch(error){
             if(error.name === 'Search Error'){
                 console.error('Erro ao fazer o find many by de orçamento: ', error)
@@ -81,7 +79,7 @@ class Orcamento{
             throw error
         }
     }
-    
+
     constructor (idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao){
         this.idCliente = idCliente
         this.idStatus = idStatus
