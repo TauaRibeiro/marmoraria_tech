@@ -1,6 +1,9 @@
 const DataError = require('./DataError')
 const database = require('mongoose')
 const validarId = require('../utils/validarIdMongoose')
+const parseData = require('../utils/parseData')
+const validarTelefone = require('../utils/validarTelefone')
+const eNumerico = require('../utils/eNumerico')
 
 const clienteSchema = new database.Schema({
     idEndereco: {
@@ -51,6 +54,7 @@ class Cliente{
         this.telefone = telefone,
         this.cpf = cpf,
         this.cnpj = cnpj
+        this.id = null
     }
 
     get idEndereco(){
@@ -64,6 +68,143 @@ class Cliente{
 
         this.idEndereco = idEndereco
     }
+
+    get nome(){
+        return this.nome
+    }
+
+    set nome(novoNome){
+        if(novoNome.trim().length){  
+          throw new DataError('Validation Error', 400, 'Nome inválido')
+        }
+
+        this.nome = novoNome
+    }
+
+    get dataNascimento(){
+        return this.dataNascimento
+    }
+
+    set dataNascimento(novaData){
+        try{
+            novaData = parseData(novaData)
+
+            this.novaData = novaData
+        }catch(error){
+            throw error
+        }
+    }
+
+    get telefone(){
+        return this.telefone
+    }
+
+    set telefone(novoTelefone){
+        if(!validarTelefone){
+            throw new DataError('Type Error', 400, 'Telefone inválido')
+        }
+
+        this.telefone = novoTelefone
+    }
+
+    get cpf(){
+        return this.cpf
+    }
+
+    set cpf(novoCpf){
+        if(novoCpf){
+            if(novoCpf.trim().length !== 11 || !eNumerico(novoCpf.trim())){
+                throw new DataError('Type Error', 400, 'CPF inválido')
+            }
+
+            this.cpf
+        }
+
+        if(this.cnpj === null){
+            throw new DataError('Validation Error', 400, 'Não é possível setar o CPF como nulo quando CNPJ é nulo')
+        }
+
+        this.cpf = null
+    }
+
+    get cnpj(){
+        return this.cnpj
+    }
+
+    set cnpj(novoCnpj){
+        if(novoCnpj){
+            if(novoCnpj.trim().length !== 14 || !eNumerico(novoCnpj)){
+                throw new DataError('Type Error', 400, 'CNPJ inválido')
+            }
+
+            this.cnpj = novoCnpj
+        }
+
+        if(this.cpf === null){
+            throw new DataError('Validation Error', 400, 'Não é possível setar CNPJ como nulo quando CPF é nulo')
+        }
+
+        this.cnpj = null
+    }
+
+    async create(){
+        try{
+            const novoCliente = await Cliente.database.create({
+                idEndereco: this.idEndereco,
+                nome: this.nome,
+                email: this.email,
+                dataNascimento: this.dataNascimento,
+                telefone: this.telefone,
+                cpf: this.cpf,
+                cnpj: this.cnpj
+            })
+
+            this.id = novoCliente._id
+        }catch(error){
+            console.error('Erro ao criar cliente no banco: ', error)
+            throw new DataError('Internal Server Error', 400, 'Erro ao criar cliente no banco')
+        }
+    }
+
+    async update(){
+        try{
+            const clienteAtualizado = await Cliente.database.findByIdAndUpdate(this.id, {
+                idEndereco: this.idEndereco,
+                nome: this.nome,
+                email: this.email,
+                dataNascimento: this.dataNascimento,
+                telefone: this.telefone,
+                cpf: this.cpf,
+                cnpj: this.cnpj
+            })
+
+            if(!clienteAtualizado){
+                throw new DataError('Invalid ID', 404, 'Cliente não encontrado')
+            }
+        }catch(error){
+            if(error.name !== 'Invalid ID'){
+                throw new DataError('Internal Server Error', 500, 'Erro ao atualizar o cliente no banco')
+            }
+
+            throw error
+        }
+    }
+
+    async delete(){
+        try{
+            const clienteDeletado = await Cliente.database.findByIdAndDelete(this.id)
+
+            if(!clienteDeletado){
+                throw new DataError('Invalid ID', 404, 'Cliente não encontrado')
+            }
+        }catch(error){
+            if(error.name !== 'Invalid ID'){
+                throw new DataError('Internal Server Error', 500, 'Erro ao atualizar o cliente no banco')
+            }
+
+            throw error
+        }
+    }
 }
 
-module.exports = database.model('Cliente', clienteSchema)
+module.exports = Cliente
