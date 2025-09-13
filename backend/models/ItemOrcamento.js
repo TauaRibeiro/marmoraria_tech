@@ -1,7 +1,5 @@
 const DataError = require('./DataError')
 const database = require('mongoose')
-const validarId = require('../utils/validarIdMongoose')
-const eNumerico = require('../utils/eNumerico')
 
 const itemOrcamentoSchema = new database.Schema({
     idOrcamento: {
@@ -73,11 +71,7 @@ class ItemOrcamento{
     }
 
     set idOrcamento(novoId){
-        if(!validarId(novoId.trim())){
-            throw new DataError('Invalid ID', 400, 'Id de orcamento inválido')
-        }
-
-        this.idOrcamento = novoId.trim()
+        this.idOrcamento = novoId
 
     }
 
@@ -86,11 +80,7 @@ class ItemOrcamento{
     }
 
     set idAmbiente(novoId){
-        if(!validarId(novoId.trim())){
-            throw new DataError('Invalid ID', 400, 'Id de ambiente inválido')
-        }
-
-        this.idAmbiente = novoId.trim()
+        this.idAmbiente = novoId
     }
 
     get idMaterial(){
@@ -98,11 +88,7 @@ class ItemOrcamento{
     }
 
     set idMaterial(novoId){
-        if(!validarId(novoId.trim())){
-            throw new DataError('Invalid ID', 400, 'Id de material inválido')
-        }
-
-        this.idMaterial = novoId.trim()
+        this.idMaterial = novoId
     }
 
     get idPreco(){
@@ -110,11 +96,7 @@ class ItemOrcamento{
     }
 
     set idPreco(novoId){
-        if(!validarId(novoId.trim())){
-            throw new DataError('Invalid ID', 400, 'Id do preco do material é inválido')
-        }
-
-        this.idPreco = novoId.trim()
+        this.idPreco = novoId
     }
 
     get quantidadeItem(){
@@ -122,18 +104,6 @@ class ItemOrcamento{
     }
 
     set quantidadeItem(quantidade){
-        quantidade = quantidade.trim()
-
-        if(!eNumerico(quantidade)){
-            throw new DataError('Type Error', 400, 'A quantidade do item deve ser do tipo númerico')
-        }
-
-        quantidade = parseInt(quantidade)
-
-        if(quantidade <= 0){
-            throw new DataError('Validation Error', 400, 'A quantidade do item deve ser maior do que zero')
-        }
-
         this.quantidadeItem = quantidade
     }
 
@@ -142,18 +112,6 @@ class ItemOrcamento{
     }
 
     set comprimentoItem(comprimento){
-        comprimento = comprimento.replace(',', '.').trim()
-
-        if(!eNumerico(comprimento)){
-            throw new DataError('Type Error', 400, 'O comprimento deve ser do tipo numérico')
-        }
-
-        comprimento = parseFloat(comprimento).toFixed(2)
-
-        if(comprimento <= 0){
-            throw new DataError('Validation Error', 400, 'O comprimento do item deve ser maior do que zero')
-        }
-
         this.comprimentoItem = comprimento
     }
 
@@ -162,18 +120,6 @@ class ItemOrcamento{
     }
 
     set larguraItem(largura){
-        largura = largura.replace(',', '.').trim()
-
-        if(!eNumerico(largura)){
-            throw new DataError('Type Error', 400, 'A largura do item deve ser do tipo numérico')
-        }
-
-        largura = parseFloat(largura).toFixed(2)
-
-        if(largura <= 0){
-            throw new DataError('Validation Error', 400, 'A largura do item deve ser maior do que zero')
-        }
-
         this.larguraItem = largura
     }
 
@@ -198,7 +144,7 @@ class ItemOrcamento{
 
     async update(){
         try{
-            const orcamentoAtualizado = await ItemOrcamento.database.findByIdAndUpdate(this.id, {
+            await ItemOrcamento.database.findByIdAndUpdate(this.id, {
                 idOrcamento: this.idOrcamento,
                 idAmbiente: this.idAmbiente,
                 idMaterial: this.idMaterial,
@@ -208,9 +154,6 @@ class ItemOrcamento{
                 larguraItem: this.larguraItem
             })
 
-            if(!orcamentoAtualizado){
-                throw new DataError('Invalid ID', 400, 'Item de orcamento não encontrado')
-            }
         }catch(error){
             console.error('Erro ao atualizar o item de orcamento no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao atualizar o item de orcamento no banco')
@@ -219,11 +162,7 @@ class ItemOrcamento{
 
     async delete(){
         try{
-            const itemDeletado = ItemOrcamento.database.findByIdAndDelete(this.id)
-
-            if(!itemDeletado){
-                throw new DataError('Invalid ID', 404, 'Item não encontrado')
-            }
+            await ItemOrcamento.database.findByIdAndDelete(this.id)
         }catch(error){
             console.error('Erro ao deletar o item de orcamento no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao deletar o item de orcamento no banco')

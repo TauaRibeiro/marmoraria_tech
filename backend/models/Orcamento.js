@@ -1,7 +1,5 @@
 const DataError = require('./DataError')
 const database = require('mongoose')
-const validarId = require('../utils/validarIdMongoose')
-const eNumerico = require('../utils/eNumerico')
 
 const orcamentoSchema = new database.Schema({
     idCliente: {
@@ -60,11 +58,7 @@ class Orcamento{
     }
 
     set idCliente(novoId){
-        if(!validarId(idCliente.trim())){
-            throw new DataError('Invalid ID', 400, 'O id de cliente é inválido')
-        }
-
-        this.idCliente = novoId.trim()
+        this.idCliente = novoId
     }
 
     get idStatus(){
@@ -72,11 +66,7 @@ class Orcamento{
     }
 
     set idStatus(novoId){
-        if(!validarId(novoId.trim())){
-            throw new DataError('Invalid ID', 400, 'O id de status é inválido')
-        }
-
-        this.idStatus = novoId.trim()
+        this.idStatus = novoId
     }
 
     get valorPagamento(){
@@ -84,18 +74,6 @@ class Orcamento{
     }
 
     set valorPagamento(novoValor){
-        novoValor = novoValor.replace(',', '.').trim()
-
-        if(!eNumerico(novoValor)){
-            throw new DataError('Type Error', 400, 'O valor de pagamento deve ser do tipo númerico')
-        }
-
-        novoValor = parseFloat(novoValor).toFixed(2)
-
-        if(novoValor < 0){
-            throw new DataError('Validation Error', 400, 'O valor de pagamento deve ser um número maior ou igual a 0')
-        }
-
         this.valorPagamento = novoValor
     }
 
@@ -105,19 +83,10 @@ class Orcamento{
 
     set valorFrete(novoValor){
         if(novoValor){
-            novoValor = novoValor.replace(',', '.').trim()
-            if(!eNumerico(novoValor)){
-                throw new DataError('Type Error', 400, 'O valor de frete deve ser do tipo númerico')
-            }
-
-            novoValor = parseFloat(novoValor).toFixed(2)
-
-            if(novoValor < 0){
-                throw new DataError('Validation Error', 400, 'O valor do frete deve ser um número maior ou igual a 0')
-            }
-
             this.valorFrete = novoValor
         }
+
+        this.valorFrete = 0
     }
 
     get valorInstalacao(){
@@ -126,19 +95,10 @@ class Orcamento{
 
     set valorInstalacao(novoValor){
         if(novoValor){
-            novoValor = novoValor.replace(',', '.').trim()
-            if(!eNumerico(novoValor)){
-                throw new DataError('Type Error', 400, 'O valor de frete deve ser do tipo númerico')
-            }
-
-            novoValor = parseFloat(novoValor).toFixed(2)
-
-            if(novoValor < 0){
-                throw new DataError('Validation Error', 400, 'O valor do frete deve ser um número maior ou igual a 0')
-            }
-
             this.valorFrete = novoValor
         }
+
+        this.valorInstalacao = 0
     }
 
     async create (){
@@ -152,8 +112,6 @@ class Orcamento{
             })
 
             this.id = novoOrcamento._id
-
-            return novoOrcamento
         }catch(error){
             console.error('Erro ao criar o orçamento no banco')
             throw new DataError('Internal Server Error', 500, 'Erro ao criar o orçamento no banco')
@@ -162,44 +120,25 @@ class Orcamento{
 
     async update (){
         try{
-            const orcamentoAtualizado = await Orcamento.database.findByIdAndUpdate(this.id, {
+            await Orcamento.database.findByIdAndUpdate(this.id, {
                 idCliente: this.idCliente,
                 idStatus: this.idStatus,
                 valorPagamento: this.valorPagamento,
                 valorFrete: this.valorFrete,
                 valorInstalacao: this.valorInstalacao
             })
-
-            if(!orcamentoAtualizado){
-                throw new DataError('Invalid ID', 404, 'Orcamento não encontrado')
-            }
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                console.error('Erro ao atualizar os dados de orcamento no banco')
-    
-                throw new DataError('Internal Server Error', 500, 'Erro ao atualizar os dados de orcamento no banco')
-            }
-
-            throw error
+            console.error('Erro ao atualizar os dados de orcamento no banco')
+            throw new DataError('Internal Server Error', 500, 'Erro ao atualizar os dados de orcamento no banco')
         }
     }
 
     async delete (){
         try{
-            const orcamentoDeletado = await Orcamento.database.findByIdAndDelete(this.id)
-
-            if(!orcamentoDeletado){
-                throw new DataError('Invalid ID', 404, 'Orcamento não encontrado')
-            }
-
-            return orcamentoDeletado
+            await Orcamento.database.findByIdAndDelete(this.id)
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                console.error('Erro ao deletar orcamento: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao deletar orcamento')
-            }
-
-            throw error
+            console.error('Erro ao deletar orcamento: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao deletar orcamento')
         }
     }
 }

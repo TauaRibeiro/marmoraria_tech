@@ -1,9 +1,5 @@
 const DataError = require('./DataError')
 const database = require('mongoose')
-const validarId = require('../utils/validarIdMongoose')
-const parseData = require('../utils/parseData')
-const validarTelefone = require('../utils/validarTelefone')
-const eNumerico = require('../utils/eNumerico')
 
 const clienteSchema = new database.Schema({
     idEndereco: {
@@ -62,10 +58,6 @@ class Cliente{
     }
 
     set idEndereco(idEndereco){
-        if(!validarId(idEndereco)){
-            throw new DataError('Invalid ID', 400, 'Id de endereco inválido')
-        }
-
         this.idEndereco = idEndereco
     }
 
@@ -74,10 +66,6 @@ class Cliente{
     }
 
     set nome(novoNome){
-        if(novoNome.trim().length){  
-          throw new DataError('Validation Error', 400, 'Nome inválido')
-        }
-
         this.nome = novoNome
     }
 
@@ -86,13 +74,7 @@ class Cliente{
     }
 
     set dataNascimento(novaData){
-        try{
-            novaData = parseData(novaData)
-
-            this.novaData = novaData
-        }catch(error){
-            throw error
-        }
+        this.novaData = novaData
     }
 
     get telefone(){
@@ -100,10 +82,6 @@ class Cliente{
     }
 
     set telefone(novoTelefone){
-        if(!validarTelefone){
-            throw new DataError('Type Error', 400, 'Telefone inválido')
-        }
-
         this.telefone = novoTelefone
     }
 
@@ -113,10 +91,6 @@ class Cliente{
 
     set cpf(novoCpf){
         if(novoCpf){
-            if(novoCpf.trim().length !== 11 || !eNumerico(novoCpf.trim())){
-                throw new DataError('Type Error', 400, 'CPF inválido')
-            }
-
             this.cpf
         }
 
@@ -133,10 +107,6 @@ class Cliente{
 
     set cnpj(novoCnpj){
         if(novoCnpj){
-            if(novoCnpj.trim().length !== 14 || !eNumerico(novoCnpj)){
-                throw new DataError('Type Error', 400, 'CNPJ inválido')
-            }
-
             this.cnpj = novoCnpj
         }
 

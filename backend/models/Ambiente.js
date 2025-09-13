@@ -33,11 +33,7 @@ class Ambiente{
     }
 
     constructor(nome){
-        if(nome.trim().length === 0){
-            throw new DataError('Validation Error', 400, 'Nome do inválido')
-        }
-
-        this.nome = nome.trim()
+        this.nome = nome
         this.id = null
     }
 
@@ -46,7 +42,7 @@ class Ambiente{
     }
 
     set nome(nome){
-        this.nome = nome.trim()
+        this.nome = nome
     }
 
     async create(){
@@ -62,35 +58,20 @@ class Ambiente{
 
     async update(){
         try{
-            const ambienteAtualizado = await Ambiente.database.findByIdAndUpdate(this.id, {nome: this.nome})
-
-            if(!ambienteAtualizado){
-                throw new DataError('Invalid ID', 404, 'Ambiente não encontrado')
-            }
+            await Ambiente.database.findByIdAndUpdate(this.id, {nome: this.nome})
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                console.error('Erro ao atualizar ambiente no banco: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao atualizar ambiente no banco')
-            }
-
-            throw error
+            console.error('Erro ao atualizar ambiente no banco: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao atualizar ambiente no banco')
         }
     }
 
     async delete(){
         try{
-            const ambienteDeletado = await Ambiente.database.findByIdAndDelete(this.id)
+            await Ambiente.database.findByIdAndDelete(this.id)
             
-            if(!ambienteDeletado){
-                throw new DataError('Invalid ID', 404, 'Ambiente não encontrado')
-            }
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                console.error('Erro ao deletar ambiente no banco: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao deletar ambiente no banco')
-            }
-
-            throw error
+            console.error('Erro ao deletar ambiente no banco: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao deletar ambiente no banco')
         }
     }
 }

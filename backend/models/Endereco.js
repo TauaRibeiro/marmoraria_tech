@@ -1,6 +1,5 @@
 const DataError = require('./DataError')
 const database = require('mongoose')
-const eNumerico = require('../utils/eNumerico')
 
 const enderecoSchema = new database.Schema({
     cep: {type: String, required: true, unique: true},
