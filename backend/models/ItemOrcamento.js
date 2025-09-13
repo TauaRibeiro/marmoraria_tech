@@ -29,8 +29,7 @@ const itemOrcamentoSchema = new database.Schema({
 
 class ItemOrcamento{
     static database = database.model('ItemOrcamento', itemOrcamentoSchema)
-
-    
+ 
     static async findAll(){
         try{
             return await ItemOrcamento.database.find()
@@ -54,7 +53,41 @@ class ItemOrcamento{
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find por id de item de orcamento no banco')
         }
     }
-    
+
+    static async updateManyBy(filtro, data){
+        try{
+            const resultado = await ItemOrcamento.database.updateMany(filtro, data)
+
+            if(resultado.matchedCount === 0){
+                throw new DataError('Search Error', 404, 'Itens de orçamento não encontrados')
+            }
+        }catch(error){
+            if(error.name !== 'Search Error'){
+                console.error('Erro ao atualizar vários itens no banco: ', error)
+                throw new DataError('Internal Server Error', 500, 'Erro ao atualizar vários itens no banco')
+            }
+
+            throw error
+        }
+    }
+
+    static async deleteManyBy(filtro){
+        try{
+            const resultado = await ItemOrcamento.database.deleteMany(filtro)
+
+            if(resultado.deletedCount === 0){
+                throw new DataError('Search Error', 404, 'Nenhum item encontrado')
+            }
+        }catch(error){
+            if(error.name !== 'Search Error'){
+                console.error('Erro ao deletar vários itens no banco: ', error)
+                throw new DataError('Internal Server Error', 500, 'Erro ao deletar vários itens no banco')
+            }
+
+            throw error
+        }
+    }
+
     constructor(idOrcamento, idAmbiente, idMaterial, idPreco, quantidadeItem, comprimentoItem, larguraItem){
         this.idOrcamento = idOrcamento
         this.idAmbiente = idAmbiente
