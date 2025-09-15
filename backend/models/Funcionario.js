@@ -112,7 +112,31 @@ class Funcionario{
             this.id = novoFuncionario._id
         }catch(error){
             console.error('Erro ao criar funcionario no banco: ', error)
-            throw new DataError('Internal Error', 500, 'Erro ao criar funcionario no banco')
+            throw new DataError('Internal Server Error', 500, 'Erro ao criar funcionario no banco')
+        }
+    }
+
+    async update(){
+        try{
+            await Funcionario.database.findByIdAndUpdate(this.id, {
+                nome: this.nome,
+                cpf: this.cpf,
+                dataNascimento: this.dataNascimento,
+                telefone: this.telefone,
+                email: this.email,
+                senha: this.senha
+            })
+        }catch(error){
+            console.error('Erro ao atualizar funcionario no banco: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao atualizar funcionario no banco')
+        }
+    }
+
+    async delete(){
+        try{
+            await Funcionario.database.findByIdAndDelete(this.id)
+        }catch(error){
+            console.error('Erro ao deletar funcionario do banco', error)
         }
     }
 }
