@@ -20,24 +20,44 @@ const orcamentoSchema = new database.Schema({
 class Orcamento{
     static database = database.model('Orcamento', orcamentoSchema)
 
-    static async findOrcamento(id){
+    static async findById(id){
         try{
             const orcamento = await Orcamento.database.findById(id.trim())
     
             if(!orcamento){
-                throw new DataError('Invalid ID', 400, 'Orcamento não encontrado')
+                return null
             }
     
-            return orcamento
+            return new Orcamento(orcamento.idCliente, 
+                orcamento.idStatus, 
+                orcamento.valorPagamento, 
+                orcamento.valorFrete, 
+                orcamento.valorInstalacao,
+                orcamento._id,
+                orcamento.createdAt,
+                orcamento.updatedAt
+            )
         }catch(error){
             console.error(error)
             throw new DataError('Internal Server Error', 500, 'Erro interno do servidor')
         }
     }
 
-    static async getAllOrcamentos(){
+    static async findAll(){
         try{
-            return await Orcamento.database.find()
+            const resultado = await Orcamento.database.find()
+
+            return resultado.map((orcamento) => {
+                return new Orcamento(orcamento.idCliente, 
+                    orcamento.idStatus, 
+                    orcamento.valorPagamento, 
+                    orcamento.valorFrete, 
+                    orcamento.valorInstalacao,
+                    orcamento._id,
+                    orcamento.createdAt,
+                    orcamento.updatedAt
+                )
+            })
         }catch(error){
             console.error(error)
             throw new DataError('Internal Server Error', 500, 'Erro interno do servidor')
@@ -48,18 +68,29 @@ class Orcamento{
         try{
             const resultado = await Orcamento.database.find(filtro)
 
-            if(resultado.length === 0){
-                throw new DataError('Search Error', 404, 'Nenhum orçamento encontrado')
-            }
-
-            return resultado
+            return resultado.map((orcamento) => {
+                return new Orcamento(orcamento.idCliente, 
+                    orcamento.idStatus, 
+                    orcamento.valorPagamento, 
+                    orcamento.valorFrete, 
+                    orcamento.valorInstalacao,
+                    orcamento._id,
+                    orcamento.createdAt,
+                    orcamento.updatedAt
+                )
+            })
         }catch(error){
-            if(error.name === 'Search Error'){
-                console.error('Erro ao fazer o find many by de orçamento: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find many by de orçamento')
-            }
+            console.error('Erro ao fazer o find many by de orçamento: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find many by de orçamento')
+        }
+    }
 
-            throw error
+    static async updateManyBy(filtro, data){
+        try{
+            await Orcamento.updateManyBy(filtro, data)
+        }catch(error){
+            console.log('Erro ao fazer o update many by de orcamento: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao fazer o update many by de orcamento')
         }
     }
 
@@ -80,13 +111,15 @@ class Orcamento{
         }
     }
 
-    constructor (idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao){
+    constructor (idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.idCliente = idCliente
         this.idStatus = idStatus
         this.valorPagamento = valorPagamento
         this.valorInstalacao = (valorInstalacao) ? valorInstalacao : 0
         this.valorFrete = (valorFrete) ? valorFrete : 0
-        this.id = null
+        this.id = id
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
     }
     
     get idCliente(){

@@ -10,7 +10,11 @@ class Status{
 
     static async findAll(){
         try{
-            return await Status.database.find()
+            const resultadoBanco = await Status.database.find()
+
+            return resultadoBanco.map((status) => {
+                return new Status(status.nome, status.createdAt, status.updatedAt)
+            })
         }catch(error){
             console.error('Erro ao fazer o find all de status: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all de status')
@@ -19,11 +23,13 @@ class Status{
 
     static async findById(id){
         try{
-            const resultado = Status.database.findById(id)
+            const resultado = await Status.database.findById(id)
 
             if(!resultado){
-                throw new DataError('Invalid Id', 404, 'Status não encontrado')
+                return null
             }
+
+            return new Status(nome, resultado.createdAt, resultado.updatedAt)
         }catch(error){
             if(error.name !== 'Invalid Id'){
                 console.log('Erro ao fazer o find all de status: ', error)
@@ -34,9 +40,11 @@ class Status{
         }
     }
 
-    constructor(nome){
+    constructor(nome, id= null, createdAt= new Date(), updatedAt= new Date() ){
         this.nome = nome
-        this.id = null
+        this.id = id
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
     }
 
     get nome(){
@@ -61,6 +69,7 @@ class Status{
     async update(){
         try{
             await Status.database.findByIdAndUpdate(this.id, {nome: this.nome})
+            this.updatedAt = new Date()
         }catch(error){
             console.error('Erro ao atualizar status no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao atualizar status no banco')

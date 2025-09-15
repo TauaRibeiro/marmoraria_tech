@@ -23,10 +23,45 @@ class Material{
 
     static async findAll(){
         try{
-            return await Material.database.find()
+            const resultado = await Material.database.find() 
+            return resultado.map((material) => {
+                return new Material(material.idTipo, 
+                    material.idStatus, 
+                    material.nome, 
+                    material.estoqueMin, 
+                    material.estoqueMax, 
+                    material.estoque,
+                    material._id,
+                    material.createdAt,
+                    material.updatedAt
+                )
+            })
         }catch(error){
             console.error('Erro ao fazer o find all de material')
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all de material')
+        }
+    }
+
+    static async findManyBy(filtro){
+        try{
+            const resultado = await Material.database.find(filtro)
+
+            return resultado.map((material) => {
+                return new Material(material.idTipo,
+                    material.idStatus,
+                    material.nome,
+                    material.estoqueMin,
+                    material.estoqueMax,
+                    material.estoque,
+                    material.id,
+                    material.createdAt,
+                    material.updatedAt
+                    
+                )
+            })
+        }catch(error){
+            console.error('Não foi possível fazer o find many by de material: ', error)
+            throw new DataError('Internal Server Error', 500, 'Não foi possível fazer o find many by de material')
         }
     }
 
@@ -35,43 +70,42 @@ class Material{
             const resultado = await Material.database.findById(id)
 
             if(!resultado){
-                throw new DataError('Invalid Id', 404, 'Material não encontrado')
+                return null
             }
 
-            return resultado
+            return new Material(resultado.idTipo, 
+                resultado.idStatus, 
+                resultado.nome, 
+                resultado.estoqueMin, 
+                resultado.estoqueMax, 
+                resultado.estoque,
+                resultado._id,
+                resultado.createdAt,
+                resultado.updatedAt
+            )
         }catch(error){
-            if(error.name !== 'Invalid Id'){
-                console.error('Internal Server Error', 500, 'Erro ao fazer o find by id de material')
-            }
-
-            throw error
+            console.error('Internal Server Error', 500, 'Erro ao fazer o find by id de material')
         }
     }
 
     static async updateManyBy(filtro, data){
         try{
-            const resultado = await Material.database.updateMany(filtro, data)
-
-            if(resultado.matchedCount === 0){
-                throw new DataError('Search Error', 404, 'Nenhum material foi encontrado')
-            }
+            await Material.database.updateMany(filtro, data)
         }catch(error){
-            if(error.name !== 'Serach Error'){
-                console.error('Internal Server Error', 500, 'Erro ao fazer o find by id de material')
-            }
-
-            throw error
+            console.error('Internal Server Error', 500, 'Erro ao fazer o find by id de material')
         }
     }
 
-    constructor(idTipo, idStatus, nome, estoqueMin, estoqueMax, estoque){
+    constructor(idTipo, idStatus, nome, estoqueMin, estoqueMax, estoque, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.idTipo = idTipo,
         this.idStatus = idStatus,
         this.nome = nome
         this.estoqueMin = estoqueMin,
         this.estoqueMax = estoqueMax,
         this.estoque = estoque
-        this.id = null
+        this.id = id
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
     }
 
     get idTipo(){
