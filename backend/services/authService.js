@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const Funcionario = require('../models/schemas/Funcionario')
+const Funcionario = require('../models/Funcionario')
 const SECRET = process.env.SECRET
 const validarEmail = require('../utils/validarEmail')
 

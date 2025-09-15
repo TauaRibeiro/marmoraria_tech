@@ -1,4 +1,4 @@
-const Ambiente = require('../models/schemas/Ambiente')
+const Ambiente = require('../models/Ambiente')
 const validarId = require('../utils/validarIdMongoose')
 
 exports.criarAmbiente = async (nome) => {

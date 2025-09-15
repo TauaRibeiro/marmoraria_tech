@@ -1,4 +1,4 @@
-const Endereco = require('../models/schemas/Endereco')
+const Endereco = require('../models/Endereco')
 const eNumerico = require('../utils/eNumerico')
 const validarId = require('../utils/validarIdMongoose')
 
