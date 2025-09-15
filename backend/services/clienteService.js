@@ -1,6 +1,6 @@
 const Cliente = require('../models/Cliente')
 const validarId = require('../utils/validarIdMongoose')
-const validarData = require('../utils/validarData')
+const validarData = require('../utils/parseData')
 const validarTelefone = require('../utils/validarTelefone')
 const enderecoService = require('../services/enderecoService')
 const validarEmail = require('../utils/validarEmail')

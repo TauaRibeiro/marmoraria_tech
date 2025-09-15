@@ -2,7 +2,7 @@ const PrecoMaterial = require('../models/PrecoMaterial')
 const Material = require('../models/Material')
 const validarId = require('../utils/validarIdMongoose')
 const eNumerico = require('../utils/eNumerico')
-const validarData = require('../utils/validarData')
+const validarData = require('../utils/parseData')
 
 exports.createPrecoMaterial = async (data) => {
     try {

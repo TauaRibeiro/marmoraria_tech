@@ -1,5 +1,5 @@
 const Funcionario = require('../models/Funcionario')
-const validarData = require('../utils/validarData')
+const validarData = require('../utils/parseData')
 const validarEmail = require('../utils/validarEmail')
 const validarId = require('../utils/validarIdMongoose')
 const eNumerico = require('../utils/eNumerico')

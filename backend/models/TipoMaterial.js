@@ -6,7 +6,7 @@ const tipoMaterialSchema = new database.Schema({
 }, {timestamps: true});
 
 class TipoMaterial{
-    static database = database.model('Status', statusSchema)
+    static database = database.model('TipoMaterial', tipoMaterialSchema)
 
     static async findAll(){
         try{
