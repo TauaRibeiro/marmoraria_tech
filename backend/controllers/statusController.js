@@ -1,82 +1,87 @@
 const statusService = require('../services/statusService')
+const validarIdMongoose = require('../utils/validarIdMongoose')
 
-exports.getAll = async (req, res) => {
-    const resultService = await statusService.getStatus();
+exports.getAll = async (_, res) => {
+    try{
+        const result = await statusService.getAllStatus()
 
-    if(resultService.status === 200){
-        return res.status(200).json({result: resultService.result})
+        return res.status(200).json({result})
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    console.log('Deu erro!!')
-    console.log(resultService)
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.getById = async (req, res) => {
-    const {id} = req.params
+    try{
+        const id = req.params.id.trim()
 
-    if(!id){
-        return res.status(400).json({message: "O id é necessário"})
-    }
+        if(!validarIdMongoose(id)){
+            return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
+        }
 
-    const resultService = await statusService.getStatusByID(id)
+        const result = await statusService.getStatusByID(id)
 
-    if(resultService.status === 200){
-        return res.status(200).json({result: resultService.result})
-    }
-
-    if(resultService.status === 404){
-        return res.status(404).json({message: "Id não encontrado"})
-    }
-
-    return res.status(resultService.status).json({message: resultService.message})
+        return res.status(200).json({result})
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
+    }    
 }
 
 exports.create = async (req, res) => {
-    const {nome} = req.body;
+    try{
+        const nome = req.body.nome.trim()
 
-    if(!nome){
-        return res.status(400).json({message: "Nome é necessário"})
-    }
+        if(!nome){
+            return res.status(400).json({name: "Paramenter Error", message: "Nome é obrigatório"})
+        }
+        if(nome.length === 0){
+            return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
+        }
 
-    const resultService = await statusService.criarStatus(nome)
-
-    if(resultService.status === 201){
+        await statusService.criarStatus(nome)
         return res.sendStatus(201)
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.update = async (req, res) => {
-    const {id} = req.params
-    const {nome} = req.body
+    try{
+        const id = req.params.id.trim()
+        const nome = req.body.nome.trim()
+    
+        if(!validarIdMongoose(id)){
+            return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
+        }
 
-    if(!id || !nome){
-        return res.status(400).json({message: "id e nome são necessários"})
+        if(!nome){
+            return res.status(400).json({name: "Parameter Error", message: "Nome é obrigatório"})
+        }  
+    
+        if(nome.length === 0){
+            return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
+        }
+    
+        await statusService.updateStatus(id, nome)
+    
+        return res.sendStatus(200)
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    const resultService = await statusService.updateStatus(id, nome)
-
-    if(resultService.status === 200){
-       return res.sendStatus(200)
-    }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.delete = async (req, res) => {
-    const {id} = req.params
+    try{
+        const id = req.params.id.trim()
 
-    if(!id){
-        return res.status(400).json({message: "id é necessário"})
+        if(!validarIdMongoose(id)){
+            return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
+        }
+
+        await statusService.deleteStatus(id)
+
+        return res.sendStatus(200)
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    const resultService = await statusService.deleteStatus(id)
-
-    if(resultService.status === 200){
-        return res.sendStatus(200);
-    }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }

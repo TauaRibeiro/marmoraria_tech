@@ -13,7 +13,7 @@ class Status{
             const resultadoBanco = await Status.database.find()
 
             return resultadoBanco.map((status) => {
-                return new Status(status.nome, status.createdAt, status.updatedAt)
+                return new Status(status.nome, status.id, status.createdAt, status.updatedAt)
             })
         }catch(error){
             console.error('Erro ao fazer o find all de status: ', error)
@@ -29,11 +29,11 @@ class Status{
                 return null
             }
 
-            return new Status(nome, resultado.createdAt, resultado.updatedAt)
+            return new Status(resultado.nome, resultado.id, resultado.createdAt, resultado.updatedAt)
         }catch(error){
             if(error.name !== 'Invalid Id'){
-                console.log('Erro ao fazer o find all de status: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all de status')
+                console.log('Erro ao fazer o find by id de status: ', error)
+                throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find by id de status')
             }
 
             throw error
@@ -47,20 +47,15 @@ class Status{
         this.updatedAt = updatedAt
     }
 
-    get nome(){
-        return this.nome
-    }
-
-    set nome(novoNome){
-        this.nome = novoNome
-    }
-
     async create(){
         try{
             const novoStatus = await Status.database.create({nome: this.nome})
 
             this.id = novoStatus._id
         }catch(error){
+            if(error.code === 11000){
+                throw new DataError('Validation Error', 400, "Já existe um status com esse nome")
+            }
             console.error('Erro ao criar um novo status no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao criar um novo status no banco')
         }

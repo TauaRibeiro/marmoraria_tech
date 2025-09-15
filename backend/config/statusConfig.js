@@ -4,12 +4,15 @@ module.exports = async () => {
     const statusPadroes = ['Ok', 'Estoque Baixo', 'Estoque Cheio', 'Estoque Transbordando', 'Aguardando Pagamento', 'Cancelado', 'Status Deletado']
     
     statusPadroes.map(async (padrao) => {
-        let result = await Status.database.find({nome: padrao})
+        let result = await Status.database.findOne({nome: padrao})
 
         if(!result){
-           result = await Status.database.create({nome: padrao}) 
-        }
+            const novoPadrao = new Status(padrao)
+            await novoPadrao.create()
 
-        process.env[padrao.toUpperCase().replace(' ', '_')] = result._id
+            process.env[padrao.toUpperCase().replace(' ', '_')] = novoPadrao.id  
+        }else{
+            process.env[padrao.toUpperCase().replace(' ', '_')] = result._id
+        }
     })
 }

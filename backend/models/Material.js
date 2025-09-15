@@ -92,7 +92,7 @@ class Material{
         try{
             await Material.database.updateMany(filtro, data)
         }catch(error){
-            console.error('Internal Server Error', 500, 'Erro ao fazer o find by id de material')
+            console.error('Internal Server Error', 500, 'Erro ao fazer o update many by de material')
         }
     }
 

@@ -87,9 +87,9 @@ class Orcamento{
 
     static async updateManyBy(filtro, data){
         try{
-            await Orcamento.updateManyBy(filtro, data)
+            await Orcamento.database.updateMany(filtro, data)
         }catch(error){
-            console.log('Erro ao fazer o update many by de orcamento: ', error)
+            console.error('Erro ao fazer o update many by de orcamento: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o update many by de orcamento')
         }
     }
