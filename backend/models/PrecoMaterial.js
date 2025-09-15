@@ -105,8 +105,9 @@ class PrecoMaterial{
 
     constructor (idMaterial, valorMaterial, dataAplicacao){
         this.idMaterial = idMaterial
-        this.valorMaterial = valorMaterial,
+        this.valorMaterial = valorMaterial
         this.dataAplicacao = dataAplicacao
+        this.id = null
     }
 
     get idMaterial(){
