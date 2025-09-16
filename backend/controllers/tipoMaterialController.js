@@ -1,81 +1,94 @@
 const service = require('../services/tipoMaterialService')
+const validarIdMongoose = require('../utils/validarIdMongoose')
 
-exports.getAll = async (req, res) => {
-    const resultService = await service.getTipoMaterial();
+exports.getAll = async (_, res) => {
+    try{
+        const result = await service.getTipoMaterial()
 
-    if(resultService.status === 200){
-        return res.status(200).json({result: resultService.result})
+        return res.status(200).json({result})
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    console.log(resultService)
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.getByID = async (req, res) => {
-    const {id} = req.params
-
-    if(!id){
-        return res.status(400).json({message: "O id é necessário"})
+    try{
+        const id = req.params.id.trim()
+    
+        if(!validarIdMongoose(id)){
+            return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
+        }
+    
+        const result = await service.getTipoMaterialByID(id)
+    
+        return res.status(200).json({result})
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
 
-    const resultService = await service.getTipoMaterialByID(id)
-
-    if(resultService.status === 200){
-        return res.status(200).json({result: resultService.result})
-    }
-
-    if(resultService.status === 404){
-        return res.status(404).json({message: "Id não encontrado"})
-    }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.create = async (req, res) => {
-    const {nome} = req.body;
+    try{
+        let nome = req.body.nome
 
-    if(!nome){
-        return res.status(400).json({message: "Nome é necessário"})
-    }
+        if(!nome){
+            return res.status(400).json({name: "Parameter Error", message: "Nome é obrigatorio"})
+        }
 
-    const resultService = await service.criarTipoMaterial(nome)
+        nome = nome.trim()
 
-    if(resultService.status === 201){
+        if(nome.length === 0){
+            return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
+        }
+
+        await service.criarTipoMaterial(nome)
+
         return res.sendStatus(201)
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.update = async (req, res) => {
-    const {id} = req.params
-    const {nome} = req.body
+    try{
+        let id = req.params.id.trim()
+        let nome = req.body.nome
+        
+        if(!validarIdMongoose(id)){
+            return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
+        }
 
-    if(!id || !nome){
-        return res.status(400).json({message: "id e nome são necessários"})
+        if(!nome){
+            return res.status(400).json({name: "Parameter Error", message: "Nome é obrigatório"})   
+        }
+
+        nome = nome.trim()
+
+        if(nome.trim().length === 0){
+            return res.status(400).json({name: "Validation Error", message: "Nome invalido"})
+        }
+
+        await service.updateTipoMaterial(id, nome)
+
+        return res.sendStatus(200)
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    const resultService = await service.updateTipoMaterial(id, nome)
-
-    if(resultService.status === 200){
-       return res.sendStatus(200)
-    }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.delete = async (req, res) => {
-    const {id} = req.params
+    try{
+        const id = req.params.id.trim()
+    
+        if(!validarIdMongoose(id)){
+            return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
+        }
 
-    if(!id){
-        return res.status(400).json({message: "id é necessário"})
+        await service.deleteTipoMaterial(id)
+        
+        return res.sendStatus(200)
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    const resultService = await service.deleteTipoMaterial(id)
-
-    if(resultService.status === 200){
-        return res.sendStatus(200);
-    }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }

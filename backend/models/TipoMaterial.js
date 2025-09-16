@@ -21,6 +21,10 @@ class TipoMaterial{
         try{
             const resultado = await TipoMaterial.database.findById(id)
 
+            if(!resultado){
+                return null
+            }
+            
             return new TipoMaterial(resultado.nome, resultado._id, resultado.createdAt, resultado.updatedAt)
         }catch(error){
             console.log('Erro ao fazer o find all de tipo material: ', error)

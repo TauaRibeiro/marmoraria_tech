@@ -108,46 +108,6 @@ class Material{
         this.updatedAt = updatedAt
     }
 
-    get idTipo(){
-        return this.idTipo
-    }
-
-    set idTipo(novoId){
-        this.idTipo = novoId
-    }
-
-    get idStatus(){
-        return this.idStatus
-    }
-
-    set idStatus(novoId){
-        this.idStatus = novoId
-    }
-
-    get nome(){
-        return this.nome
-    }
-
-    set nome(novoNome){
-        this.nome = novoNome
-    }
-
-    get estoqueMin(){
-        return this.estoqueMin
-    }
-
-    get estoqueMax(){
-        return this.estoqueMax
-    }
-
-    get estoque(){
-        return this.estoque
-    }
-
-    set estoque(novoEstoque){
-        this.estoque = novoEstoque
-    }
-
     async setStoqueLimit(novoMin, novoMax){
         if(novoMin > novoMax){
             throw new DataError('Validation Error', 400, 'O estoque mínimo não deve ser maior que o estoque máximo')
