@@ -50,6 +50,10 @@ class TipoMaterial{
         try{
             await TipoMaterial.database.findByIdAndUpdate(this.id, {nome: this.nome})
         }catch(error){
+            if(error.code === 11000){
+                throw new DataError('Validation Error', 400, 'Já existe um tipo com este nome')
+            }
+            
             console.error('Erro ao atualizar tipo material no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao atualizar tipo material no banco')
         }
