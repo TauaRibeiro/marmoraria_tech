@@ -29,11 +29,14 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try{
-        const nome = req.body.nome.trim()
+        let nome = req.body.nome
 
         if(!nome){
-            return res.status(400).json({name: "Paramenter Error", message: "Nome é obrigatório"})
+            return res.status(400).json({name: "Parameter Error", message: "Nome é obrigatório"})
         }
+
+        nome = nome.trim()
+        
         if(nome.length === 0){
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
@@ -48,7 +51,7 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
     try{
         const id = req.params.id.trim()
-        const nome = req.body.nome.trim()
+        let nome = req.body.nome
     
         if(!validarIdMongoose(id)){
             return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
@@ -57,6 +60,8 @@ exports.update = async (req, res) => {
         if(!nome){
             return res.status(400).json({name: "Parameter Error", message: "Nome é obrigatório"})
         }  
+
+        nome = nome.trim()
     
         if(nome.length === 0){
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
