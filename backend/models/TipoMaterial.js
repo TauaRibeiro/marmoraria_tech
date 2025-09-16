@@ -19,32 +19,20 @@ class TipoMaterial{
 
     static async findById(id){
         try{
-            const resultado = TipoMaterial.database.findById(id)
+            const resultado = await TipoMaterial.database.findById(id)
 
-            if(!resultado){
-                throw new DataError('Invalid Id', 404, 'Tipo material não encontrado')
-            }
+            return new TipoMaterial(resultado.nome, resultado._id, resultado.createdAt, resultado.updatedAt)
         }catch(error){
-            if(error.name !== 'Invalid Id'){
-                console.log('Erro ao fazer o find all de tipo material: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all de tipo material')
-            }
-
-            throw error
+            console.log('Erro ao fazer o find all de tipo material: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all de tipo material')
         }
     }
 
-    constructor(nome){
+    constructor(nome, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.nome = nome
-        this.id = null
-    }
-
-    get nome(){
-        return this.nome
-    }
-
-    set nome(novoNome){
-        this.nome = novoNome
+        this.id = id
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
     }
 
     async create(){
