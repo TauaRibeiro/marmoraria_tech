@@ -32,7 +32,20 @@ class ItemOrcamento{
  
     static async findAll(){
         try{
-            return await ItemOrcamento.database.find()
+            const result = await ItemOrcamento.database.find()
+            return result.map((item) => {
+                return new ItemOrcamento(item.idOrcamento, 
+                    item.idAmbiente, 
+                    item.idMaterial, 
+                    item.idPreco, 
+                    item.quantidadeItem,
+                    item.comprimentoItem,
+                    item.larguraItem,
+                    item._id,
+                    item.createdAt,
+                    item.updatedAt
+                )
+            })
         }catch(error){
             console.error('Erro ao fazr o find all de Item Orcamento: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao fazr o find all de Item Orcamento')
@@ -44,51 +57,69 @@ class ItemOrcamento{
             const item = await ItemOrcamento.database.findById(id.trim())
             
             if(!item){
-                throw new DataError('Invalid ID', 404, 'Item não encontrado')
+                return null
             }
             
-            return item
+            return new ItemOrcamento(item.idOrcamento, 
+                item.idAmbiente, 
+                item.idMaterial, 
+                item.idPreco, 
+                item.quantidadeItem,
+                item.comprimentoItem,
+                item.larguraItem,
+                item._id,
+                item.createdAt,
+                item.updatedAt
+            )
         }catch(error){
             console.error('Erro ao fazer o find por id de item de orcamento no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find por id de item de orcamento no banco')
         }
     }
 
+    static async findManyBy(filtro){
+        try{
+            const result = await ItemOrcamento.database.find(filtro)
+
+            return result.map((item) => {
+                return new ItemOrcamento(item.idOrcamento, 
+                    item.idAmbiente, 
+                    item.idMaterial, 
+                    item.idPreco, 
+                    item.quantidadeItem,
+                    item.comprimentoItem,
+                    item.larguraItem,
+                    item._id,
+                    item.createdAt,
+                    item.updatedAt
+                )
+            })
+        }catch(error){
+            console.error('Erro ao fazr o find many by de Item Orcamento: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find many by de Item Orcamento')
+        }
+    }
+
     static async updateManyBy(filtro, data){
         try{
-            const resultado = await ItemOrcamento.database.updateMany(filtro, data)
-
-            if(resultado.matchedCount === 0){
-                throw new DataError('Search Error', 404, 'Itens de orçamento não encontrados')
-            }
+            await ItemOrcamento.database.updateMany(filtro, data)
         }catch(error){
-            if(error.name !== 'Search Error'){
-                console.error('Erro ao atualizar vários itens no banco: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao atualizar vários itens no banco')
-            }
-
-            throw error
+            console.error('Erro ao atualizar vários itens no banco: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao atualizar vários itens no banco')
         }
     }
 
     static async deleteManyBy(filtro){
         try{
-            const resultado = await ItemOrcamento.database.deleteMany(filtro)
-
-            if(resultado.deletedCount === 0){
-                throw new DataError('Search Error', 404, 'Nenhum item encontrado')
-            }
+            await ItemOrcamento.database.deleteMany(filtro)
         }catch(error){
-            if(error.name !== 'Search Error'){
-                console.error('Erro ao deletar vários itens no banco: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao deletar vários itens no banco')
-            }
-
-            throw error
+            console.error('Erro ao deletar vários itens no banco: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao deletar vários itens no banco')
         }
     }
 
-    constructor(idOrcamento, idAmbiente, idMaterial, idPreco, quantidadeItem, comprimentoItem, larguraItem){
+    constructor(idOrcamento, idAmbiente, idMaterial, idPreco, quantidadeItem, comprimentoItem, larguraItem, 
+                id= null, createdAt= new Date(), updatedAt= new Date()){
         this.idOrcamento = idOrcamento
         this.idAmbiente = idAmbiente
         this.idMaterial = idMaterial
@@ -96,66 +127,11 @@ class ItemOrcamento{
         this.quantidadeItem = quantidadeItem
         this.comprimentoItem = comprimentoItem
         this.larguraItem = larguraItem
-        this.id = null
+        this.id = id
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
     }
     
-    get idOrcamento(){
-        return this.idOrcamento
-    }
-
-    set idOrcamento(novoId){
-        this.idOrcamento = novoId
-
-    }
-
-    get idAmbiente(){
-        return this.idAmbiente
-    }
-
-    set idAmbiente(novoId){
-        this.idAmbiente = novoId
-    }
-
-    get idMaterial(){
-        return this.idMaterial
-    }
-
-    set idMaterial(novoId){
-        this.idMaterial = novoId
-    }
-
-    get idPreco(){
-        return this.idPreco
-    }
-
-    set idPreco(novoId){
-        this.idPreco = novoId
-    }
-
-    get quantidadeItem(){
-        return this.quantidadeItem
-    }
-
-    set quantidadeItem(quantidade){
-        this.quantidadeItem = quantidade
-    }
-
-    get comprimentoItem(){
-        return this.comprimentoItem
-    }
-
-    set comprimentoItem(comprimento){
-        this.comprimentoItem = comprimento
-    }
-
-    get larguraItem(){
-        return this.larguraItem
-    }
-
-    set larguraItem(largura){
-        this.larguraItem = largura
-    }
-
     async create(){
         try{
             const novoItem = await ItemOrcamento.database.create({

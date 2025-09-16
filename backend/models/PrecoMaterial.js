@@ -16,7 +16,17 @@ class PrecoMaterial{
 
     static async findAll(){
         try{
-            return await PrecoMaterial.database.find()
+            const resultado = await PrecoMaterial.database.find()
+
+            return resultado.map((preco) => {
+                return new PrecoMaterial(preco.idMaterial,
+                    preco.valorMaterial,
+                    preco.dataAplicacao,
+                    preco._id,
+                    preco.createdAt,
+                    preco.updatedAt
+                )
+            })
         }catch(error){
             console.error('Erro ao fazer o find all de preço material: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all de preço material')
@@ -28,16 +38,18 @@ class PrecoMaterial{
             const resultado = await PrecoMaterial.database.findById(id)
 
             if(!resultado){
-                throw new DataError('Invalid Id', 404, 'Preço do material não encontrado')
+                return null
             }
 
-            return resultado
+            return new PrecoMaterial(resultado.idMaterial,
+                resultado.valorMaterial,
+                resultado.dataAplicacao,
+                resultado._id,
+                resultado.createdAt,
+                resultado.updatedAt
+            )
         }catch(error){
-            if(error.name !== 'Invalid Id'){
-                throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find by id de preço material')
-            }
-
-            throw error
+            throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find by id de preço material')
         }
     }
 
@@ -45,18 +57,18 @@ class PrecoMaterial{
         try{
             const resultado = await PrecoMaterial.database.find(filtro)
 
-            if(resultado.length === 0){
-                throw new DataError('Search Error', 404, 'Nenhum preço de material encontrado')
-            }
-
-            return resultado
+            return resultado.map((preco) => {
+                return new PrecoMaterial(preco.idMaterial,
+                    preco.valorMaterial,
+                    preco.dataAplicacao,
+                    preco._id,
+                    preco.createdAt,
+                    preco.updatedAt
+                )
+            })
         }catch(error){
-            if(error.name !== 'Search Error'){
-                console.error('Erro ao fazer o find many by de preço material: ', error)
-                throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find many by de preço material')
-            }
-
-            throw error
+            console.error('Erro ao fazer o find many by de preço material: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find many by de preço material')
         }
     }
 
@@ -79,7 +91,15 @@ class PrecoMaterial{
             })
             
            
-            return precosAtuais
+            return precosAtuais.map((preco) => {
+                return new PrecoMaterial(preco.idMaterial,
+                    preco.valorMaterial,
+                    preco.dataAplicacao,
+                    preco._id,
+                    preco.createdAt,
+                    preco.updatedAt
+                )
+            })
         }catch(error){
             console.log('Erro fazer o find dos preços atuiais dos materiais: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro fazer o find dos preços atuiais dos materiais')
@@ -89,10 +109,6 @@ class PrecoMaterial{
     static async deleteManyBy(filtro){
         try{
             const resultado = await PrecoMaterial.database.deleteMany(filtro)
-
-            if(resultado.deletedCount === 0){
-                throw new DataError('Search Error', 404, 'Nenhum preço de material encontrado')
-            }
         }catch(error){
             if(error.name !== 'Search Error'){
                 console.error('Erro ao fazer o delete many de de preço material: ', error)
@@ -103,35 +119,13 @@ class PrecoMaterial{
         }
     }
 
-    constructor (idMaterial, valorMaterial, dataAplicacao){
+    constructor (idMaterial, valorMaterial, dataAplicacao, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.idMaterial = idMaterial
         this.valorMaterial = valorMaterial
         this.dataAplicacao = dataAplicacao
-        this.id = null
-    }
-
-    get idMaterial(){
-        return this.idMaterial
-    }
-
-    set idMaterial(novoId){
-        this.idMaterial = novoId
-    }
-
-    get valorMaterial(){
-        return this.valorMaterial
-    }
-
-    set valorMaterial(novoValor){
-        this.valorMaterial = novoValor
-    }
-
-    get dataAplicacao(){
-        return this.dataAplicacao
-    }
-
-    set dataAplicacao(novaData){
-        this.dataAplicacao = novaData
+        this.id = id
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
     }
 
     async create(){
