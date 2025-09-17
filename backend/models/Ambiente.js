@@ -22,7 +22,7 @@ class Ambiente{
 
     static async findById(id){
         try{
-            const ambiente = Ambiente.database.findById(id)
+            const ambiente = await Ambiente.database.findById(id)
 
             if(!ambiente){
                 return null
@@ -48,6 +48,10 @@ class Ambiente{
 
             this.id = novoAmbiente._id
         }catch(error){
+            if(error.code === 11000){
+                throw new DataError('Validation Error', 400, 'Já existe um ambiente com esse nome')
+            }
+            
             console.error('Erro ao criar ambiente no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao criar ambiente no banco')
         }
@@ -57,6 +61,9 @@ class Ambiente{
         try{
             await Ambiente.database.findByIdAndUpdate(this.id, {nome: this.nome})
         }catch(error){
+            if(error.code === 11000){
+                throw new DataError('Validation Error', 400, 'Já existe um ambiente com esse nome')
+            }
             console.error('Erro ao atualizar ambiente no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao atualizar ambiente no banco')
         }

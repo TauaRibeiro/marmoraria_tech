@@ -1,6 +1,6 @@
 const Ambiente = require('../models/Ambiente')
 const DataError = require('../models/DataError')
-const validarId = require('../utils/validarIdMongoose')
+
 
 exports.criarAmbiente = async (nome) => {
     try{
