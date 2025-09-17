@@ -74,7 +74,7 @@ exports.create = async (req, res) => {
 
         return res.sendStatus(201)
     }catch(error){
-        return res.status(error.message).json({name: error.name, message: error.message})
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
 }
 

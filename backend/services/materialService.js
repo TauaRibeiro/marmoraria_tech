@@ -1,4 +1,6 @@
 const Material = require('../models/Material')
+const Status = require('../models/Status')
+const TipoMaterial = require('../models/TipoMaterial')
 const PrecoMaterial = require('../models/PrecoMaterial')
 const ItemOrcamento = require('../models/ItemOrcamento')
 const DataError = require('../models/DataError')
@@ -7,6 +9,14 @@ exports.createMaterial = async (data) => {
     try{
         const { idTipo, idStatus, nome, valorMaterial, estoqueMin, estoqueMax, estoque, dataAplicacao } = data
 
+        if(!(await Status.findById(idStatus))){
+            throw new DataError('Not Found', 404, 'Status não encontrado')
+        }
+
+        if(!(await TipoMaterial.findById(idTipo))){
+            throw new DataError('Not Found', 404, 'Tipo não encontrado')
+        }
+        
         const novoMaterial = new Material(idTipo, idStatus, nome, estoqueMin, estoqueMax, estoque)
         
         await novoMaterial.create()
@@ -103,6 +113,14 @@ exports.updateMaterial = async (data) => {
             throw new DataError('Not Found', 404, 'Material não encontrado')
         }
 
+        if(!(await Status.findById(idStatus))){
+            throw new DataError('Not Found', 404, 'Status não encontrado')
+        }
+
+        if(!(await TipoMaterial.findById(idTipo))){
+            throw new DataError('Not Found', 404, 'Tipo não encontrado')
+        }
+        
         const precos = await PrecoMaterial.findCurrentPrices()
 
         material.idTipo = idTipo
