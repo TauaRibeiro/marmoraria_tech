@@ -122,54 +122,6 @@ class Orcamento{
         this.updatedAt = updatedAt
     }
     
-    get idCliente(){
-        return this.idCliente
-    }
-
-    set idCliente(novoId){
-        this.idCliente = novoId
-    }
-
-    get idStatus(){
-        return this.idStatus
-    }
-
-    set idStatus(novoId){
-        this.idStatus = novoId
-    }
-
-    get valorPagamento(){
-        return this.valorPagamento
-    }
-
-    set valorPagamento(novoValor){
-        this.valorPagamento = novoValor
-    }
-
-    get valorFrete(){
-        return this.valorFrete
-    }
-
-    set valorFrete(novoValor){
-        if(novoValor){
-            this.valorFrete = novoValor
-        }
-
-        this.valorFrete = 0
-    }
-
-    get valorInstalacao(){
-        return this.valorInstalacao
-    }
-
-    set valorInstalacao(novoValor){
-        if(novoValor){
-            this.valorFrete = novoValor
-        }
-
-        this.valorInstalacao = 0
-    }
-
     async create (){
         try{
             const novoOrcamento = await Orcamento.database.create({

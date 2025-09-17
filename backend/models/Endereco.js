@@ -15,7 +15,21 @@ class Endereco{
 
     static async findAll(){
         try{
-            return Endereco.database.find()
+            const resultado = await Endereco.database.find()
+
+            return resultado.map((endereco) => {
+                return {
+                    id: endereco._id,
+                    cep: endereco.cep,
+                    cidade: endereco.cidade,
+                    rua: endereco.rua,
+                    numero: endereco.numero,
+                    bairro: endereco.bairro,
+                    complemento: endereco.complemento,
+                    createdAt: endereco.createdAt,
+                    updatedAt: endereco.updatedAt
+                }
+            })
         }catch(error){
             console.error('Erro ao fazer o find all de endereço: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all endereço')
@@ -27,10 +41,20 @@ class Endereco{
             const endereco = await Endereco.findById(id)
 
             if(!endereco){
-                throw new DataError('Invalid ID', 404, 'Erro ao fazer o find by id de endereco')
+                return null
             }
 
-            return endereco
+            return {
+                id: endereco._id,
+                cep: endereco.cep,
+                cidade: endereco.cidade,
+                rua: endereco.rua,
+                numero: endereco.numero,
+                bairro: endereco.bairro,
+                complemento: endereco.complemento,
+                createdAt: endereco.createdAt,
+                updatedAt: endereco.updatedAt
+            }
         }catch(error){}
     }
 
@@ -42,60 +66,6 @@ class Endereco{
         this.bairro = bairro
         this.complemento = complemento
         this.id = null
-    }
-
-    get cep(){
-        return this.cep
-    }
-
-    set cep(novoCep){
-        const duplicata = Endereco.database.findOne({cep: novoCep.trim()})
-
-        if(duplicata){
-            throw new DataError('Validation Error', 400, 'Já existe um endereço com este CEP')
-        }
-
-        this.cep = novoCep
-    }
-
-    get cidade(){
-        return this.cidade
-    }
-
-    set cidade(novaCidade){
-        this.cidade = novaCidade
-    }
-
-    get rua(){
-        return this.rua
-    }
-
-    set rua(novaRua){
-        this.rua = novaRua
-    }
-
-    get numero(){
-        return this.numero
-    }
-
-    set numero(novoNumero){
-        this.numero = novoNumero
-    }
-
-    get bairro(){
-        return this.bairro
-    }
-
-    set bairro(novoBairro){
-        this.bairro = novoBairro
-    }
-
-    get complemento(){
-        return this.complemento
-    }
-
-    set complemento(novoComplemento){
-        this.complemento = novoComplemento
     }
 
     async create(){

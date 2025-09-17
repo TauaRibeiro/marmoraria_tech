@@ -10,7 +10,15 @@ class Ambiente{
 
     static async findAll(){
         try{
-            return await Ambiente.database.find()
+            const resultado = await Ambiente.database.find() 
+            return resultado.map((ambiente) => {
+                return {
+                    id: ambiente._id,
+                    nome: ambiente.nome,
+                    createdAt: ambiente.createdAt,
+                    updatedAt: ambiente.updatedAt
+                }
+            })
         }catch(error){
             console.error('Erro ao fazer o findAll de Ambiente: ')
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o findAll de Ambiente')
@@ -22,34 +30,33 @@ class Ambiente{
             const ambiente = Ambiente.database.findById(id)
 
             if(!ambiente){
-                throw new DataError('Invalid ID', 404, 'Ambiente não encontrado')
+                return null
             }
 
-            return ambiente
+            return {
+                id: ambiente._id,
+                nome: ambiente.nome,
+                createdAt: ambiente.createdAt,
+                updatedAt: ambiente.updatedAt
+            }
         }catch(error){
             console.error('Erro ao encontrar por id ambiente: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao encontrar por id ambiente')
         }
     }
 
-    constructor(nome){
+    constructor(nome, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.nome = nome
-        this.id = null
-    }
-
-    get nome(){
-        return this.nome
-    }
-
-    set nome(nome){
-        this.nome = nome
+        this.id = id
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
     }
 
     async create(){
         try{
             const novoAmbiente = await Ambiente.database.create({nome: this.nome})
 
-            this.id = novoAmbiente.id
+            this.id = novoAmbiente._id
         }catch(error){
             console.error('Erro ao criar ambiente no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao criar ambiente no banco')

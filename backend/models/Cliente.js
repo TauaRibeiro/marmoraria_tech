@@ -20,7 +20,22 @@ class Cliente{
 
     static async findAll(){
         try{
-            return await Cliente.database.find()
+            const resultado = await Cliente.database.find()
+
+            return resultado.map((cliente) => {
+                return {
+                    id: cliente._id,
+                    idEndereco: cliente.idEndereco,
+                    nome: cliente.nome,
+                    email: cliente.email,
+                    dataNascimento: cliente.dataNascimento,
+                    telefone: cliente.telefone,
+                    cpf: cliente.cpf,
+                    cnpj: cliente.cnpj,
+                    createdAt: cliente.createdAt,
+                    updatedAt: cliente.updatedAt
+                }
+            })
         }catch(error){
             console.error('Erro ao fazer o find all de cliente: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all de cliente')
@@ -32,17 +47,28 @@ class Cliente{
             const cliente = await Cliente.database.findById(id)
 
             if(!cliente){
-                throw DataError('Invalid ID', 404, 'Cliente não encontrado')
+                return null
             }
 
-            return cliente
+            return {
+                id: cliente._id,
+                idEndereco: cliente.idEndereco,
+                nome: cliente.nome,
+                email: cliente.email,
+                dataNascimento: cliente.dataNascimento,
+                telefone: cliente.telefone,
+                cpf: cliente.cpf,
+                cnpj: cliente.cnpj,
+                createdAt: cliente.createdAt,
+                updatedAt: cliente.updatedAt
+            }
         }catch(error){
             console.log('Erro fazer o find by id de cliente: ', error)
             throw DataError('Internal Server Error', 500, 'Erro fazer o find by id de cliente')
         }
     }
 
-    constructor(idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj){
+    constructor(idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.idEndereco = idEndereco,
         this.nome = nome,
         this.email = email,
@@ -50,71 +76,9 @@ class Cliente{
         this.telefone = telefone,
         this.cpf = cpf,
         this.cnpj = cnpj
-        this.id = null
-    }
-
-    get idEndereco(){
-        return this.idEndereco
-    }
-
-    set idEndereco(idEndereco){
-        this.idEndereco = idEndereco
-    }
-
-    get nome(){
-        return this.nome
-    }
-
-    set nome(novoNome){
-        this.nome = novoNome
-    }
-
-    get dataNascimento(){
-        return this.dataNascimento
-    }
-
-    set dataNascimento(novaData){
-        this.novaData = novaData
-    }
-
-    get telefone(){
-        return this.telefone
-    }
-
-    set telefone(novoTelefone){
-        this.telefone = novoTelefone
-    }
-
-    get cpf(){
-        return this.cpf
-    }
-
-    set cpf(novoCpf){
-        if(novoCpf){
-            this.cpf
-        }
-
-        if(this.cnpj === null){
-            throw new DataError('Validation Error', 400, 'Não é possível setar o CPF como nulo quando CNPJ é nulo')
-        }
-
-        this.cpf = null
-    }
-
-    get cnpj(){
-        return this.cnpj
-    }
-
-    set cnpj(novoCnpj){
-        if(novoCnpj){
-            this.cnpj = novoCnpj
-        }
-
-        if(this.cpf === null){
-            throw new DataError('Validation Error', 400, 'Não é possível setar CNPJ como nulo quando CPF é nulo')
-        }
-
-        this.cnpj = null
+        this.id = id
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
     }
 
     async create(){

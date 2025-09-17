@@ -15,7 +15,19 @@ class Funcionario{
 
     static async findAll(){
         try{
-            return await Funcionario.database.find()
+            const resultado = await Funcionario.database.find()
+
+            return resultado.map((funcionario) => {
+                return {
+                    id: funcionario._id,
+                    nome: funcionario.nome,
+                    cpf: funcionario.cpf,
+                    dataNascimento: funcionario.dataNascimento,
+                    telefone: funcionario.telefone,
+                    email: funcionario.email,
+                    senha: funcionario.senha
+                }
+            })
         }catch(error){
             console.error('Erro ao fazer o find all de funcionário: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all de funcionário')
@@ -27,10 +39,18 @@ class Funcionario{
             const funcionario = await Funcionario.database.findById(id)
 
             if(!funcionario){
-                throw new DataError('Invalid ID', 404, 'Funcionário não encontrado')
+                return null
             }
 
-            return funcionario
+            return {
+                id: funcionario._id,
+                nome: funcionario.nome,
+                cpf: funcionario.cpf,
+                dataNascimento: funcionario.dataNascimento,
+                telefone: funcionario.telefone,
+                email: funcionario.email,
+                senha: funcionario.senha
+            }
         }catch(error){
             if(error.name !== 'Invalid ID'){
                 throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find por id de funcionário')
@@ -40,62 +60,16 @@ class Funcionario{
         }
     }
 
-    constructor(nome, cpf, dataNascimento, telefone, email, senha){
+    constructor(nome, cpf, dataNascimento, telefone, email, senha, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.nome = nome
         this.cpf = cpf
         this.dataNascimento = dataNascimento
         this.telefone = telefone
         this.email = email
         this.senha = senha
-        this.id = null
-    }
-
-    get nome(){
-        return this.nome
-    }
-
-    set nome(novoNome){
-        this.nome = novoNome
-    }
-
-    get cpf(){
-        return this.cpf
-    }
-
-    set cpf(novoCpf){
-        this.cpf = novoCpf
-    }
-
-    get dataNascimento(){
-        return this.dataNascimento
-    }
-
-    set dataNascimento(novaData){
-        this.dataNascimento = novaData
-    }
-
-    get telefone(){
-        return this.telefone
-    }
-
-    set telefone(novoTelefone){
-        this.telefone = novoTelefone
-    }
-
-    get email(){
-        return this.email
-    }
-
-    set email(novoEmail){
-        this.email = novoEmail
-    }
-
-    get senha(){
-        return this.senha
-    }
-
-    set senha(novaSenha){
-        this.senha = novaSenha
+        this.id = id
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
     }
 
     async create(){
