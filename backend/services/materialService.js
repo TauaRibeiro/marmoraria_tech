@@ -23,9 +23,9 @@ exports.getMaterial = async () => {
     try{
         const precos = await PrecoMaterial.findCurrentPrices()
         
-        return precos.map(async (preco) => {
+        const result = await Promise.all(precos.map(async (preco) => {
             const material = await Material.findById(preco.idMaterial)
-
+            
             return {
                 id: material.id,
                 idStatus: material.idStatus,
@@ -38,7 +38,9 @@ exports.getMaterial = async () => {
                 updatedAt: material.updatedAt,
                 createdAt: material.createdAt
             }
-        })
+        }))
+
+        return result
     }catch(error){
         throw error
     }

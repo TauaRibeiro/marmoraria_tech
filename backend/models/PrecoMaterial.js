@@ -75,22 +75,21 @@ class PrecoMaterial{
     static async findCurrentPrices(){
         try{
             const idsUnicos = await PrecoMaterial.database.distinct('idMaterial')
-            const precos = await PrecoMaterial.database.find().sort({dataAplicacao: -1})
+            const allPrecos = await PrecoMaterial.database.find().sort({dataAplicacao: -1})
             
-            const precosAtuais = idsUnicos.map((id) => {
-                let resultado = null
-    
-                for(let i = 0; i < allResults.length; i++){
-                    if(id.toString() === precos[i].idMaterial.toString()){
-                        resultado = allResults[i]
+            let precosAtuais = idsUnicos.map((id) => {
+                var result = null
+                for(let i = 0; i < allPrecos.length; i++){
+                    
+                    if(id.toString() === allPrecos[i].idMaterial.toString()){
+                        result =  allPrecos[i]
                         break
                     }
                 }
-                
-                return resultado
+
+                return result
             })
-            
-           
+
             return precosAtuais.map((preco) => {
                 return new PrecoMaterial(preco.idMaterial,
                     preco.valorMaterial,
