@@ -23,18 +23,17 @@ class Cliente{
             const resultado = await Cliente.database.find()
 
             return resultado.map((cliente) => {
-                return {
-                    id: cliente._id,
-                    idEndereco: cliente.idEndereco,
-                    nome: cliente.nome,
-                    email: cliente.email,
-                    dataNascimento: cliente.dataNascimento,
-                    telefone: cliente.telefone,
-                    cpf: cliente.cpf,
-                    cnpj: cliente.cnpj,
-                    createdAt: cliente.createdAt,
-                    updatedAt: cliente.updatedAt
-                }
+                return new Cliente(cliente.idEndereco,
+                    cliente.nome,
+                    cliente.email,
+                    cliente.dataNascimento,
+                    cliente.telefone,
+                    cliente.cpf,
+                    cliente.cnpj,
+                    cliente._id,
+                    cliente.createdAt,
+                    cliente.updatedAt
+                )
             })
         }catch(error){
             console.error('Erro ao fazer o find all de cliente: ', error)
@@ -50,18 +49,17 @@ class Cliente{
                 return null
             }
 
-            return {
-                id: cliente._id,
-                idEndereco: cliente.idEndereco,
-                nome: cliente.nome,
-                email: cliente.email,
-                dataNascimento: cliente.dataNascimento,
-                telefone: cliente.telefone,
-                cpf: cliente.cpf,
-                cnpj: cliente.cnpj,
-                createdAt: cliente.createdAt,
-                updatedAt: cliente.updatedAt
-            }
+            return new Cliente(cliente.idEndereco,
+                cliente.nome,
+                cliente.email,
+                cliente.dataNascimento,
+                cliente.telefone,
+                cliente.cpf,
+                cliente.cnpj,
+                cliente._id,
+                cliente.createdAt,
+                cliente.updatedAt
+            )
         }catch(error){
             console.log('Erro fazer o find by id de cliente: ', error)
             throw DataError('Internal Server Error', 500, 'Erro fazer o find by id de cliente')

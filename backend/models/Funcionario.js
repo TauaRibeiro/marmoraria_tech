@@ -18,15 +18,16 @@ class Funcionario{
             const resultado = await Funcionario.database.find()
 
             return resultado.map((funcionario) => {
-                return {
-                    id: funcionario._id,
-                    nome: funcionario.nome,
-                    cpf: funcionario.cpf,
-                    dataNascimento: funcionario.dataNascimento,
-                    telefone: funcionario.telefone,
-                    email: funcionario.email,
-                    senha: funcionario.senha
-                }
+                return new Funcionario(funcionario.nome,
+                    funcionario.cpf,
+                    funcionario.dataNascimento,
+                    funcionario.telefone,
+                    funcionario.email,
+                    funcionario.senha,
+                    funcionario._id,
+                    funcionario.createdAt,
+                    funcionario.updatedAt
+                )
             })
         }catch(error){
             console.error('Erro ao fazer o find all de funcionário: ', error)
@@ -42,15 +43,16 @@ class Funcionario{
                 return null
             }
 
-            return {
-                id: funcionario._id,
-                nome: funcionario.nome,
-                cpf: funcionario.cpf,
-                dataNascimento: funcionario.dataNascimento,
-                telefone: funcionario.telefone,
-                email: funcionario.email,
-                senha: funcionario.senha
-            }
+            return new Funcionario(funcionario.nome,
+                funcionario.cpf,
+                funcionario.dataNascimento,
+                funcionario.telefone,
+                funcionario.email,
+                funcionario.senha,
+                funcionario._id,
+                funcionario.createdAt,
+                funcionario.updatedAt
+            )
         }catch(error){
             if(error.name !== 'Invalid ID'){
                 throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find por id de funcionário')

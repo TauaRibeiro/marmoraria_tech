@@ -12,12 +12,7 @@ class Ambiente{
         try{
             const resultado = await Ambiente.database.find() 
             return resultado.map((ambiente) => {
-                return {
-                    id: ambiente._id,
-                    nome: ambiente.nome,
-                    createdAt: ambiente.createdAt,
-                    updatedAt: ambiente.updatedAt
-                }
+                return new Ambiente(ambiente.nome, ambiente._id, ambiente.createdAt, ambiente.updatedAt)
             })
         }catch(error){
             console.error('Erro ao fazer o findAll de Ambiente: ')
@@ -33,12 +28,7 @@ class Ambiente{
                 return null
             }
 
-            return {
-                id: ambiente._id,
-                nome: ambiente.nome,
-                createdAt: ambiente.createdAt,
-                updatedAt: ambiente.updatedAt
-            }
+            return new Ambiente(ambiente.nome, ambiente._id, ambiente.createdAt, ambiente.updatedAt)
         }catch(error){
             console.error('Erro ao encontrar por id ambiente: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao encontrar por id ambiente')

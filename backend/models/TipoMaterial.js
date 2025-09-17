@@ -10,7 +10,11 @@ class TipoMaterial{
 
     static async findAll(){
         try{
-            return await TipoMaterial.database.find()
+            const result = await TipoMaterial.database.find()
+
+            return result.map((tipo) => {
+                return new TipoMaterial(tipo.nome, tipo._id, tipo.createdAt, tipo.updatedAt)
+            })
         }catch(error){
             console.error('Erro ao fazer o find all de tipo material: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all de tipo material')
