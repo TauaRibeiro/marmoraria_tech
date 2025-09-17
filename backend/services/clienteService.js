@@ -1,251 +1,103 @@
 const Cliente = require('../models/Cliente')
-const validarId = require('../utils/validarIdMongoose')
-const validarData = require('../utils/parseData')
-const validarTelefone = require('../utils/validarTelefone')
-const enderecoService = require('../services/enderecoService')
-const validarEmail = require('../utils/validarEmail')
-const eNumerico = require('../utils/eNumerico')
-const serviceEndereco = require('../services/enderecoService')
+const DataError = require('../models/DataError')
 
 exports.getCliente = async () => {
     try{
-        const result = await Cliente.find()
+        const result = await Cliente.findAll()
 
-        return {status: 200, result}
+        return result.map((cliente) => {
+            return {
+                id: cliente.id,
+                idEndereco: cliente.idEndereco,
+                nome: cliente.nome,
+                email: cliente.email,
+                dataNascimento: cliente.dataNascimento,
+                telefone: cliente.telefone,
+                cpf: cliente.cpf,
+                cnpj: cliente.cnpj,
+                createdAt: cliente.createdAt,
+                updatedAt: cliente.updatedAt
+            }
+        })
     }catch(error){
-        console.error('Erro ao fazer o get de cliente', error)
-        
-        return {status: 500, message: "Erro ao fazer get de cliente"}
+        throw error
     }
 }
 
 exports.getClienteByID = async (id) => {
     try{
-        if(!validarId(id)){
-            return {status: 400, message: "Id inválido"}
+        const cliente = await Cliente.findById(id)
+
+        if(!cliente){
+            throw new DataError('Not Found', 404, 'Cliente não encontrado')
         }
 
-        const result = await Cliente.findById(id)
-
-        if(!result){
-            return {status: 404, message: "Cliente não encontrado"}
+        return {
+            id: cliente.id,
+            idEndereco: cliente.idEndereco,
+            nome: cliente.nome,
+            email: cliente.email,
+            dataNascimento: cliente.dataNascimento,
+            telefone: cliente.telefone,
+            cpf: cliente.cpf,
+            cnpj: cliente.cnpj,
+            createdAt: cliente.createdAt,
+            updatedAt: cliente.updatedAt
         }
-
-        return {status: 200, result}
     }catch(error){
-        console.error('Erro ao procurar cliente por id: ', error)
-
-        return {status: 500, message: "Erro ao procurar cliente por id"}
+        throw error
     }
 }
 
 exports.createCliente = async (data) => {
     try {
-        let {idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj} = data
-        
-        if(!idEndereco || !nome || !email || !dataNascimento || !telefone || (!cpf && !cnpj)){
-            return {status: 400, message: "Os campos de idEndereco, nome, email, dataNascimento, telefone, cpf e cnpj são obrigatórios"}
-        }
-        
-        if(!validarId(idEndereco.trim())){
-            return {status: 400, message: "Id de endereco inválido"}
-        }
-    
-        const resultadoService = await enderecoService.getEnderecoByID(idEndereco)
-    
-        if(resultadoService.status !== 200){
-            return {status: resultadoService.status, message: resultadoService.message}
-        }
+        const {idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj} = data
 
-        dataNascimento = validarData(dataNascimento)
-        
-        if(nome.trim().length === 0){
-            return {status: 400, message: "Nome inválido"}
-        }
-        
-        if(!dataNascimento){
-            return {status: 400, message: "Data de nascimento inválida"}
-        }
-    
-        if(!validarEmail(email)){
-            return {status: 400, message: "Email inválido"}
-        }
-    
-        if(!cpf && !cnpj){
-            return {status: 400, message: "Deve ser passado pelo meno o CPF ou o CNPJ do cliente"}
-        }
-    
-        if(cpf && (cpf.trim().length !== 11 || !eNumerico(cpf.trim()))){
-            return {status: 400, message: "CPF inválido"}
-        }
-    
-        if(cnpj && (cnpj.length !== 14 || !eNumerico(cnpj.trim()))){
-            return {status: 400, message: "CNPJ inválido"}
-        }
-    
-        if(!validarTelefone(telefone)){
-            return {status: 400, message: "Telefone inválido"}
-        }
+        const novoCliente = new Cliente(idEndereco, nome, email, dataNascimento, telefone,
+            cpf, cnpj)
 
-        await Cliente.create({
-            idEndereco: idEndereco.trim(), 
-            nome: nome.trim(), 
-            email: email.trim(), 
-            dataNascimento, 
-            telefone: telefone.trim(), 
-            cpf: (cpf) ? cpf.trim(): null, 
-            cnpj: (cnpj) ? cnpj.trim():null})
-
-        return {status: 201}
+        novoCliente.create()
     } catch (error) {
-        console.error('Erro ao criar cliente')
-        
-        if(error.codeName == 'DuplicateKey' || error.code === 11000){
-            let duplicata = await Cliente.findOne({email: data.email.trim()})
-
-            if(duplicata){
-                return {status: 400, message: "O email providenciado já pertence à um outro cliente"}
-            }
-
-            duplicata = await Cliente.findOne({telefone: data.telefone.trim()})
-
-            if(duplicata){
-                return {status: 400, message: "O telefone providenciado já pertence à um outro cliente"}
-            }
-
-            duplicata = await Cliente.findOne({cpf: data.cpf.trim()})
-
-            if(duplicata){
-                return {status: 400, message: "O CPF providenciado já pertence à um outro cliente"}
-            }
-
-            duplicata = await Cliente.findOne({cnpj: data.cnpj.trim()})
-
-            if(duplicata){
-                return {status: 400, message: "O CNPJ providenciado já pertence à um outro cliente"}
-            }
-            
-        }
-        
-        console.error(error)
-        return {status: 500, message: "Erro ao criar cliente"}
+        throw error
     }
     
 }
 
 exports.deleteCliente = async (id) => {
     try {
-        if(!validarId(id)){
-            return {status: 400, message: "Id inválido"}
+        const antigoCliente = await Cliente.findById(id)
+
+        if(!antigoCliente){
+            throw new DataError('Not Found', 404, 'Cliente não encontrado')
         }
 
-        const clienteDeletado = await Cliente.findByIdAndDelete(id)
-
-        if(!clienteDeletado){
-            return {status: 404, message: "Cliente não encontrado"}
-        }
-
-        return {status: 200}
+        await antigoCliente.delete()
     } catch (error) {
-        console.error('Erro ao deletar o cliente: ', error)
-        
-        return {status: 500, message: "Erro ao deletar o cliente"}
+        throw error
     }
         
 }
 
 exports.updateCliente = async (data) => {
     try {
-        if(!data.id || !data.idEndereco){
-            return {status: 400, message: "Id de endereço e do cliente são obrigatórios"}
+        const {id, idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj} = data
+
+        const cliente = await Cliente.findById(id)
+
+        if(!cliente){
+            throw new DataError('Not Found', 404, 'Cliente não encontrado')
         }
 
-        if(!validarId(data.id)){
-            return {status: 400, message: "Id de cliente inválido"}
-        }
-    
-        if(!validarId(data.idEndereco)){
-            return {status: 400, message: "Id de endereco inválido"}
-        }
-    
-        const resultadoService = await serviceEndereco.getEnderecoByID(data.idEndereco.trim())
-    
-        if(resultadoService.status !== 200){
-            return {status: resultadoService.status, message: resultadoService.message}
-        }
-    
-        var {id, idEndereco, nome, email, telefone, dataNascimento, cpf, cnpj} = data
-        
-        dataNascimento = validarData(dataNascimento)
-        if(!nome || !email || !telefone || (!cpf && !cnpj)){
-            return {status: 400, message: "Os campos de nome, email, telefone e (cpf ou cnpj) são obrigatórios"}
-        }
-        
-        if(nome.trim().length === 0){
-            return {status: 400, message: "Nome inválido"}
-        }
+        cliente.idEndereco = idEndereco
+        cliente.nome = nome
+        cliente.email = email
+        cliente.dataNascimento = dataNascimento
+        cliente.telefone = telefone
+        cliente.cpf = cpf
+        cliente.cnpj = cnpj
 
-        if(!dataNascimento){
-            return {status: 400, message: "Data de nascimento inválida"}
-        }
-    
-        if(!validarEmail(email)){
-            return {status: 400, message: "Email inválido"}
-        }
-    
-        if(cpf && (cpf.trim().length !== 11 || !eNumerico(cpf.trim()))){
-            return {status: 400, message: "CPF inválido"}
-        }
-    
-        if(cnpj && (cnpj.length !== 14 || !eNumerico(cnpj.trim()))){
-            return {status: 400, message: "CNPJ inválido"}
-        }
-    
-        if(!validarTelefone(telefone)){
-            return {status: 400, message: "Telefone inválido"}
-        }
-        
-        const clienteAtualizado = await Cliente.findByIdAndUpdate(id, {
-            idEndereco: idEndereco.trim(),
-            nome: nome.trim(),
-            dataNascimento,
-            email: email.trim(),
-            cpf: (cpf) ? cpf.trim() : null,
-            cnpj: (cnpj) ? cnpj.trim() : null,
-            telefone: telefone.trim()
-        })
-
-        if(!clienteAtualizado){
-            return {status: 404, message: "Cliente atualizado"}
-        }
-
-        return {status: 200}
+        cliente.update()
     } catch (error) {
-        if(error.code === 11000 || error.codeName === "DuplicateKey"){
-            let duplicata = await Cliente.findOne({email})
-
-            if(duplicata && duplicata._id != id){
-                return {status: 400, message: "Já existe um cliente com esse email"}
-            }
-
-            duplicata = await Cliente.findOne({telefone})
-
-            if(duplicata && duplicata._id != id){
-                return {status: 400, message: "Já existe um cliente com esse telefone"}
-            }
-
-            duplicata = await Cliente.findOne({cpf})
-
-            if(duplicata && duplicata._id != id){
-                return {status: 400, message: "Já existe um cliente com esse CPF"}
-            }
-
-            duplicata = await Cliente.findOne({cnpj})
-
-            if(duplicata && duplicata._id != id){
-                return {status: 400, message: "Já existe um cliente com esse CNPJ"}
-            }
-        }
-        console.error('Erro ao atualizar cliente: ', error)
+        throw error
     }
 }

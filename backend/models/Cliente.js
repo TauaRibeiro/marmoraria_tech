@@ -93,6 +93,31 @@ class Cliente{
 
             this.id = novoCliente._id
         }catch(error){
+            if(error.code === 11000){
+                let duplicata = await Cliente.database.findOne({email: this.email})
+
+                if(duplicata && duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Esse email já usado por um cliente')
+                }
+
+                duplicata = await Cliente.database.findOne({telefone: this.telefone})
+
+                if(duplicata && duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Esse telefone já usado por um cliente')
+                }
+
+                duplicata = await Cliente.database.findOne({cpf: this.cpf})
+
+                if(duplicata && duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Esse CPF já usado por um cliente')
+                }
+
+                duplicata = await Cliente.database.findOne({cnpj: this.cnpj})
+
+                if(duplicata && duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Esse CNPJ já usado por um cliente')
+                }
+            }
             console.error('Erro ao criar cliente no banco: ', error)
             throw new DataError('Internal Server Error', 400, 'Erro ao criar cliente no banco')
         }
@@ -100,7 +125,7 @@ class Cliente{
 
     async update(){
         try{
-            const clienteAtualizado = await Cliente.database.findByIdAndUpdate(this.id, {
+            await Cliente.database.findByIdAndUpdate(this.id, {
                 idEndereco: this.idEndereco,
                 nome: this.nome,
                 email: this.email,
@@ -109,32 +134,42 @@ class Cliente{
                 cpf: this.cpf,
                 cnpj: this.cnpj
             })
-
-            if(!clienteAtualizado){
-                throw new DataError('Invalid ID', 404, 'Cliente não encontrado')
-            }
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                throw new DataError('Internal Server Error', 500, 'Erro ao atualizar o cliente no banco')
-            }
+            if(error.code === 11000){
+                let duplicata = await Cliente.database.findOne({email: this.email})
 
-            throw error
+                if(duplicata && duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Esse email já usado por um cliente')
+                }
+
+                duplicata = await Cliente.database.findOne({telefone: this.telefone})
+
+                if(duplicata && duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Esse telefone já usado por um cliente')
+                }
+
+                duplicata = await Cliente.database.findOne({cpf: this.cpf})
+
+                if(duplicata && duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Esse CPF já usado por um cliente')
+                }
+
+                duplicata = await Cliente.database.findOne({cnpj: this.cnpj})
+
+                if(duplicata && duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Esse CNPJ já usado por um cliente')
+                }
+            }
+            console.error('Erro ao criar cliente no banco: ', error)
+            throw new DataError('Internal Server Error', 400, 'Erro ao criar cliente no banco')
         }
     }
 
     async delete(){
         try{
-            const clienteDeletado = await Cliente.database.findByIdAndDelete(this.id)
-
-            if(!clienteDeletado){
-                throw new DataError('Invalid ID', 404, 'Cliente não encontrado')
-            }
+            await Cliente.database.findByIdAndDelete(this.id)
         }catch(error){
-            if(error.name !== 'Invalid ID'){
-                throw new DataError('Internal Server Error', 500, 'Erro ao atualizar o cliente no banco')
-            }
-
-            throw error
+            throw new DataError('Internal Server Error', 500, 'Erro ao atualizar o cliente no banco')
         }
     }
 }
