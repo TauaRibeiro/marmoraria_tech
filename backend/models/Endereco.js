@@ -38,7 +38,7 @@ class Endereco{
 
     static async findById(id){
         try{
-            const endereco = await Endereco.findById(id)
+            const endereco = await Endereco.database.findById(id)
 
             if(!endereco){
                 return null
@@ -55,7 +55,9 @@ class Endereco{
                 createdAt: endereco.createdAt,
                 updatedAt: endereco.updatedAt
             }
-        }catch(error){}
+        }catch(error){
+            throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find by id de endereço')
+        }
     }
 
     constructor(cep, cidade, rua, numero, bairro, complemento){

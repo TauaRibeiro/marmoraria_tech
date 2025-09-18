@@ -1,4 +1,6 @@
 const Cliente = require('../models/Cliente')
+const Orcamento = require('../models/Orcamento')
+const Endereco = require('../models/Endereco')
 const DataError = require('../models/DataError')
 
 exports.getCliente = async () => {
@@ -53,10 +55,16 @@ exports.createCliente = async (data) => {
     try {
         const {idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj} = data
 
+        const endereco = await Endereco.findById(idEndereco)
+
+        if(!endereco){
+            throw new DataError('Not Found', 404, 'Endereço não encontrado')
+        }
+
         const novoCliente = new Cliente(idEndereco, nome, email, dataNascimento, telefone,
             cpf, cnpj)
 
-        novoCliente.create()
+        await novoCliente.create()
     } catch (error) {
         throw error
     }
@@ -69,6 +77,12 @@ exports.deleteCliente = async (id) => {
 
         if(!antigoCliente){
             throw new DataError('Not Found', 404, 'Cliente não encontrado')
+        }
+
+        const orcamento = await Orcamento.findManyBy({idCliente: id})
+
+        if(orcamento.length !== 0){
+            throw new DataError('Relacional Error', 400, 'Existe pelo menos 1 orçamento que tem dados cliente')
         }
 
         await antigoCliente.delete()
@@ -96,7 +110,7 @@ exports.updateCliente = async (data) => {
         cliente.cpf = cpf
         cliente.cnpj = cnpj
 
-        cliente.update()
+        await cliente.update()
     } catch (error) {
         throw error
     }

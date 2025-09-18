@@ -35,7 +35,7 @@ exports.create = async (req, res) => {
     try{
         let {idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj} = req.body
 
-        if(!idEndereco || !nome || !email || !dataNascimento || !telefone || !cpf || !cnpj){
+        if(!idEndereco || !nome || !email || !dataNascimento || !telefone || (!cpf && !cnpj)){
             return res.status(400).json({name: "Paremeter Error", message: "Os parâmetros idEndereco, nome, email, dataNascimento, telefone e cpf ou cnpj são obrigatórios "})
         }
         
@@ -48,8 +48,8 @@ exports.create = async (req, res) => {
         email = email.trim()
         dataNascimento = parseData(dataNascimento.trim())
         telefone = telefone.trim()
-        cpf = cpf.trim()
-        cnpj = cnpj.trim()
+        cpf = (cpf) ? cpf.trim() : null
+        cnpj = (cnpj) ? cnpj.trim() : null
         
 
         if(!validarId(idEndereco)){
@@ -64,11 +64,20 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Email inválido"})
         }
 
-        if(dataNascimento >= Date.now() || Date.now() - dataNascimento >= 100){
+        const dataAtual = new Date()
+        let idade = new Date().getFullYear() - dataNascimento.getFullYear()
+
+        if(dataAtual.getMonth() === dataNascimento.getMonth() && dataAtual.getDate() < dataNascimento.getDate()){
+            idade = --idade
+        }else if(dataAtual.getMonth() === dataNascimento.getMonth()){
+            idade = --idade
+        }
+        
+        if(idade >= 100){
             return res.status(400).json({name: "Validation Error", message: "Data de nascimento inválida"})
         }
 
-        if(Date.now() - dataNascimento < 18){
+        if(idade < 18){
             return res.status(400).json({name: "Validation Error", message: "Cliente é menor de idade"})
         }
         
@@ -81,7 +90,7 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: "Validaion Error", message: "CPF inválido"})
         }
 
-        if(cnpj && (cnpj.length !== 11)){
+        if(cnpj && (cnpj.length !== 14)){
             return res.status(400).json({name: "Validation Error", message: "CNPJ inválido"})
         }
 
@@ -131,8 +140,8 @@ exports.update = async (req, res) => {
         email = email.trim()
         dataNascimento = parseData(dataNascimento.trim())
         telefone = telefone.trim()
-        cpf = cpf.trim()
-        cnpj = cnpj.trim()
+        cpf = (cpf) ? cpf.trim() : null
+        cnpj = (cnpj) ? cnpj.trim() : null
         
 
         if(!validarId(idEndereco)){
@@ -147,11 +156,20 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Email inválido"})
         }
 
-        if(dataNascimento >= Date.now() || Date.now() - dataNascimento >= 100){
+        const dataAtual = new Date()
+        let idade = new Date().getFullYear() - dataNascimento.getFullYear()
+
+        if(dataAtual.getMonth() === dataNascimento.getMonth() && dataAtual.getDate() < dataNascimento.getDate()){
+            idade = --idade
+        }else if(dataAtual.getMonth() === dataNascimento.getMonth()){
+            idade = --idade
+        }
+        
+        if(idade >= 100){
             return res.status(400).json({name: "Validation Error", message: "Data de nascimento inválida"})
         }
 
-        if(Date.now() - dataNascimento < 18){
+        if(idade < 18){
             return res.status(400).json({name: "Validation Error", message: "Cliente é menor de idade"})
         }
         
@@ -164,11 +182,13 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Validaion Error", message: "CPF inválido"})
         }
 
-        if(cnpj && (cnpj.length !== 11)){
+        if(cnpj && (cnpj.length !== 14)){
             return res.status(400).json({name: "Validation Error", message: "CNPJ inválido"})
         }
 
         await clienteService.updateCliente({id, idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj})
+
+        return res.sendStatus(200)
    }catch(error){
         return res.status(error.status).json({name: error.name, message: error.message})
    }
