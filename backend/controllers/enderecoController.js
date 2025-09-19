@@ -1,51 +1,73 @@
 const enderecoService = require('../services/enderecoService')
+const eNumerio = require('../utils/eNumerico')
 
 exports.create = async (req, res) => {
-    const resultService = await enderecoService.criarEndereco(req.body)
+    try{
+        let {cep, cidade, rua, numero, bairro, complemento} = req.body
 
-    if(resultService.status == 201){
-        return res.sendStatus(201)
+        if(!cep ||!cidade ||!rua || !numero || !bairro){
+            return res.status('Parameter Error', 400, 'Os parâmetros de cep, cidade, rua, numero e bairro são obrigatórios')
+        }
+
+        cep = (typeof(cep) === 'string') ? cep.trim().replace(',', '.') : cep.toString()
+        cidade = cidade.trim()
+        rua = rua.trim()
+        bairro = bairro.trim()
+        numero = (typeof(numero) === 'string') ? numero.trim() : numero.toString()
+        if(complemento === undefined){
+            complemento = null
+        }else if(complemento !== null){
+            complemento = complemento.trim()
+        }
+
+        if(cep.length === 0 || !eNumerio(cep) || cep.indexOf('.') !== -1){
+            return res.status(400).json({name: "Validation Error", message: "CEP inválido"})
+        }
+
+        if(cidade.length === 0){
+            return res.status(400).json({name: "Validation Error", message: "Cidade inválida"})
+        }
+
+        if(rua.length === 0){
+            return res.status(400).json({name: "Validation Error", message: "Rua inválida"})
+        }
+
+        if(numero.length === 0 || !eNumerio(numero) || numero.indexOf('.') !== -1){
+            return res.status(400).json({name: "Validation Error", message: "Número inválido"})
+        }
+
+        if(complemento && complemento.length === 0){
+            return res.status(200).json({name: "Validation Error", message: "Complemento inválido"})
+        }
+
+        const result = await enderecoService.criarEndereco({cep, cidade, rua, numero, bairro, complemento})
+        
+        return res.status(201).json({result})
+    }catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-    
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.getAll = async (_, res) => {
-    const resultService = await enderecoService.getEndereco()
-
-    if(resultService.status == 200){
-        return res.status(200).json({result: resultService.result})
+    try{}catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.getById = async (req, res) => {
-    const resultService = await enderecoService.getEnderecoByID(req.params.id)
-
-    if(resultService.status == 200){
-        return res.status(200).json({result: resultService.result})
+    try{}catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.update = async (req, res) => {
-    const resultService = await enderecoService.updateEndereco(req.params.id, req.body)
-
-    if(resultService.status == 200){
-        return res.sendStatus(200)
+    try{}catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.delete = async (req, res) => {
-    const resultService = await enderecoService.deleteEndereco(req.params.id)
-
-    if(resultService.status == 200){
-        return res.sendStatus(200)
+    try{}catch(error){
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
