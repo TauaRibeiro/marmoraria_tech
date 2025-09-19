@@ -1,142 +1,67 @@
+const DataError = require('../models/DataError')
 const Endereco = require('../models/Endereco')
-const eNumerico = require('../utils/eNumerico')
-const validarId = require('../utils/validarIdMongoose')
 
 exports.criarEndereco = async (enderecoData) => {
     try{
-        var { cep, cidade, rua, numero, bairro, complemento } = enderecoData
-    
-        if(!cep || !cidade || !rua || !numero || !bairro){
-            return {status: 400, message: "Dados de cep, cidade, rua, número e bairro são obrigatórios"}
-        }
-        
-        cidade = cidade.trim()
-        cep = cep.trim()
-        rua = rua.trim()
-        bairro = bairro.trim()
-        complemento = (complemento) ? complemento.trim() : null
-        
-        if(cidade.length === 0){
-            return {status: 400, message: "Cidade inválida"}
-        }
-        if(cep.length != 8 || !eNumerico(cep)){
-            return {status: 400, message: "CEP inválido"}
-        }
-        
-        if(bairro.length == 0 || rua.length == 0){
-            return {status: 400, message: "Rua ou bairro inválido(os)"}
-        }
-        
-        if(!eNumerico(numero)){
-            return {status: 400, message: "Número do endereço inválido"}
-        }
-        
-        const result = await Endereco.create({cep, cidade, rua, numero, bairro, complemento})
+        const {cep, cidade, rua, numero, bairro, complemento} = enderecoData
 
-        return {status: 201, result}
+        const novoEndereco = new Endereco(cep, cidade, rua, numero, bairro, complemento)
+
+        await novoEndereco.create()
+
+        return JSON.parse(JSON.stringify(novoEndereco))
     }catch(error){
-        if(error.codeName == 'DuplicateKey' || error.code === 11000){
-            return {status: 400, message: "Já existe um endereço com esse CEP"}
-        }
-        console.error(`Erro ao criar o endereço: `, error)
-        return {status: 500, message: "Erro ao criar endereço"}
+        throw error
     }
 }
 
 exports.getEndereco = async () => {
     try{
-        return {status: 200, result: await Endereco.find()}
+        const result = await Endereco.findAll()
+
+        return result.map((endereco) => {
+            return JSON.parse(JSON.stringify(endereco))
+            
+        })
     }catch(error){
-        console.error('Erro ao pegar os dados de endereço: ', error)
-        return {status: 500, message: "Erro ao pegar os dados de endereço"}
+        throw error
     }
 }
 
 exports.getEnderecoByID = async (id) => {
     try {
-        if(!id){
-            return {status: 400, message: "Id é obrigatório"}
+        const endereco = await Endereco.findById(id)
+
+        if(!endereco){
+            throw new DataError('Not Found', 404, 'Endereço não encontrado')
         }
 
-        if(!validarId(id)){
-            return {status: 400, message: "Id inválido"}
-        }
-
-        const result = await Endereco.findById(id.trim())
-
-        if(!result){
-            return {status: 404, message: `O endereço não foi encontrado`}
-        }
-
-        return {status: 200, result}
+        return JSON.parse(JSON.stringify(endereco))
     } catch (error) {
-        console.error(`Erro ao tentar encontrar endereço de id ${id}: `, error)
-        return {status: 500, message: `Erro ao tentar encontrar endereço de id ${id}: `}
+        throw error
     }
 }
 
 exports.updateEndereco = async (id, data) => {
     try {
-        if(!id){
-            return {status: 400, message: "Id é obrigatório"}
+        const endereco = await Endereco.findById(id)
+
+        if(!endereco){
+            throw new DataError('Not Found', 404, 'Endereço não encontrado')
         }
 
-        if(!validarId(id)){
-            return {status: 400, message: "Id inválido"}
-        }
-        
-        const antigoEndereco = await Endereco.findById(id.trim())
-        
-        if(!antigoEndereco){
-            return {status: 404, message: "Endereço não encontrado"}
-        }
-        
-        var {cep, cidade, rua, numero, bairro, complemento} = data
-        
-        if(!cep || !cidade || !numero || !rua || !bairro){
-            return {status: 400, message: "É os campos cep, cidade, rua, numero e bairro são obrigatórios"}
-        }
-        
-        if(cep.length != 8 || !eNumerico(cep.trim())){
-            return {status: 400, message:"CEP inválido"}
-        }
-    
-        if(cidade.trim().length == 0){
-            return {status: 400, message: "Cidade inválida"}
-        }
-    
-        if(rua.trim().length == 0){
-            return {status: 400, message: "Rua inválida"}
-        }
-    
+        const {cep, cidade, rua, numero, bairro, complemento} = enderecoData
 
-        if(!eNumerico(numero)){
-            return {status: 400, message: "Número inválido"}
-        }
+        endereco.cep = cep
+        endereco.cidade = cidade
+        endereco.rua = rua
+        endereco.numero = numero
+        endereco.bairro = bairro
+        endereco.complemento = complemento
 
-        numero = parseInt(numero.trim())
-        
-    
-        if(bairro.trim().length == 0){
-            return {status: 400, message: "Bairro inválido"}
-        }
-        
-        if(complemento !== undefined && complemento.trim().length == 0){
-            complemento = null
-        }else if(!complemento){
-            complemento = antigoEndereco.complemento 
-        }
+        await endereco.update()
 
-        await Endereco.findByIdAndUpdate(id, {
-            cep: cep.trim(),
-            cidade: cidade.trim(),
-            rua: rua.trim(),
-            numero,
-            bairro: bairro.trim(),
-            complemento
-        })
-
-        return {status: 200}
+        return JSON.parse(JSON.stringify(endereco))
     } catch (error) {
         if(error.codeName == 'DuplicateKey' || error.code === 11000){
             return {status: 400, message: "Já existe um endereço com este CEP"}
@@ -152,23 +77,14 @@ exports.updateEndereco = async (id, data) => {
 
 exports.deleteEndereco = async (id) => {
     try {
-        if(!id){
-            return {status: 400, message: "Id é obrigatório"}
+        const endereco = await Endereco.findById(id)
+
+        if(!endereco){
+            throw new DataError('Not Found', 404, 'Endereço não encontrado')
         }
 
-        if(!validarId(id)){
-            return {status: 400, message: "Id inválido"}
-        }
-
-        const enderecoAntigo = await Endereco.findByIdAndDelete(id.trim())
-
-        if(!enderecoAntigo){
-            return {status: 404, message: "Endereço não encontrado"}
-        }
-
-        return {status: 200}
+        await endereco.delete()
     } catch (error) {
-        console.error(`Erro ao deletar endereço de id ${id}`)
-        return {status: 500, message: "Erro ao deletar endereco"}
+        throw error
     }
 }

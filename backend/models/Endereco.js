@@ -43,30 +43,31 @@ class Endereco{
                 return null
             }
 
-            return {
-                id: endereco._id,
-                cep: endereco.cep,
-                cidade: endereco.cidade,
-                rua: endereco.rua,
-                numero: endereco.numero,
-                bairro: endereco.bairro,
-                complemento: endereco.complemento,
-                createdAt: endereco.createdAt,
-                updatedAt: endereco.updatedAt
-            }
+            return new Endereco(endereco.cep,
+                endereco.cidade,
+                endereco.rua,
+                endereco.numero,
+                endereco.bairro,
+                endereco.complemento,
+                endereco._id,
+                endereco.createdAt,
+                endereco.updatedAt
+            )
         }catch(error){
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find by id de endereço')
         }
     }
 
-    constructor(cep, cidade, rua, numero, bairro, complemento, id= null, createdAt= new Date(), updatedAt= new Date()){
+    constructor(cep, cidade, rua, numero, bairro, complemento, id= null, createdAt= null, updatedAt= null){
         this.cep = cep
         this.cidade = cidade
         this.rua = rua
         this.numero = numero
         this.bairro = bairro
         this.complemento = complemento
-        this.id = null
+        this.id = id
+        this.createdAt = createdAt
+        this.updatedAt = updatedAt
     }
 
     async create(){
@@ -81,6 +82,8 @@ class Endereco{
             })
 
             this.id = novoEndereco._id
+            this.createdAt = new Date()
+            this.updatedAt = new Date()
         }catch(error){
             if(error.code === 11000){
                 throw new DataError('Validation Error', 400, 'Já existe um endereço com este CEP')
@@ -101,6 +104,8 @@ class Endereco{
                 bairro: this.bairro,
                 complemento: this.complemento
             })
+
+            this.updatedAt = new Date()
         }catch(error){
             if(error.code === 11000){
                 throw new DataError('Validation Error', 400, 'Já existe um endereço com este CEP')
