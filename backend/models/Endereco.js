@@ -18,17 +18,16 @@ class Endereco{
             const resultado = await Endereco.database.find()
 
             return resultado.map((endereco) => {
-                return {
-                    id: endereco._id,
-                    cep: endereco.cep,
-                    cidade: endereco.cidade,
-                    rua: endereco.rua,
-                    numero: endereco.numero,
-                    bairro: endereco.bairro,
-                    complemento: endereco.complemento,
-                    createdAt: endereco.createdAt,
-                    updatedAt: endereco.updatedAt
-                }
+                return new Endereco(endereco.cep,
+                    endereco.cidade,
+                    endereco.rua,
+                    endereco.numero,
+                    endereco.bairro,
+                    endereco.complemento,
+                    endereco._id,
+                    endereco.createdAt,
+                    endereco.updatedAt
+                )
             })
         }catch(error){
             console.error('Erro ao fazer o find all de endereço: ', error)
@@ -60,7 +59,7 @@ class Endereco{
         }
     }
 
-    constructor(cep, cidade, rua, numero, bairro, complemento){
+    constructor(cep, cidade, rua, numero, bairro, complemento, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.cep = cep
         this.cidade = cidade
         this.rua = rua
