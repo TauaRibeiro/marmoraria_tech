@@ -50,7 +50,7 @@ exports.updateEndereco = async (id, data) => {
             throw new DataError('Not Found', 404, 'Endereço não encontrado')
         }
 
-        const {cep, cidade, rua, numero, bairro, complemento} = enderecoData
+        const {cep, cidade, rua, numero, bairro, complemento} = data
 
         endereco.cep = cep
         endereco.cidade = cidade
@@ -63,14 +63,7 @@ exports.updateEndereco = async (id, data) => {
 
         return JSON.parse(JSON.stringify(endereco))
     } catch (error) {
-        if(error.codeName == 'DuplicateKey' || error.code === 11000){
-            return {status: 400, message: "Já existe um endereço com este CEP"}
-        }
-        
-        console.error("Erro ao atualizar o endereço:")
-        console.error(error)
-
-        return {status: 500, message: 'Erro ao atualizar o endereço'}
+        throw error
     }
 
 }

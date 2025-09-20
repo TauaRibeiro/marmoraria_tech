@@ -37,6 +37,7 @@ class Endereco{
 
     static async findById(id){
         try{
+            console.log(id)
             const endereco = await Endereco.database.findById(id)
 
             if(!endereco){
@@ -54,6 +55,7 @@ class Endereco{
                 endereco.updatedAt
             )
         }catch(error){
+            console.log(error)
             throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find by id de endereço')
         }
     }
