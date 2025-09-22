@@ -37,7 +37,6 @@ class Endereco{
 
     static async findById(id){
         try{
-            console.log(id)
             const endereco = await Endereco.database.findById(id)
 
             if(!endereco){
