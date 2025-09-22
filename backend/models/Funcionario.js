@@ -7,7 +7,8 @@ const funcionarioSchema = new database.Schema({
     dataNascimento: {type:Date, required: true},
     telefone: {type:String, requied: true, unique: true},
     email: {type: String, required: true, unique: true},
-    senha: {type:String, required: true}
+    senha: {type:String, required: true},
+    eADM: {type: Boolean, required: true}
 });
 
 class Funcionario{
@@ -26,7 +27,8 @@ class Funcionario{
                     funcionario.senha,
                     funcionario._id,
                     funcionario.createdAt,
-                    funcionario.updatedAt
+                    funcionario.updatedAt,
+                    funcionario.eADM
                 )
             })
         }catch(error){
@@ -51,7 +53,8 @@ class Funcionario{
                 funcionario.senha,
                 funcionario._id,
                 funcionario.createdAt,
-                funcionario.updatedAt
+                funcionario.updatedAt,
+                funcionario.eADM
             )
         }catch(error){
             if(error.name !== 'Invalid ID'){
@@ -62,7 +65,7 @@ class Funcionario{
         }
     }
 
-    constructor(nome, cpf, dataNascimento, telefone, email, senha, id= null, createdAt= new Date(), updatedAt= new Date()){
+    constructor(nome, cpf, dataNascimento, telefone, email, senha, eADM, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.nome = nome
         this.cpf = cpf
         this.dataNascimento = dataNascimento
@@ -72,6 +75,7 @@ class Funcionario{
         this.id = id
         this.createdAt = createdAt
         this.updatedAt = updatedAt
+        this.eADM = eADM
     }
 
     async create(){
@@ -82,11 +86,31 @@ class Funcionario{
                 dataNascimento: this.dataNascimento,
                 telefone: this.telefone,
                 email: this.email,
-                senha: this.senha
+                senha: this.senha,
+                eADM: this.eADM
             })
 
             this.id = novoFuncionario._id
         }catch(error){
+            if(error.code === 11000){
+                let duplicata = await Funcionario.database.findOne({cpf: this.cpf})
+
+                if(duplicata){
+                    throw new DataError('Validation Error', 400, 'Já existe um funcionario com este CPF')
+                }
+
+                duplicata = await Funcionario.database.findOne({telefone: this.telefone}) 
+
+                if(duplicata){
+                    throw new DataError('Validation Error', 400, 'Já existe um funcionario com este telefone')
+                }
+                
+                duplicata = await Funcionario.database.findOne({email: this.email}) 
+
+                if(duplicata){
+                    throw new DataError('Validation Error', 400, 'Já existe um funcionario com este email')
+                }
+            }
             console.error('Erro ao criar funcionario no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao criar funcionario no banco')
         }
@@ -100,9 +124,29 @@ class Funcionario{
                 dataNascimento: this.dataNascimento,
                 telefone: this.telefone,
                 email: this.email,
-                senha: this.senha
+                senha: this.senha,
+                eADM: this.eADM
             })
         }catch(error){
+            if(error.code === 11000){
+                let duplicata = await Funcionario.database.findOne({cpf: this.cpf})
+
+                if(duplicata &&  duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Já existe um funcionario com este CPF')
+                }
+
+                duplicata = await Funcionario.database.findOne({telefone: this.telefone}) 
+
+                if(duplicata &&  duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Já existe um funcionario com este telefone')
+                }
+                
+                duplicata = await Funcionario.database.findOne({email: this.email}) 
+
+                if(duplicata && duplicata._id !== this.id){
+                    throw new DataError('Validation Error', 400, 'Já existe um funcionario com este email')
+                }
+            }
             console.error('Erro ao atualizar funcionario no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao atualizar funcionario no banco')
         }
