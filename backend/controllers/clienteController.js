@@ -63,23 +63,6 @@ exports.create = async (req, res) => {
         if(!validarEmail(email)){
             return res.status(400).json({name: "Validation Error", message: "Email inválido"})
         }
-
-        const dataAtual = new Date()
-        let idade = new Date().getFullYear() - dataNascimento.getFullYear()
-
-        if(dataAtual.getMonth() === dataNascimento.getMonth() && dataAtual.getDate() < dataNascimento.getDate()){
-            idade = --idade
-        }else if(dataAtual.getMonth() === dataNascimento.getMonth()){
-            idade = --idade
-        }
-        
-        if(idade >= 100){
-            return res.status(400).json({name: "Validation Error", message: "Data de nascimento inválida"})
-        }
-
-        if(idade < 18){
-            return res.status(400).json({name: "Validation Error", message: "Cliente é menor de idade"})
-        }
         
         if(!validarTelefone(telefone)){
             return res.status(400).json({name: "Validation Error", message: "Telefone inválido"})
@@ -156,23 +139,6 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Email inválido"})
         }
 
-        const dataAtual = new Date()
-        let idade = new Date().getFullYear() - dataNascimento.getFullYear()
-
-        if(dataAtual.getMonth() === dataNascimento.getMonth() && dataAtual.getDate() < dataNascimento.getDate()){
-            idade = --idade
-        }else if(dataAtual.getMonth() === dataNascimento.getMonth()){
-            idade = --idade
-        }
-        
-        if(idade >= 100){
-            return res.status(400).json({name: "Validation Error", message: "Data de nascimento inválida"})
-        }
-
-        if(idade < 18){
-            return res.status(400).json({name: "Validation Error", message: "Cliente é menor de idade"})
-        }
-        
         if(!validarTelefone(telefone)){
             return res.status(400).json({name: "Validation Error", message: "Telefone inválido"})
         }
