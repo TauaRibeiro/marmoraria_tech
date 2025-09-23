@@ -14,6 +14,29 @@ const funcionarioSchema = new database.Schema({
 class Funcionario{
     static database = database.model('Funcionario', funcionarioSchema)
 
+    static async findBy(filtro){
+        try{
+            const resultado = await Funcionario.database.find(filtro)
+
+            return resultado.map((funcionario) => {
+                return new Funcionario(funcionario.nome,
+                    funcionario.cpf,
+                    funcionario.dataNascimento,
+                    funcionario.telefone,
+                    funcionario.email,
+                    funcionario.senha,
+                    funcionario._id,
+                    funcionario.createdAt,
+                    funcionario.updatedAt,
+                    funcionario.eADM
+                )
+            })
+        }catch(error){
+            console.error('Erro ao fazer o find all de funcionário: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find all de funcionário')
+        }
+    }
+    
     static async findAll(){
         try{
             const resultado = await Funcionario.database.find()
