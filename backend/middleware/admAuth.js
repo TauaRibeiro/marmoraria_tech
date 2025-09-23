@@ -3,7 +3,7 @@ const Funcionario = require('../models/Funcionario')
 
 const SECRET = process.env.SECRET
 
-function autenticarToken(req, res, next) {
+function autenticarAdm(req, res, next){
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
 
@@ -14,7 +14,7 @@ function autenticarToken(req, res, next) {
 
         const funcionario = await Funcionario.findById(usuario.id)
 
-        if(!funcionario){
+        if(!funcionario || !funcionario.eADM){
             return res.sendStatus(403)
         }
 
@@ -25,4 +25,4 @@ function autenticarToken(req, res, next) {
 
 }
 
-module.exports = autenticarToken;
+module.exports = autenticarAdm
