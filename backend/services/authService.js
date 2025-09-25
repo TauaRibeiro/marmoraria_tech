@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
-const Funcionario = require('../models/Funcionario')
 const SECRET = process.env.SECRET
+const DataError = require('../models/DataError')
+const Funcionario = require('../models/Funcionario')
 
 exports.login = async (data) => {
     try{
@@ -16,6 +17,6 @@ exports.login = async (data) => {
 
         return token
     }catch(error){
-        console.error("Erro ao fazer login do usuario: ", error)
+        throw error
     }
 }
