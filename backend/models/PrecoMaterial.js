@@ -72,15 +72,15 @@ class PrecoMaterial{
         }
     }
 
-    static async findCurrentPrices(){
+    static async findCurrentPrices(filtro= null){
         try{
             const idsUnicos = await PrecoMaterial.database.distinct('idMaterial')
-            const allPrecos = await PrecoMaterial.database.find().sort({dataAplicacao: -1})
+            const allPrecos =  (filtro) ? await PrecoMaterial.database.find(filtro).sort({dataAplicacao: -1}) : await PrecoMaterial.database.find().sort({dataAplicacao: -1})
             
             let precosAtuais = idsUnicos.map((id) => {
                 var result = null
                 for(let i = 0; i < allPrecos.length; i++){
-                    
+
                     if(id.toString() === allPrecos[i].idMaterial.toString()){
                         result =  allPrecos[i]
                         break
