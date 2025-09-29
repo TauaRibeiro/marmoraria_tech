@@ -173,20 +173,15 @@ exports.updateOrcamento = async (data) => {
 
 exports.deleteOrcamento = async (id) => {
     try{
-        if(!validarId(id)){
-            return {status: 400, message: 'Message id inválido'}
-        }
-    
-        const orcamentoDeletado = await Orcamento.findByIdAndDelete(id)
-    
-        if(!orcamentoDeletado){
-            return {status: 404, message: 'Orcamento não encontrado'}
+        const orcamento = await Orcamento.findById(id)
+
+        if(!orcamento){
+            throw new DataError('Not Found', 404, 'Orcamento não encontrado')
         }
 
-        return {status: 200}
+        await ItemOrcamento.deleteManyBy({idOrcamento: id})
+        await orcamento.delete()
     }catch(error){
-        console.error('Erro ao deletar o orçamento: ', error)
-
-        return {status: 500, message: 'Erro ao deletar o orçamento'}
+        throw error
     }
 }
