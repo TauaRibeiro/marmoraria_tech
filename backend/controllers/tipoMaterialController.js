@@ -52,9 +52,9 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
 
-        await service.criarTipoMaterial(nome)
+        const result = await service.criarTipoMaterial(nome)
 
-        return res.sendStatus(201)
+        return res.status(201).json({result})
     }catch(error){
         if(!error.status){
             console.error(error)
@@ -84,9 +84,9 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Nome invalido"})
         }
 
-        await service.updateTipoMaterial(id, nome)
+        const result = await service.updateTipoMaterial(id, nome)
 
-        return res.sendStatus(200)
+        return res.status(200).json({result})
     }catch(error){
         if(!error.status){
             console.error(error)

@@ -87,9 +87,9 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "CNPJ inválido"})
         }
 
-        await clienteService.createCliente({idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj})
+        const result = await clienteService.createCliente({idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj})
 
-        return res.sendStatus(201)
+        return res.status(201).json({result})
     }catch(error){
         if(!error.status){
             console.error(error)
@@ -172,9 +172,9 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "CNPJ inválido"})
         }
 
-        await clienteService.updateCliente({id, idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj})
+        const result = await clienteService.updateCliente({id, idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj})
 
-        return res.sendStatus(200)
+        return res.status(200).json({result})
    }catch(error){
         if(!error.status){
             console.error(error)

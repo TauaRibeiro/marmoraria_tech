@@ -80,9 +80,9 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
 
-        await serviceMaterial.createMaterial({idStatus, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial})
+        const result = await serviceMaterial.createMaterial({idStatus, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial})
 
-        return res.sendStatus(201)
+        return res.status(201).json({result})
     }catch(error){
         if(!error.status){
             console.error(error)
@@ -160,9 +160,9 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
 
-        await serviceMaterial.createMaterial({id, idStatus, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial})
+        const result = await serviceMaterial.createMaterial({id, idStatus, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial})
 
-        return res.sendStatus(200)
+        return res.status(200).json({result})
     }catch(error){
         if(!error.status){
             console.error(error)

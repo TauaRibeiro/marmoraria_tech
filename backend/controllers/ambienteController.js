@@ -55,9 +55,9 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
 
-        await ambienteService.criarAmbiente(nome)
+        const result = await ambienteService.criarAmbiente(nome)
 
-        return res.sendStatus(201)
+        return res.status(201).json({result})
     }catch(error){
         if(!error.status){
             console.error(error)
@@ -87,9 +87,9 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
 
-        await ambienteService.updateAmbiente(id, nome)
+        const result = await ambienteService.updateAmbiente(id, nome)
 
-        return res.sendStatus(200)
+        return res.status(200).json({result})
     }catch(error){
         if(!error.status){
             console.error(error)
