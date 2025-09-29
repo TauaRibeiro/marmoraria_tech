@@ -2,7 +2,8 @@ const DataError = require('./DataError')
 const database = require('mongoose')
 
 const statusSchema = new database.Schema({
-    nome: {type: String, required: true, unique: true}
+    nome: {type: String, required: true, unique: true},
+    eMutavel: {type: Boolean, required: true}
 }, { timestamps: true});
 
 class Status{
@@ -13,7 +14,7 @@ class Status{
             const resultadoBanco = await Status.database.find()
 
             return resultadoBanco.map((status) => {
-                return new Status(status.nome, status.id, status.createdAt, status.updatedAt)
+                return new Status(status.nome, status.id, status.eMutavel, status.createdAt, status.updatedAt)
             })
         }catch(error){
             console.error('Erro ao fazer o find all de status: ', error)
@@ -29,7 +30,7 @@ class Status{
                 return null
             }
 
-            return new Status(resultado.nome, resultado.id, resultado.createdAt, resultado.updatedAt)
+            return new Status(resultado.nome, resultado.id, resultado.eMutavel, resultado.createdAt, resultado.updatedAt)
         }catch(error){
             if(error.name !== 'Invalid Id'){
                 console.log('Erro ao fazer o find by id de status: ', error)
@@ -40,16 +41,17 @@ class Status{
         }
     }
 
-    constructor(nome, id= null, createdAt= new Date(), updatedAt= new Date() ){
+    constructor(nome, eMutavel, id= null, createdAt= new Date(), updatedAt= new Date() ){
         this.nome = nome
         this.id = id
+        this.eMutavel = eMutavel
         this.createdAt = createdAt
         this.updatedAt = updatedAt
     }
 
     async create(){
         try{
-            const novoStatus = await Status.database.create({nome: this.nome})
+            const novoStatus = await Status.database.create({nome: this.nome, eMutavel: this.eMutavel})
 
             this.id = novoStatus._id
         }catch(error){
@@ -63,7 +65,7 @@ class Status{
 
     async update(){
         try{
-            await Status.database.findByIdAndUpdate(this.id, {nome: this.nome})
+            await Status.database.findByIdAndUpdate(this.id, {nome: this.nome, eMutavel: this.eMutavel})
             this.updatedAt = new Date()
         }catch(error){
             console.error('Erro ao atualizar status no banco: ', error)
