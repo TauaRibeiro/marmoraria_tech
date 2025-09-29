@@ -1,5 +1,6 @@
 const statusService = require('../services/statusService')
 const validarIdMongoose = require('../utils/validarIdMongoose')
+const eNumerico = require('../utils/eNumerico')
 
 exports.getAll = async (_, res) => {
     try{
@@ -39,20 +40,26 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try{
-        let nome = req.body.nome
-
-        if(!nome){
-            return res.status(400).json({name: "Parameter Error", message: "Nome é obrigatório"})
+        let {nome, eMutavel} = req.body
+        
+        if(!nome || !eMutavel){
+            return res.status(400).json({name: "Parameter Error", message: "Nome e eMutável são obrigatórios"})
         }
 
         nome = nome.trim()
-        
+        eMutavel = (typeof(eMutavel) === 'number') ? eMutavel.toString() : eMutavel.trim()
+
         if(nome.length === 0){
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
 
-        await statusService.criarStatus(nome)
-        return res.sendStatus(201)
+        if(!eNumerico(eMutavel) || eMutavel != '1' || eMutavel != '0'){
+            return res.status(400).json({name: "Validation Error", message: "Valor de eMutavel inválido"})
+        }
+
+        const result = await statusService.criarStatus(nome, eMutavel)
+
+        return res.status(201).json({result})
     }catch(error){
         if(!error.status){
             console.error(error)
@@ -66,23 +73,28 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
     try{
         const id = req.params.id.trim()
-        let nome = req.body.nome
+        let {nome, eMutavel} = req.body
     
         if(!validarIdMongoose(id)){
             return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
         }
-
-        if(!nome){
-            return res.status(400).json({name: "Parameter Error", message: "Nome é obrigatório"})
-        }  
+        
+        if(!nome || !eMutavel){
+            return res.status(400).json({name: "Parameter Error", message: "Nome e eMutável são obrigatórios"})
+        }
 
         nome = nome.trim()
-    
+        eMutavel = (typeof(eMutavel) === 'number') ? eMutavel.toString() : eMutavel.trim()
+
         if(nome.length === 0){
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
+
+        if(!eNumerico(eMutavel) || eMutavel != '1' || eMutavel != '0'){
+            return res.status(400).json({name: "Validation Error", message: "Valor de eMutavel inválido"})
+        }
     
-        await statusService.updateStatus(id, nome)
+        await statusService.updateStatus(id, nome, eMutavel)
     
         return res.sendStatus(200)
     }catch(error){

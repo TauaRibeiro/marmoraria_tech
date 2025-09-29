@@ -71,10 +71,15 @@ exports.deleteStatus = async (id) => {
 
         if(process.env[status.nome.toUpperCase().replace(' ', '_')]){
             throw new DataError('Validation error', 400, 'Não é possível deletar um status padrão')
+        }  
+
+        if((await Material.findManyBy({idStatus: id}))){
+            throw new DataError('Dependecy Error', 400, 'Existe pelo menos um material que utiliza esse status')
         }
 
-        await Material.updateManyBy({idStatus: status.id}, {idStatus: process.env.STATUS_DELETADO})
-        await Orcamento.updateManyBy({idStatus: status.id}, {idStatus: process.env.STATUS_DELETADO})
+        if((await Orcamento.findManyBy({idStatus: id}))){
+            throw new DataError('Dependecy Error', 400, 'Existe pelo menos um orçamento que utiliza esse status')
+        }
 
         await status.delete()
     }catch(error){
