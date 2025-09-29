@@ -57,6 +57,8 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Valor de eMutavel inválido"})
         }
 
+        eMutavel = (eMutavel == '1') ? true : false
+
         const result = await statusService.criarStatus(nome, eMutavel)
 
         return res.status(201).json({result})
@@ -93,6 +95,8 @@ exports.update = async (req, res) => {
         if(!eNumerico(eMutavel) || eMutavel != '1' || eMutavel != '0'){
             return res.status(400).json({name: "Validation Error", message: "Valor de eMutavel inválido"})
         }
+
+        eMutavel = (eMutavel == '1') ? true : false
     
         await statusService.updateStatus(id, nome, eMutavel)
     
