@@ -7,6 +7,8 @@ exports.criarAmbiente = async (nome) => {
         const novoAmbiente = new Ambiente(nome)
 
         await novoAmbiente.create()
+
+        return JSON.parse(JSON.stringify(novoAmbiente))
     }catch(error){
         throw error
     }
@@ -17,12 +19,7 @@ exports.getAmbiente = async () => {
         const result = await Ambiente.findAll()
 
         return result.map((ambiente) => {
-            return {
-                id: ambiente.id,
-                nome: ambiente.nome,
-                createdAt: ambiente.createdAt,
-                updatedAt: ambiente.updatedAt
-            }
+            return JSON.parse(JSON.stringify(ambiente))
         })
     }catch(error){
         throw error
@@ -37,12 +34,7 @@ exports.getAmbienteByID = async (id) => {
             throw new DataError('Not Found', 404, 'Ambiente não encontrado')
         }
 
-        return {
-            id: ambiente.id,
-            nome: ambiente.nome,
-            createdAt: ambiente.createdAt,
-            updatedAt: ambiente.updatedAt
-        }
+        return JSON.parse(JSON.stringify(novoAmbiente))
     }catch(error){
         throw error
     }
@@ -59,6 +51,8 @@ exports.updateAmbiente = async (id, novoNome) => {
         ambiente.nome = novoNome
 
         await ambiente.update()
+
+        return JSON.parse(JSON.stringify(ambiente))
     } catch (error) {
         throw error
     }

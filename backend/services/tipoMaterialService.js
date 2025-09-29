@@ -7,6 +7,8 @@ exports.criarTipoMaterial = async (nome) => {
         const novoTipo = new TipoMaterial(nome)
 
         await novoTipo.create()
+
+        return JSON.parse(JSON.stringify(novoTipo)) 
     }catch(error){
         throw error
     }
@@ -17,12 +19,7 @@ exports.getTipoMaterial = async () => {
         const result = await TipoMaterial.findAll();
 
         return result.map((tipo) => {
-            return {
-                id: tipo.id,
-                nome: tipo.nome,
-                createdAt: tipo.createdAt,
-                updatedAt: tipo.updatedAt
-            }
+            return JSON.parse(JSON.stringify(tipo))
         })
     }catch(error){
         throw error
@@ -37,7 +34,7 @@ exports.getTipoMaterialByID = async (id) => {
             throw new DataError('Not Found', 404, 'Tipo de material não encotrado')
         }
 
-        return {id: result.id, nome: result.nome, createdAt: result.createdAt, updatedAt: result.updatedAt}
+        return JSON.parse(JSON.stringify(result))
     }catch(error){
         throw error
     }
@@ -54,6 +51,8 @@ exports.updateTipoMaterial = async (id, novoNome) => {
         tipo.nome = novoNome
 
         await tipo.update()
+
+        return JSON.parse(JSON.stringify(tipo))
     } catch (error) {
         throw error
     }

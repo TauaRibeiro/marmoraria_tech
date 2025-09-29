@@ -21,9 +21,13 @@ exports.createMaterial = async (data) => {
         
         await novoMaterial.create()
 
+        const jsonMaterial = JSON.parse(JSON.stringify(novoMaterial))
+
         const novoPreco = new PrecoMaterial(novoMaterial.id, valorMaterial, (dataAplicacao) ? dataAplicacao: new Date())
 
         await novoPreco.create()
+
+        return {...jsonMaterial, valorMaterial: novoPreco.valorMaterial}
     }catch(error){
         throw error
     }
@@ -105,7 +109,7 @@ exports.deleteMaterial = async (id) => {
 
 exports.updateMaterial = async (data) => {
     try {
-        const{ id, idTipo, idStatus, nome, estoqueMin, estoqueMax, estoque, valorMaterial } = data
+        const{ id, idTipo, idStatus, nome, preco, estoqueMin, estoqueMax, estoque, valorMaterial } = data
 
         const material = await Material.findById(id)
 
@@ -121,7 +125,7 @@ exports.updateMaterial = async (data) => {
             throw new DataError('Not Found', 404, 'Tipo não encontrado')
         }
         
-        const precos = await PrecoMaterial.findCurrentPrices()
+        let precoMaterial = await PrecoMaterial.findCurrentPrices({idMaterial: id})[0]
 
         material.idTipo = idTipo
         material.idStatus = idStatus
@@ -129,17 +133,23 @@ exports.updateMaterial = async (data) => {
         material.estoqueMin = estoqueMin
         material.estoqueMax = estoqueMax
         material.estoque = estoque
+        
+        if(precoMaterial.valorMaterial !== preco){
+            const novoPreco = new PrecoMaterial(id, valorMaterial, new Date())
 
-        material.update()
+            await novoPreco.create()
 
-        precos.map(async (preco) => {
-            if(preco.idMaterial === id && preco.valorMaterial !== preco){
-                const novoPreco = new PrecoMaterial(id, valorMaterial, new Date())
+            precoMaterial = JSON.parse(JSON.stringify(novoPreco))
+        }else{
+            precoMaterial = JSON.parse(JSON.stringify(precoMaterial))
+        }
 
-                await novoPreco.create()
-                return
-            }
-        })
+        await material.update()
+
+
+        const jsonMaterial = JSON.parse(JSON.stringify(material))
+
+        return {...jsonMaterial, valorMaterial: precoMaterial.valorMaterial}
     }catch(error) {
        throw error 
     }

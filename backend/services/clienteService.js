@@ -8,18 +8,7 @@ exports.getCliente = async () => {
         const result = await Cliente.findAll()
 
         return result.map((cliente) => {
-            return {
-                id: cliente.id,
-                idEndereco: cliente.idEndereco,
-                nome: cliente.nome,
-                email: cliente.email,
-                dataNascimento: cliente.dataNascimento,
-                telefone: cliente.telefone,
-                cpf: cliente.cpf,
-                cnpj: cliente.cnpj,
-                createdAt: cliente.createdAt,
-                updatedAt: cliente.updatedAt
-            }
+            return JSON.parse(JSON.stringify(cliente))
         })
     }catch(error){
         throw error
@@ -34,18 +23,7 @@ exports.getClienteByID = async (id) => {
             throw new DataError('Not Found', 404, 'Cliente não encontrado')
         }
 
-        return {
-            id: cliente.id,
-            idEndereco: cliente.idEndereco,
-            nome: cliente.nome,
-            email: cliente.email,
-            dataNascimento: cliente.dataNascimento,
-            telefone: cliente.telefone,
-            cpf: cliente.cpf,
-            cnpj: cliente.cnpj,
-            createdAt: cliente.createdAt,
-            updatedAt: cliente.updatedAt
-        }
+        return JSON.parse(JSON.stringify(cliente))
     }catch(error){
         throw error
     }
@@ -65,6 +43,8 @@ exports.createCliente = async (data) => {
             cpf, cnpj)
 
         await novoCliente.create()
+
+        return JSON.parse(JSON.stringify(novoCliente))
     } catch (error) {
         throw error
     }
@@ -111,6 +91,8 @@ exports.updateCliente = async (data) => {
         cliente.cnpj = cnpj
 
         await cliente.update()
+
+        return JSON.parse(JSON.stringify(cliente))
     } catch (error) {
         throw error
     }
