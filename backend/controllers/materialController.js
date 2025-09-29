@@ -8,6 +8,11 @@ exports.getAll = async (_, res) => {
 
         return res.status(200).json({result})
     }catch(error){
+        if(!error.status){
+            console.error(error)
+            return res.status(500).json({name: "Uncaugth Error", message: "Erro interno não tratado"})
+        }
+
         return res.status(error.status).json({name: error.name, message: error.message})
     }
 }
@@ -24,6 +29,11 @@ exports.getById = async (req, res) => {
 
         return res.status(200).json({result})
     }catch(error){
+        if(!error.status){
+            console.error(error)
+            return res.status(500).json({name: "Uncaugth Error", message: "Erro interno não tratado"})
+        }
+
         return res.status(error.status).json({name: error.name, message: error.message})
     }
 }
@@ -74,6 +84,11 @@ exports.create = async (req, res) => {
 
         return res.sendStatus(201)
     }catch(error){
+        if(!error.status){
+            console.error(error)
+            return res.status(500).json({name: "Uncaugth Error", message: "Erro interno não tratado"})
+        }
+
         return res.status(error.status).json({name: error.name, message: error.message})
     }
 }
@@ -90,7 +105,12 @@ exports.delete = async (req, res) => {
 
         return res.sendStatus(200)
     }catch(error){
-        return res.status(error.status).json({name: error.status, message: error.message})
+        if(!error.status){
+            console.error(error)
+            return res.status(500).json({name: "Uncaugth Error", message: "Erro interno não tratado"})
+        }
+
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
 }
 
@@ -144,6 +164,11 @@ exports.update = async (req, res) => {
 
         return res.sendStatus(200)
     }catch(error){
+        if(!error.status){
+            console.error(error)
+            return res.status(500).json({name: "Uncaugth Error", message: "Erro interno não tratado"})
+        }
+
         return res.status(error.status).json({name: error.name, message: error.message})
     }
 }
