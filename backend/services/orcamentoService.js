@@ -13,12 +13,15 @@ exports.createOrcamento = async (data) => {
     try {
         let {idCliente, idStatus, valorFrete, valorInstalacao, itens} = data
         let valorPagamento = 0
+        const cliente = await Cliente.findById(idCliente)
         
-        if(!(await Cliente.findById(idCliente))){
+        if(!cliente){
             throw new DataError('Not Found', 404, 'Cliente não encontrado')
         }
 
-        if(!(await Status.findById(idStatus))){
+        const status = await Status.findById(idStatus)
+        
+        if(!status){
             throw new DataError('Not Found', 404, 'Status não encontrado')
         }
 
@@ -27,12 +30,16 @@ exports.createOrcamento = async (data) => {
 
         itens = itens.map(async (item) => {
             const { idAmbiente, idMaterial, quantidadeItem, comprimentoItem, larguraItem } = item
-
-            if(!(await Ambiente.findById(idAmbiente))){
+            
+            const ambiente = await Ambiente.findById(idAmbiente)
+            
+            if(!ambiente){
                 throw new DataError('Not Found', 404, 'Ambiente não encontrado')
             }
 
-            if(!(await Material.findById(idMaterial))){
+            const material = await Material.findById(idMaterial)
+            
+            if(!material){
                 throw new DataError('Not Found', 404, 'Material não encontrado')
             }
 
@@ -43,16 +50,27 @@ exports.createOrcamento = async (data) => {
 
             valorPagamento += comprimentoItem*larguraItem*preco.valorMaterial*quantidadeItem
 
-            return JSON.parse(JSON.stringify(novoItem))
+            return {
+                ambiente: ambiente.nome,
+                material: material.nome,
+                valorMaterial: preco.valorMaterial,
+                quantidadeItem,
+                comprimentoItem,
+                larguraItem,
+                subTotal: comprimentoItem*larguraItem*preco.valorMaterial*quantidadeItem
+            }
         })
 
         novoOrcamento.valorPagamento = valorPagamento
         await novoOrcamento.update()
-        
-        const jsonOrcamento = JSON.parse(JSON.stringify(novoOrcamento))
 
-        return {...jsonOrcamento, 
+        return {
+            cliente: cliente.nome,
+            status: status.nome, 
             itens, 
+            valorPagamento,
+            valorFrete,
+            valorInstalacao,
             valorTotal: novoOrcamento.valorPagamento + novoOrcamento.valorFrete + novoOrcamento.valorInstalacao
         }
     } catch (error) {
@@ -66,16 +84,36 @@ exports.getOrcamento = async () => {
         const itens = orcamentos.map(async (orcamento) => {
             const resultado = await ItemOrcamento.findManyBy({idOrcamento: orcamento.id})
 
-            return resultado.map((item) => JSON.parse(JSON.stringify(item)))
+            return resultado.map(async (item) => {
+                const ambiente = await Ambiente.findById(item.idAmbiente)
+                const material = await Material.findById(item.idMaterial)
+                const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: item.idMaterial}))[0]
+                
+                return {
+                    ambiente: ambiente.nome,
+                    material: material.nome,
+                    valorMaterial: preco.valorMaterial,
+                    quantidadeItem: item.quantidadeItem,
+                    comprimentoItem: item.comprimentoItem,
+                    larguraItem: item.larguraItem,
+                    subTotal: item.comprimentoItem*item.larguraItem*preco.valorMaterial*item.quantidadeItem
+                }
+            })
         })
 
         const result = []
 
         for(let i = 0; i < orcamentos.length; i++){
-            const jsonOrcamento = JSON.parse(JSON.stringify(orcamentos[i]))
+            const cliente = await Cliente.findById(orcamentos[i].idCliente)
+            const status = await Status.findById(orcamentos[i].idStatus)
 
-            result.push({...jsonOrcamento, 
-                itens: itens[i], 
+            result.push({
+                cliente: cliente.nome,
+                status: status.nome, 
+                itens, 
+                valorPagamento: orcamentos[i].valorPagamento,
+                valorFrete: orcamentos[i].valorFrete,
+                valorInstalacao: orcamentos[i].valorInstalacao,
                 valorTotal: orcamentos[i].valorPagamento + orcamentos[i].valorFrete + orcamentos[i].valorInstalacao
             })
         }
@@ -96,14 +134,32 @@ exports.getOrcamentoById = async (id) => {
 
         let itens = await ItemOrcamento.findManyBy({idOrcamento: orcamento.id})
 
-        itens = itens.map((item) => {
-            return JSON.parse(JSON.stringify(item))
+        itens = itens.map(async (item) => {
+            const ambiente = await Ambiente.findById(item.idAmbiente)
+            const material = await Material.findById(item.idMaterial)
+            const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: item.idMaterial}))[0]
+            
+            return {
+                ambiente: ambiente.nome,
+                material: material.nome,
+                valorMaterial: preco.valorMaterial,
+                quantidadeItem: item.quantidadeItem,
+                comprimentoItem: item.comprimentoItem,
+                larguraItem: item.larguraItem,
+                subTotal: item.comprimentoItem*item.larguraItem*preco.valorMaterial*item.quantidadeItem
+            }
         })
 
-        orcamento = JSON.parse(JSON.stringify(orcamento))
+        const cliente = await Cliente.findById(orcamentos[i].idCliente)
+        const status = await Status.findById(orcamentos[i].idStatus)
         
-        return {...orcamento, 
+        return {
+            cliente: cliente.nome,
+            status: status.nome, 
             itens,
+            valorPagamento: orcamento.valorPagamento,
+            valorFrete: orcamento.valorFrete,
+            valorInstalacao: orcamento.valorInstalacao,
             valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + orcamento.valorPagamento
         }
     }catch(error){
@@ -119,6 +175,9 @@ exports.updateOrcamento = async (data) => {
         if(!orcamento){
             throw new DataError('Not Found', 404, 'Orçamento não encontrado')
         }
+
+        const cliente = await Cliente.findById(idCliente)
+        const status = await Status.findById(idStatus)
 
         let novoValor = 0
 
@@ -160,10 +219,27 @@ exports.updateOrcamento = async (data) => {
         orcamento.valorFrete = valorFrete
         orcamento.valorInstalacao = valorInstalacao
 
-        const jsonOrcamento = JSON.parse(JSON.stringify(orcamento))
-
-        return {...jsonOrcamento, 
-            itens: itens.map((item) => JSON.parse(JSON.stringify(item))),
+        return {
+            cliente: cliente.nome,
+            status: status.nome, 
+            itens: itens.map(async (item) => {
+                const ambiente = await Ambiente.findById(item.idAmbiente)
+                const material = await Material.findById(item.idMaterial)
+                const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: item.idMaterial}))[0]
+                
+                return {
+                    ambiente: ambiente.nome,
+                    material: material.nome,
+                    valorMaterial: preco.valorMaterial,
+                    quantidadeItem: item.quantidadeItem,
+                    comprimentoItem: item.comprimentoItem,
+                    larguraItem: item.larguraItem,
+                    subTotal: item.comprimentoItem*item.larguraItem*preco.valorMaterial*item.quantidadeItem
+                }
+            }),
+            valorPagamento: orcamento.valorPagamento,
+            valorFrete: orcamento.valorFrete,
+            valorInstalacao: orcamento.valorInstalacao,
             valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + orcamento.valorPagamento
         }
     }catch(error){
