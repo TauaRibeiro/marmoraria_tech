@@ -66,6 +66,29 @@ class Cliente{
         }
     }
 
+    static async findManyBy(filtro){
+        try{
+            const resultado = await Cliente.database.find(filtro)
+
+            return resultado.map((cliente) => {
+                return new Cliente(cliente.idEndereco,
+                    cliente.nome,
+                    cliente.email,
+                    cliente.dataNascimento,
+                    cliente.telefone,
+                    cliente.cpf,
+                    cliente.cnpj,
+                    cliente._id,
+                    cliente.createdAt,
+                    cliente.updatedAt
+                )
+            })
+        }catch(error){
+            console.error('Erro ao fazer o find all de cliente: ', error)
+            throw new DataError('Internal Server Error', 500, 'Erro ao fazer o find many by de cliente')
+        }
+    }
+
     constructor(idEndereco, nome, email, dataNascimento, telefone, cpf, cnpj, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.idEndereco = idEndereco,
         this.nome = nome,
