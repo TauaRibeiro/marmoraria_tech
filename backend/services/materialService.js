@@ -7,27 +7,45 @@ const DataError = require('../models/DataError')
 
 exports.createMaterial = async (data) => {
     try{
-        const { idTipo, idStatus, nome, valorMaterial, estoqueMin, estoqueMax, estoque, dataAplicacao } = data
-
-        if(!(await Status.findById(idStatus))){
-            throw new DataError('Not Found', 404, 'Status não encontrado')
-        }
-
-        if(!(await TipoMaterial.findById(idTipo))){
+        const { idTipo, nome, valorMaterial, estoqueMin, estoqueMax, estoque, dataAplicacao } = data
+        const tipo = await TipoMaterial.findById(idTipo)
+        
+        if(!tipo){
             throw new DataError('Not Found', 404, 'Tipo não encontrado')
         }
+
+        let idStatus
+
+        if(estoque >= estoqueMax){
+            idStatus = process.env.ESTOQUE_CHEIO
+        }else if(estoque < estoqueMin){
+            idStatus = process.env.ESTOQUE_BAIXO
+        }else{
+            idStatus = process.env.OK
+        }
+
+        const status = await Status.findById(idStatus)
         
         const novoMaterial = new Material(idTipo, idStatus, nome, estoqueMin, estoqueMax, estoque)
         
         await novoMaterial.create()
 
-        const jsonMaterial = JSON.parse(JSON.stringify(novoMaterial))
-
         const novoPreco = new PrecoMaterial(novoMaterial.id, valorMaterial, (dataAplicacao) ? dataAplicacao: new Date())
 
         await novoPreco.create()
 
-        return {...jsonMaterial, valorMaterial: novoPreco.valorMaterial}
+        return {
+            id: novoMaterial.id,
+            tipo: tipo.nome,
+            idStatus: status.nome,
+            nome,
+            estoque,
+            estoqueMin,
+            estoqueMax,
+            valorMaterial: novoPreco.valorMaterial,
+            createdAt: novoMaterial.createdAt,
+            updatedAt: novoMaterial.updatedAt,
+        }
     }catch(error){
         throw error
     }
@@ -39,18 +57,21 @@ exports.getMaterial = async () => {
         
         const result = await Promise.all(precos.map(async (preco) => {
             const material = await Material.findById(preco.idMaterial)
-            
+            const tipo = await TipoMaterial.findById(material.idTipo)
+            const status = await Status.findById(material.idStatus)
+            const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: material.id}))[0]
+
             return {
                 id: material.id,
-                idStatus: material.idStatus,
-                idTipo: material.idTipo,
+                tipo: tipo.nome,
+                idStatus: status.nome,
                 nome: material.nome,
-                valorMaterial: preco.valorMaterial,
+                estoque: material.estoque,
                 estoqueMin: material.estoqueMin,
                 estoqueMax: material.estoqueMax,
-                estoque: material.estoque,
+                valorMaterial: preco.valorMaterial,
+                createdAt: material.createdAt,
                 updatedAt: material.updatedAt,
-                createdAt: material.createdAt
             }
         }))
 
@@ -62,24 +83,27 @@ exports.getMaterial = async () => {
 
 exports.getMaterialById = async (id) => {
     try{
-        const preco = (await PrecoMaterial.findManyBy({idMaterial: id}))[0]
+        const material = await Material.findById(preco.idMaterial)
 
-        if(!preco){
-            throw new DataError('Search Error', 404, 'Material não encontrado')
+        if(!material){
+            throw new DataError('Not Found', 404, 'Material não encontrado')
         }
 
-        const material = await Material.findById(id)
+        const tipo = await TipoMaterial.findById(material.idTipo)
+        const status = await Status.findById(material.idStatus)
+        const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: material.id}))[0]
 
         return {
-            id,
-            idStatus: material.idStatus,
-            idTipo: material.idTipo,
+            id: material.id,
+            tipo: tipo.nome,
+            idStatus: status.nome,
             nome: material.nome,
-            valorMaterial: preco.valorMaterial,
+            estoque: material.estoque,
             estoqueMin: material.estoqueMin,
-            esotqueMax: material.estoqueMax,
+            estoqueMax: material.estoqueMax,
+            valorMaterial: preco.valorMaterial,
             createdAt: material.createdAt,
-            updatedAt: material.updatedAt
+            updatedAt: material.updatedAt,
         }
     }catch(error){
         throw error
@@ -97,7 +121,7 @@ exports.deleteMaterial = async (id) => {
         const orcamentos = await ItemOrcamento.findManyBy({idMaterial: id})
 
         if(orcamentos.length !== 0){
-            throw new DataError('Relacional Error', 400, 'Existe pelo menos um orçamento que usa este material')
+            throw new DataError('Dependecy Error', 400, 'Existe pelo menos um orçamento que usa este material')
         }
 
         await material.delete()
@@ -109,7 +133,7 @@ exports.deleteMaterial = async (id) => {
 
 exports.updateMaterial = async (data) => {
     try {
-        const{ id, idTipo, idStatus, nome, preco, estoqueMin, estoqueMax, estoque, valorMaterial } = data
+        const{ id, idTipo, nome, preco, estoqueMin, estoqueMax, estoque, valorMaterial } = data
 
         const material = await Material.findById(id)
 
@@ -117,18 +141,15 @@ exports.updateMaterial = async (data) => {
             throw new DataError('Not Found', 404, 'Material não encontrado')
         }
 
-        if(!(await Status.findById(idStatus))){
-            throw new DataError('Not Found', 404, 'Status não encontrado')
-        }
-
-        if(!(await TipoMaterial.findById(idTipo))){
+        const tipo = await TipoMaterial.findById(idTipo)
+        
+        if(!tipo){
             throw new DataError('Not Found', 404, 'Tipo não encontrado')
         }
         
         let precoMaterial = await PrecoMaterial.findCurrentPrices({idMaterial: id})[0]
 
         material.idTipo = idTipo
-        material.idStatus = idStatus
         material.nome = nome
         material.estoqueMin = estoqueMin
         material.estoqueMax = estoqueMax
@@ -139,17 +160,33 @@ exports.updateMaterial = async (data) => {
 
             await novoPreco.create()
 
-            precoMaterial = JSON.parse(JSON.stringify(novoPreco))
-        }else{
-            precoMaterial = JSON.parse(JSON.stringify(precoMaterial))
+            precoMaterial = novoPreco
         }
+
+        if(estoque >= estoqueMax){
+            material.idStatus = process.env.ESTOQUE_CHEIO
+        }else if(estoque < estoqueMin){
+            material.idStatus = process.env.ESTOQUE_BAIXO
+        }else{
+            material.idStatus = process.env.OK
+        }
+
+        const status = await Status.findById(material.idStatus)
 
         await material.update()
 
-
-        const jsonMaterial = JSON.parse(JSON.stringify(material))
-
-        return {...jsonMaterial, valorMaterial: precoMaterial.valorMaterial}
+        return{
+            id: material.id,
+            tipo: tipo.nome,
+            status: status.nome,
+            nome: material.nome,
+            estoque: material.estoque,
+            estoqueMin: material.estoqueMin,
+            estoqueMax: material.estoqueMax,
+            valorMaterial: precoMaterial.valorMaterial,
+            createdAt: material.createdAt,
+            updatedAt: material.updatedAt,
+        }
     }catch(error) {
        throw error 
     }

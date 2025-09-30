@@ -40,9 +40,9 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
     try{
-        let { idStatus, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial } = req.body
+        let { idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial } = req.body
         
-        if(!idStatus || !idTipo || !nome || !estoqueMin || !estoqueMax || !estoque || !valorMaterial){
+        if(!idTipo || !nome || !estoqueMin || !estoqueMax || !estoque || !valorMaterial){
             if(estoque !== 0 && estoqueMax !== 0 && estoqueMin !== 0){
                 return res.status(400).json({name: "Parameter Error", message: "Os campos idStatus, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial."})
             }
@@ -52,7 +52,6 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: "Type Error", message: "O estoqueMin, estoqueMax, estoque e valorMaterial devem ser do tipo numérico"})
         }
     
-        idStatus = idStatus.trim()
         idTipo = idTipo.trim()
         nome = nome.trim()
         estoqueMin = (typeof(estoqueMin) === 'string') ? parseInt(estoqueMin.trim()) : estoqueMin.toFixed(0)
@@ -60,10 +59,6 @@ exports.create = async (req, res) => {
         estoque = (typeof(estoque) === 'string') ? parseInt(estoque.trim()) : estoque.toFixed(0)
         valorMaterial = (typeof(valorMaterial) === 'string') ? parseFloat(valorMaterial.trim()).toFixed(2) : valorMaterial.toFixed(2)
         
-        if(!validarIdMongoose(idStatus)){
-            return res.status(400).json({name: "Invalid Id", message: "Id de status inválido"})
-        }
-
         if(!validarIdMongoose(idTipo)){
             return res.status(400).json({name: "Invalid Id", message: "Id de tipo inválido"})
         }
@@ -80,7 +75,7 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
 
-        const result = await serviceMaterial.createMaterial({idStatus, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial})
+        const result = await serviceMaterial.createMaterial({idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial})
 
         return res.status(201).json({result})
     }catch(error){
@@ -122,9 +117,9 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Invalid Id", message: 'Id de material inválido'})
         }
 
-        let { idStatus, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial } = req.body
+        let {idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial } = req.body
     
-        if(!idStatus || !idTipo || !nome || !estoqueMin || !estoqueMax || !estoque || !valorMaterial){
+        if(!idTipo || !nome || !estoqueMin || !estoqueMax || !estoque || !valorMaterial){
             return res.status(400).json({name: "Parameter Error", message: "Os campos idStatus, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial."})
         }
     
@@ -132,17 +127,12 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Type Error", message: "O estoqueMin, estoqueMax, estoque e valorMaterial devem ser do tipo numérico"})
         }
     
-        idStatus = idStatus.trim()
         idTipo = idTipo.trim()
         nome = nome.trim()
         estoqueMin = (typeof(estoqueMin) === 'string') ? parseInt(estoqueMin.trim()) : estoqueMin.toFixed(0)
         estoqueMax = (typeof(estoqueMax) === 'string') ? parseInt(estoqueMax.trim()) : estoqueMax.toFixed(0)
         estoque = (typeof(estoque) === 'string') ? parseInt(estoque.trim()) : estoque.toFixed(0)
         valorMaterial = (typeof(valorMaterial) === 'string') ? parseFloat(valorMaterial.trim()).toFixed(2) : valorMaterial.toFixed(2)
-        
-        if(!validarIdMongoose(idStatus)){
-            return res.status(400).json({name: "Invalid Id", message: "Id de status inválido"})
-        }
 
         if(!validarIdMongoose(idTipo)){
             return res.status(400).json({name: "Invalid Id", message: "Id de tipo inválido"})
@@ -160,7 +150,7 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
 
-        const result = await serviceMaterial.createMaterial({id, idStatus, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial})
+        const result = await serviceMaterial.createMaterial({id, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial})
 
         return res.status(200).json({result})
     }catch(error){
