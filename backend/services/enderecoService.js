@@ -1,5 +1,6 @@
 const DataError = require('../models/DataError')
 const Endereco = require('../models/Endereco')
+const Cliente = require('../models/Cliente')
 
 exports.criarEndereco = async (enderecoData) => {
     try{
@@ -74,6 +75,10 @@ exports.deleteEndereco = async (id) => {
 
         if(!endereco){
             throw new DataError('Not Found', 404, 'Endereço não encontrado')
+        }
+
+        if((await(Cliente.findManyBy({idEndereco: id})))){
+            throw new DataError('Dependecy Error', 400, 'Existe pelo menos um cliente que usa este endereço')
         }
 
         await endereco.delete()

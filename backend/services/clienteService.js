@@ -7,8 +7,18 @@ exports.getCliente = async () => {
     try{
         const result = await Cliente.findAll()
 
-        return result.map((cliente) => {
-            return JSON.parse(JSON.stringify(cliente))
+        return result.map(async (cliente) => {
+            const endereco = await Endereco.findById(cliente.idEndereco)
+
+            return {
+                id: cliente.id,
+                nome: cliente.email,
+                dataNascimento: cliente.dataNascimento,
+                telefone: cliente.telefone,
+                cpf: cliente.cpf,
+                cnpj: cliente.cnpj,
+                endereco: JSON.parse(JSON.stringify(endereco))
+            }
         })
     }catch(error){
         throw error
@@ -23,7 +33,17 @@ exports.getClienteByID = async (id) => {
             throw new DataError('Not Found', 404, 'Cliente não encontrado')
         }
 
-        return JSON.parse(JSON.stringify(cliente))
+        const endereco = await Endereco.findById(cliente.idEndereco)
+
+        return {
+                id: cliente.id,
+                nome: cliente.email,
+                dataNascimento: cliente.dataNascimento,
+                telefone: cliente.telefone,
+                cpf: cliente.cpf,
+                cnpj: cliente.cnpj,
+                endereco: JSON.parse(JSON.stringify(endereco))
+            }
     }catch(error){
         throw error
     }
@@ -44,7 +64,15 @@ exports.createCliente = async (data) => {
 
         await novoCliente.create()
 
-        return JSON.parse(JSON.stringify(novoCliente))
+        return {
+            id: novoCliente.id,
+            nome: novoCliente.email,
+            dataNascimento: novoCliente.dataNascimento,
+            telefone: novoCliente.telefone,
+            cpf: novoCliente.cpf,
+            cnpj: novoCliente.cnpj,
+            endereco: JSON.parse(JSON.stringify(endereco))
+        }
     } catch (error) {
         throw error
     }
@@ -62,7 +90,7 @@ exports.deleteCliente = async (id) => {
         const orcamento = await Orcamento.findManyBy({idCliente: id})
 
         if(orcamento.length !== 0){
-            throw new DataError('Relacional Error', 400, 'Existe pelo menos 1 orçamento que tem dados cliente')
+            throw new DataError('Dependecy Error', 400, 'Existe pelo menos 1 orçamento que tem dados cliente')
         }
 
         await antigoCliente.delete()
@@ -82,6 +110,12 @@ exports.updateCliente = async (data) => {
             throw new DataError('Not Found', 404, 'Cliente não encontrado')
         }
 
+        const endereco = await Endereco.findById(idEndereco)
+
+        if(!endereco){
+            throw new DataError('Not Found', 404, 'Endereço não encontrado')
+        }
+
         cliente.idEndereco = idEndereco
         cliente.nome = nome
         cliente.email = email
@@ -92,7 +126,15 @@ exports.updateCliente = async (data) => {
 
         await cliente.update()
 
-        return JSON.parse(JSON.stringify(cliente))
+        return {
+            id: cliente.id,
+            nome: cliente.email,
+            dataNascimento: cliente.dataNascimento,
+            telefone: cliente.telefone,
+            cpf: cliente.cpf,
+            cnpj: cliente.cnpj,
+            endereco: JSON.parse(JSON.stringify(endereco))
+        }
     } catch (error) {
         throw error
     }
