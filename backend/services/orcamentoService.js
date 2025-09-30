@@ -5,8 +5,6 @@ const Ambiente = require('../models/Ambiente')
 const PrecoMaterial = require('../models/PrecoMaterial')
 const Material = require('../models/Material')
 const ItemOrcamento = require('../models/ItemOrcamento')
-const Cliente = require('../models/Cliente')
-const Status = require('../models/Status')
 const DataError = require('../models/DataError')
 
 exports.createOrcamento = async (data) => {

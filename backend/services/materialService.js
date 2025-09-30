@@ -59,7 +59,6 @@ exports.getMaterial = async () => {
             const material = await Material.findById(preco.idMaterial)
             const tipo = await TipoMaterial.findById(material.idTipo)
             const status = await Status.findById(material.idStatus)
-            const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: material.id}))[0]
 
             return {
                 id: material.id,

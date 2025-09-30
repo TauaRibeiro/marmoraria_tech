@@ -11,9 +11,9 @@ module.exports = async () => {
             const novoPadrao = new Status(mutavel, true)
             await novoPadrao.create()
 
-            process.env[padrao.toUpperCase().replace(' ', '_')] = novoPadrao.id  
+            process.env[mutavel.toUpperCase().replace(' ', '_')] = novoPadrao.id  
         }else{
-            process.env[padrao.toUpperCase().replace(' ', '_')] = result._id
+            process.env[mutavel.toUpperCase().replace(' ', '_')] = result._id
         }
     })
 
@@ -24,9 +24,9 @@ module.exports = async () => {
             const novoPadrao = new Status(imutavel, true)
             await novoPadrao.create()
 
-            process.env[padrao.toUpperCase().replace(' ', '_')] = novoPadrao.id  
+            process.env[imutavel.toUpperCase().replace(' ', '_')] = novoPadrao.id  
         }else{
-            process.env[padrao.toUpperCase().replace(' ', '_')] = result._id
+            process.env[imutavel.toUpperCase().replace(' ', '_')] = result._id
         }
     })
 }
