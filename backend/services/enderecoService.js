@@ -43,9 +43,9 @@ exports.getEnderecoByID = async (id) => {
     }
 }
 
-exports.updateEndereco = async (id, data) => {
+exports.updateEndereco = async (data) => {
     try {
-        const endereco = await Endereco.findById(id)
+        const endereco = await Endereco.findById(data.id)
 
         if(!endereco){
             throw new DataError('Not Found', 404, 'Endereço não encontrado')
@@ -77,7 +77,7 @@ exports.deleteEndereco = async (id) => {
             throw new DataError('Not Found', 404, 'Endereço não encontrado')
         }
 
-        if((await(Cliente.findManyBy({idEndereco: id})))){
+        if((await(Cliente.findManyBy({idEndereco: id}))).length > 0){
             throw new DataError('Dependecy Error', 400, 'Existe pelo menos um cliente que usa este endereço')
         }
 

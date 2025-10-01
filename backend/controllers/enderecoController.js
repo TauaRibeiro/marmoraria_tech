@@ -96,8 +96,8 @@ exports.update = async (req, res) => {
     
         let {cep, cidade, rua, numero, bairro, complemento} = req.body
 
-        if(!cep ||!cidade ||!rua || !numero || !bairro || !complemento){
-            return res.status('Parameter Error', 400, 'Os parâmetros de cep, cidade, rua, numero, bairro e complemento são obrigatórios')
+        if(!cep ||!cidade ||!rua || !numero || !bairro){
+            return res.status(400).json({name: "Parameter Error", message: 'Os parâmetros de cep, cidade, rua, numero e bairro são obrigatórios'})
         }
 
         cep = (typeof(cep) === 'string') ? cep.trim().replace(',', '.') : cep.toString()
@@ -105,7 +105,7 @@ exports.update = async (req, res) => {
         rua = rua.trim()
         bairro = bairro.trim()
         numero = (typeof(numero) === 'string') ? numero.trim() : numero.toString()
-        complemento = complemento.trim()
+        complemento = (complemento) ? complemento.trim() : null
 
         if(cep.length !== 8 || !eNumerio(cep) || cep.indexOf('.') !== -1){
             return res.status(400).json({name: "Validation Error", message: "CEP inválido"})
