@@ -4,6 +4,7 @@ const TipoMaterial = require('../models/TipoMaterial')
 const PrecoMaterial = require('../models/PrecoMaterial')
 const ItemOrcamento = require('../models/ItemOrcamento')
 const DataError = require('../models/DataError')
+const Orcamento = require('../models/Orcamento')
 
 exports.createMaterial = async (data) => {
     try{
@@ -158,7 +159,20 @@ exports.updateMaterial = async (data) => {
             const novoPreco = new PrecoMaterial(id, valorMaterial, new Date())
 
             await novoPreco.create()
+            
+            const itens = await ItemOrcamento.findManyBy({idPreco: novoPreco.id})
 
+            itens.map(async (item) => {
+                const orcamento = (await Orcamento.findManyBy({id: item.idOrcamento}))[0]
+                const status = await Status.findById(orcamento.idStatus)
+
+                if(status.eMutavel){
+                    item.idPreco = novoPreco.id
+
+                    await item.update()
+                }
+            })
+            
             precoMaterial = novoPreco
         }
 
@@ -173,6 +187,7 @@ exports.updateMaterial = async (data) => {
         const status = await Status.findById(material.idStatus)
 
         await material.update()
+
 
         return{
             id: material.id,
