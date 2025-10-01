@@ -76,18 +76,14 @@ class PrecoMaterial{
         try{
             const idsUnicos = await PrecoMaterial.database.distinct('idMaterial')
             const allPrecos =  (filtro) ? await PrecoMaterial.database.find(filtro).sort({dataAplicacao: -1}) : await PrecoMaterial.database.find().sort({dataAplicacao: -1})
-            
-            let precosAtuais = idsUnicos.map((id) => {
-                var result = null
-                for(let i = 0; i < allPrecos.length; i++){
-
-                    if(id.toString() === allPrecos[i].idMaterial.toString()){
-                        result =  allPrecos[i]
-                        break
+            let precosAtuais = allPrecos.filter((preco) => {
+                for(let i = 0; i < idsUnicos.length; i++){
+                    if(preco.idMaterial.toString() === idsUnicos[i].toString()){
+                        return true
                     }
                 }
 
-                return result
+                return false
             })
 
             return precosAtuais.map((preco) => {

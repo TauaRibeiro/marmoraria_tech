@@ -150,7 +150,7 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
         }
 
-        const result = await serviceMaterial.createMaterial({id, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial})
+        const result = await serviceMaterial.updateMaterial({id, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial})
 
         return res.status(200).json({result})
     }catch(error){

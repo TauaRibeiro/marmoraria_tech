@@ -19,7 +19,7 @@ exports.createMaterial = async (data) => {
 
         if(estoque >= estoqueMax){
             idStatus = process.env.ESTOQUE_CHEIO
-        }else if(estoque < estoqueMin){
+        }else if(estoque <= estoqueMin){
             idStatus = process.env.ESTOQUE_BAIXO
         }else{
             idStatus = process.env.OK
@@ -38,7 +38,7 @@ exports.createMaterial = async (data) => {
         return {
             id: novoMaterial.id,
             tipo: tipo.nome,
-            idStatus: status.nome,
+            status: status.nome,
             nome,
             estoque,
             estoqueMin,
@@ -64,7 +64,7 @@ exports.getMaterial = async () => {
             return {
                 id: material.id,
                 tipo: tipo.nome,
-                idStatus: status.nome,
+                status: status.nome,
                 nome: material.nome,
                 estoque: material.estoque,
                 estoqueMin: material.estoqueMin,
@@ -83,7 +83,7 @@ exports.getMaterial = async () => {
 
 exports.getMaterialById = async (id) => {
     try{
-        const material = await Material.findById(preco.idMaterial)
+        const material = await Material.findById(id)
 
         if(!material){
             throw new DataError('Not Found', 404, 'Material não encontrado')
@@ -96,7 +96,7 @@ exports.getMaterialById = async (id) => {
         return {
             id: material.id,
             tipo: tipo.nome,
-            idStatus: status.nome,
+            status: status.nome,
             nome: material.nome,
             estoque: material.estoque,
             estoqueMin: material.estoqueMin,
@@ -133,7 +133,7 @@ exports.deleteMaterial = async (id) => {
 
 exports.updateMaterial = async (data) => {
     try {
-        const{ id, idTipo, nome, preco, estoqueMin, estoqueMax, estoque, valorMaterial } = data
+        const{ id, idTipo, nome, estoqueMin, estoqueMax, estoque, valorMaterial } = data
 
         const material = await Material.findById(id)
 
@@ -147,7 +147,10 @@ exports.updateMaterial = async (data) => {
             throw new DataError('Not Found', 404, 'Tipo não encontrado')
         }
         
-        let precoMaterial = await PrecoMaterial.findCurrentPrices({idMaterial: id})[0]
+        let precoMaterial = (await PrecoMaterial.findCurrentPrices({idMaterial: id}))[0]
+        
+        console.log(valorMaterial)
+        console.log(precoMaterial)
 
         material.idTipo = idTipo
         material.nome = nome
@@ -155,7 +158,7 @@ exports.updateMaterial = async (data) => {
         material.estoqueMax = estoqueMax
         material.estoque = estoque
         
-        if(precoMaterial.valorMaterial !== preco){
+        if(precoMaterial.valorMaterial != valorMaterial){
             const novoPreco = new PrecoMaterial(id, valorMaterial, new Date())
 
             await novoPreco.create()
