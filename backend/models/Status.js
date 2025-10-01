@@ -14,7 +14,7 @@ class Status{
             const resultadoBanco = await Status.database.find()
 
             return resultadoBanco.map((status) => {
-                return new Status(status.nome, status.id, status.eMutavel, status.createdAt, status.updatedAt)
+                return new Status(status.nome, status.eMutavel, status.id, status.createdAt, status.updatedAt)
             })
         }catch(error){
             console.error('Erro ao fazer o find all de status: ', error)
@@ -30,7 +30,7 @@ class Status{
                 return null
             }
 
-            return new Status(resultado.nome, resultado.id, resultado.eMutavel, resultado.createdAt, resultado.updatedAt)
+            return new Status(resultado.nome, resultado.eMutavel, resultado.id, resultado.createdAt, resultado.updatedAt)
         }catch(error){
             if(error.name !== 'Invalid Id'){
                 console.log('Erro ao fazer o find by id de status: ', error)
@@ -68,6 +68,10 @@ class Status{
             await Status.database.findByIdAndUpdate(this.id, {nome: this.nome, eMutavel: this.eMutavel})
             this.updatedAt = new Date()
         }catch(error){
+            if(error.code === 11000){
+                throw new DataError('Validation Error', 400, "Já existe um status com esse nome")
+            }
+            
             console.error('Erro ao atualizar status no banco: ', error)
             throw new DataError('Internal Server Error', 500, 'Erro ao atualizar status no banco')
         }

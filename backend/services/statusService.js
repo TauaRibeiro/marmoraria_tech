@@ -73,11 +73,11 @@ exports.deleteStatus = async (id) => {
             throw new DataError('Validation error', 400, 'Não é possível deletar um status padrão')
         }  
 
-        if((await Material.findManyBy({idStatus: id}))){
+        if((await Material.findManyBy({idStatus: id})).length > 0){
             throw new DataError('Dependecy Error', 400, 'Existe pelo menos um material que utiliza esse status')
         }
 
-        if((await Orcamento.findManyBy({idStatus: id}))){
+        if((await Orcamento.findManyBy({idStatus: id})).length > 0){
             throw new DataError('Dependecy Error', 400, 'Existe pelo menos um orçamento que utiliza esse status')
         }
 
