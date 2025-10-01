@@ -140,7 +140,6 @@ exports.update = async (req, res) => {
 
         idCliente = idCliente.trim()
         idStatus = idStatus.trim()
-        valorPagamento = (typeof(valorPagamento) === 'number') ? valorPagamento.toString() : valorPagamento.trim().replace(',', '.')
         valorFrete = (typeof(valorFrete) === 'number') ? valorFrete.toString() : valorFrete.trim().replace(',', '.')
 
         if(!validarId(idCliente)){

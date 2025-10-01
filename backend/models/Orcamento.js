@@ -12,7 +12,6 @@ const orcamentoSchema = new database.Schema({
         ref: 'Status',
         required: true
     },
-    valorPagamento: {type: Number, required: true},
     valorFrete: {type: Number, default: 0},
     valorInstalacao: {type: Number, default: 0}
 });
@@ -30,7 +29,6 @@ class Orcamento{
     
             return new Orcamento(orcamento.idCliente, 
                 orcamento.idStatus, 
-                orcamento.valorPagamento, 
                 orcamento.valorFrete, 
                 orcamento.valorInstalacao,
                 orcamento._id,
@@ -50,7 +48,6 @@ class Orcamento{
             return resultado.map((orcamento) => {
                 return new Orcamento(orcamento.idCliente, 
                     orcamento.idStatus, 
-                    orcamento.valorPagamento, 
                     orcamento.valorFrete, 
                     orcamento.valorInstalacao,
                     orcamento._id,
@@ -71,7 +68,6 @@ class Orcamento{
             return resultado.map((orcamento) => {
                 return new Orcamento(orcamento.idCliente, 
                     orcamento.idStatus, 
-                    orcamento.valorPagamento, 
                     orcamento.valorFrete, 
                     orcamento.valorInstalacao,
                     orcamento._id,
@@ -111,10 +107,9 @@ class Orcamento{
         }
     }
 
-    constructor (idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao, id= null, createdAt= new Date(), updatedAt= new Date()){
+    constructor (idCliente, idStatus, valorFrete, valorInstalacao, id= null, createdAt= new Date(), updatedAt= new Date()){
         this.idCliente = idCliente
         this.idStatus = idStatus
-        this.valorPagamento = valorPagamento
         this.valorInstalacao = (valorInstalacao) ? valorInstalacao : 0
         this.valorFrete = (valorFrete) ? valorFrete : 0
         this.id = id
@@ -127,7 +122,6 @@ class Orcamento{
             const novoOrcamento = await Orcamento.database.create({
                 idCliente: this.idCliente,
                 idStatus: this.idStatus,
-                valorPagamento: this.valorPagamento,
                 valorInstalacao: this.valorInstalacao,
                 valorFrete: this.valorFrete
             })
@@ -144,7 +138,6 @@ class Orcamento{
             await Orcamento.database.findByIdAndUpdate(this.id, {
                 idCliente: this.idCliente,
                 idStatus: this.idStatus,
-                valorPagamento: this.valorPagamento,
                 valorFrete: this.valorFrete,
                 valorInstalacao: this.valorInstalacao
             })

@@ -167,7 +167,7 @@ exports.getOrcamentoById = async (id) => {
 
 exports.updateOrcamento = async (data) => {
     try{
-        let { id, idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao, itens } = data
+        let { id, idCliente, idStatus, valorFrete, valorInstalacao, itens } = data
         const orcamento = await Orcamento.findById(id)
 
         if(!orcamento){
@@ -199,21 +199,30 @@ exports.updateOrcamento = async (data) => {
             return new ItemOrcamento(orcamento.id, idAmbiente, idMaterial, preco.id, quantidadeItem, comprimentoItem, larguraItem)
         })
 
+        let valorPagamento = 0
+
         for(let i = 0; i < itensAntigos.length; i++){
             if(itens.indexOf(itensAntigos[i]) === -1){
                 await itensAntigos[i].delete()
+            }else{
+                const preco = await PrecoMaterial.findById(itensAntigos[i].idPreco)
+
+                valorPagamento += preco.valorMaterial
             }
         }
 
         for(let i = 0; i < itens.length; i++){
             if(itensAntigos.indexOf(itens[i]) === -1){
                 await itens[i].create()
+
+                const preco = await PrecoMaterial.findById(itensAntigos[i].idPreco)
+
+                valorPagamento += preco.valorMaterial
             }
         }
 
         orcamento.idCliente = idCliente
         orcamento.idStatus = idStatus
-        orcamento.valorPagamento = valorPagamento
         orcamento.valorFrete = valorFrete
         orcamento.valorInstalacao = valorInstalacao
 
@@ -235,7 +244,7 @@ exports.updateOrcamento = async (data) => {
                     subTotal: item.comprimentoItem*item.larguraItem*preco.valorMaterial*item.quantidadeItem
                 }
             }),
-            valorPagamento: orcamento.valorPagamento,
+            valorPagamento,
             valorFrete: orcamento.valorFrete,
             valorInstalacao: orcamento.valorInstalacao,
             valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + orcamento.valorPagamento
