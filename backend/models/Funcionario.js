@@ -25,10 +25,10 @@ class Funcionario{
                     funcionario.telefone,
                     funcionario.email,
                     funcionario.senha,
+                    funcionario.eADM,
                     funcionario._id,
                     funcionario.createdAt,
                     funcionario.updatedAt,
-                    funcionario.eADM
                 )
             })
         }catch(error){
@@ -48,10 +48,10 @@ class Funcionario{
                     funcionario.telefone,
                     funcionario.email,
                     funcionario.senha,
+                    funcionario.eADM,
                     funcionario._id,
                     funcionario.createdAt,
                     funcionario.updatedAt,
-                    funcionario.eADM
                 )
             })
         }catch(error){
@@ -70,14 +70,14 @@ class Funcionario{
 
             return new Funcionario(funcionario.nome,
                 funcionario.cpf,
-                funcionario.dataNascimento,
-                funcionario.telefone,
-                funcionario.email,
-                funcionario.senha,
-                funcionario._id,
-                funcionario.createdAt,
-                funcionario.updatedAt,
-                funcionario.eADM
+                    funcionario.dataNascimento,
+                    funcionario.telefone,
+                    funcionario.email,
+                    funcionario.senha,
+                    funcionario.eADM,
+                    funcionario._id,
+                    funcionario.createdAt,
+                    funcionario.updatedAt,
             )
         }catch(error){
             if(error.name !== 'Invalid ID'){

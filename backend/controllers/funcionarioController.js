@@ -9,8 +9,8 @@ exports.create = async (req, res) => {
     try{
         let {cpf, nome, dataNascimento, telefone, email, senha, eADM} = req.body
     
-        if(!cpf || !nome || !dataNascimento || !telefone || !email || !senha){
-            return res.status(400).json({name: "Parameter Error", message: "Os campos de cpf, nome, dataNascimento, telefone, email e senha são obrigatórios"})
+        if(!cpf || !nome || !dataNascimento || !telefone || !email || !senha || (!eADM && eADM != '0')){
+            return res.status(400).json({name: "Parameter Error", message: "Os campos de cpf, nome, dataNascimento, telefone, email, senha, e eADM são obrigatórios"})
         }
     
         cpf = (typeof(cpf) === 'number') ? cpf.toString() : cpf.trim()
@@ -42,15 +42,11 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Senha inválida"})
         }
 
-        if(!eNumerico(eADM) || parseInt(eADM) > 1 || parseInt(eADM) < 0){
+        if(!eNumerico(eADM) || (eADM != '1' && eADM != '0')){
             return res.status(400).json({name: "Validation Error", message: "Permissão inválida"})
         }
 
-        if(parseInt(eADM) === 1){
-            eADM = true
-        }else{
-            eADM = false
-        }
+        eADM = (eADM == '1') ? true : false
     
         const novoFuncionario = await funcionarioService.createFuncionario({cpf, nome, dataNascimento, telefone, email, senha, eADM})
         
@@ -110,8 +106,8 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
         }
 
-        if(!cpf || !nome || !dataNascimento || !telefone || !email || !senha){
-            return res.status(400).json({name: "Parameter Error", message: "Os campos de cpf, nome, dataNascimento, telefone, email e senha são obrigatórios"})
+        if(!cpf || !nome || !dataNascimento || !telefone || !email || !senha || (!eADM && eADM != '0')){
+            return res.status(400).json({name: "Parameter Error", message: "Os campos de cpf, nome, dataNascimento, telefone, email, senha, e eADM são obrigatórios"})
         }
     
         cpf = (typeof(cpf) === 'number') ? cpf.toString() : cpf.trim()
@@ -121,7 +117,8 @@ exports.update = async (req, res) => {
         email = email.trim()
         senha = senha.trim()
         eADM = (typeof(eADM) === 'number') ? eADM.toString() : eADM.trim()
-    
+        
+        
         if(cpf.length !== 11 || !eNumerico(cpf)){
             return res.status(400).json({name: "Validation Error", message: "CPF inválido"})
         }
@@ -142,15 +139,11 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: "Validation Error", message: "Senha inválida"})
         }
 
-        if(!eNumerico(eADM) || parseInt(eADM) > 1 || parseInt(eADM) < 0){
+        if(!eNumerico(eADM) || (eADM != '1' && eADM != '0')){
             return res.status(400).json({name: "Validation Error", message: "Permissão inválida"})
         }
 
-        if(parseInt(eADM) === 1){
-            eADM = true
-        }else{
-            eADM = false
-        }
+        eADM = (eADM == '1') ? true : false
 
         const result = await funcionarioService.updateFuncionario({id, cpf, nome, dataNascimento, telefone, email, senha, eADM})
 
@@ -176,8 +169,12 @@ exports.delete = async (req, res) => {
         if(!validarId(idDelete)){
             return res.status(400).json({name: "Invalid Id", message: "Id do funcionário inválido"})
         }
+
+        if(idAdm === idDelete){
+            return res.status(400).json({name: "Validation Errro", message: "Não é possível se deletar do sistema"})
+        }
         
-        await funcionarioService.deleteFuncionario(id)
+        await funcionarioService.deleteFuncionario({idAdm, idDelete})
 
         return res.sendStatus(200)
     }catch(error){
