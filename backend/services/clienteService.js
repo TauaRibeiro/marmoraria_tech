@@ -7,19 +7,20 @@ exports.getCliente = async () => {
     try{
         const result = await Cliente.findAll()
 
-        return result.map(async (cliente) => {
+        return Promise.all(result.map(async (cliente) => {
             const endereco = await Endereco.findById(cliente.idEndereco)
 
             return {
                 id: cliente.id,
-                nome: cliente.email,
+                nome: cliente.nome,
+                email: cliente.email,
                 dataNascimento: cliente.dataNascimento,
                 telefone: cliente.telefone,
                 cpf: cliente.cpf,
                 cnpj: cliente.cnpj,
                 endereco: JSON.parse(JSON.stringify(endereco))
             }
-        })
+        }))
     }catch(error){
         throw error
     }
