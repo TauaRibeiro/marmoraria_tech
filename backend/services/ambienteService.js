@@ -34,7 +34,7 @@ exports.getAmbienteByID = async (id) => {
             throw new DataError('Not Found', 404, 'Ambiente não encontrado')
         }
 
-        return JSON.parse(JSON.stringify(novoAmbiente))
+        return JSON.parse(JSON.stringify(ambiente))
     }catch(error){
         throw error
     }
