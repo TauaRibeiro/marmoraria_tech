@@ -213,6 +213,7 @@ exports.updateOrcamento = async (data) => {
 
                 valorPagamento += preco.valorMaterial
             }))
+            
             return {
                 cliente: cliente.nome,
                 status: status.nome, 
