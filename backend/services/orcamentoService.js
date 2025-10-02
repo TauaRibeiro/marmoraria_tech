@@ -173,15 +173,17 @@ exports.updateOrcamento = async (data) => {
         if(!orcamento){
             throw new DataError('Not Found', 404, 'Orçamento não encontrado')
         }
+        
+        const status = await Status.findById(idStatus)
+        const statusAntigo = await Status.findById(orcamento.idStatus)
 
         const cliente = await Cliente.findById(idCliente)
-        const status = await Status.findById(idStatus)
 
-        let novoValor = 0
+        let valorPagamento = 0
 
         const itensAntigos = await ItemOrcamento.findManyBy({idOrcamento: orcamento.id})
 
-        itens = map(async (item) => {
+        itens = Promise.all(itens.map(async (item) => {
             const { idAmbiente, idMaterial, quantidadeItem, comprimentoItem, larguraItem } = item
 
             if(!(await Ambiente.findById(idAmbiente))){
@@ -194,32 +196,103 @@ exports.updateOrcamento = async (data) => {
 
             const preco = (await PrecoMaterial.findCurrentPrices({idMaterial}))[0]
 
-            novoValor += quantidadeItem*comprimentoItem*larguraItem*preco.valorMaterial
+            valorPagamento += quantidadeItem*comprimentoItem*larguraItem*preco.valorMaterial
 
             return new ItemOrcamento(orcamento.id, idAmbiente, idMaterial, preco.id, quantidadeItem, comprimentoItem, larguraItem)
-        })
+        }))
 
-        let valorPagamento = 0
+        if(!statusAntigo.eMutavel){
+            orcamento.idStatus = status.id
 
-        for(let i = 0; i < itensAntigos.length; i++){
-            if(itens.indexOf(itensAntigos[i]) === -1){
-                await itensAntigos[i].delete()
-            }else{
-                const preco = await PrecoMaterial.findById(itensAntigos[i].idPreco)
+            await orcamento.update()
+
+            valorPagamento = 0
+            
+            Promise.all(itensAntigos.map(async (item) => {
+                const preco = await PrecoMaterial.findById(item.idPreco)
 
                 valorPagamento += preco.valorMaterial
+            }))
+            return {
+                cliente: cliente.nome,
+                status: status.nome, 
+                itens: Promise.all(itens.map(async (item) => {
+                    const ambiente = await Ambiente.findById(item.idAmbiente)
+                    const material = await Material.findById(item.idMaterial)
+                    const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: item.idMaterial}))[0]
+                    
+                    return {
+                        ambiente: ambiente.nome,
+                        material: material.nome,
+                        valorMaterial: preco.valorMaterial,
+                        quantidadeItem: item.quantidadeItem,
+                        comprimentoItem: item.comprimentoItem,
+                        larguraItem: item.larguraItem,
+                        subTotal: item.comprimentoItem*item.larguraItem*preco.valorMaterial*item.quantidadeItem
+                    }
+                })),
+                valorPagamento,
+                valorFrete: orcamento.valorFrete,
+                valorInstalacao: orcamento.valorInstalacao,
+                valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + orcamento.valorPagamento
+            }
+        }
+
+        const listaUpdate = []
+
+        for(let i = 0; i < itensAntigos.length; i++){
+            let achou = false
+
+            for(let p = 0; p < itens.length; p++){
+                if(itensAntigos[i].idMaterial === itens[p].idMaterial){
+                    achou = true
+
+                    if(itensAntigos[i].quantidadeItem !== itens[p].quantidadeItem){
+                        const material = await Material.findById(itensAntigos[i].idMaterial)
+                        material.estoque += itensAntigos[i].quantidadeItem - itens[p].quantidadeItem
+
+                        if(material.estoque < 0){
+                            throw new DataError('Validation Error', 400, `Não há quantidade suficiente em estoque para o item: ${material.nome}`)
+                        }
+
+                        listaUpdate.push(material)
+                        break
+                    }
+                }
+            }
+
+            if(!achou){
+                const material = await Material.findById(itensAntigos[i].idMaterial)
+
+                material.estoque += itensAntigos[i].quantidadeItem
+
+                listaUpdate.push(material)
             }
         }
 
         for(let i = 0; i < itens.length; i++){
-            if(itensAntigos.indexOf(itens[i]) === -1){
+            let achou = false
+
+            for(let p = 0; p < itensAntigos.length; p++){
+                if(itens[i].idMaterial === itensAntigos[p].idMaterial){
+                    achou = true
+                    break
+                }
+            }
+
+            if(!achou){
+                const material = await Material.findById(itens[i].idMaterial)
+                
+                if(material.estoque - itens[i].quantidadeItem < 0){
+                    throw new DataError('Validation Error', 400, `Não há estoque suficiente para o item: ${material.nome}`)
+                }
+
                 await itens[i].create()
-
-                const preco = await PrecoMaterial.findById(itensAntigos[i].idPreco)
-
-                valorPagamento += preco.valorMaterial
+                await material.update()
             }
         }
+
+        Promise.all(listaUpdate.map(async (item) => await item.update()))    
 
         orcamento.idCliente = idCliente
         orcamento.idStatus = idStatus
@@ -229,7 +302,7 @@ exports.updateOrcamento = async (data) => {
         return {
             cliente: cliente.nome,
             status: status.nome, 
-            itens: itens.map(async (item) => {
+            itens: Promise.all(itens.map(async (item) => {
                 const ambiente = await Ambiente.findById(item.idAmbiente)
                 const material = await Material.findById(item.idMaterial)
                 const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: item.idMaterial}))[0]
@@ -243,7 +316,7 @@ exports.updateOrcamento = async (data) => {
                     larguraItem: item.larguraItem,
                     subTotal: item.comprimentoItem*item.larguraItem*preco.valorMaterial*item.quantidadeItem
                 }
-            }),
+            })),
             valorPagamento,
             valorFrete: orcamento.valorFrete,
             valorInstalacao: orcamento.valorInstalacao,
