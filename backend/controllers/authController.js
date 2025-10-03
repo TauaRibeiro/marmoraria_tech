@@ -1,8 +1,26 @@
 const authService = require('../services/authService')
+const validarEmail = require('../utils/validarEmail')
 
 exports.login = async (req, res) => {
     try{
-        const token = await authService.login(req.body)
+        let {email, senha} = req.body
+
+        if(!email || !senha){
+            return res.status(400).json({name: "Parameter Error", message: "email e senha são obrigatórios para o login"})
+        }
+
+        email = email.trim()
+        senha = senha.trim()
+
+        if(!validarEmail(email)){
+            return res.status(400).json({name: "Validation Error", message: "Email inválido"})
+        }
+
+        if(senha.length < 4){
+            return res.status(400).json({name: "Validation Error", message: "Senha inválida"})
+        }
+
+        const token = await authService.login({email, senha})
     
         return res.status(200).json({token})
     
