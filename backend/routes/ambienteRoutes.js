@@ -3,10 +3,10 @@ const express = require('express')
 const router = express.Router()
 const autenticarToken = require('../middleware/auth')
 
-router.get('/', ambienteController.getAll)
-router.get('/:id', ambienteController.getById)
-router.post('/', ambienteController.create)
-router.put('/:id', ambienteController.update)
-router.delete('/:id', ambienteController.delete)
+router.get('/', autenticarToken, ambienteController.getAll)
+router.get('/:id', autenticarToken, ambienteController.getById)
+router.post('/', autenticarToken, ambienteController.create)
+router.put('/:id', autenticarToken, ambienteController.update)
+router.delete('/:id', autenticarToken, ambienteController.delete)
 
 module.exports = router
