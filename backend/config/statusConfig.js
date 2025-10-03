@@ -21,7 +21,7 @@ module.exports = async () => {
         let result = await Status.database.findOne({nome: imutavel})
 
         if(!result){
-            const novoPadrao = new Status(imutavel, true)
+            const novoPadrao = new Status(imutavel, false)
             await novoPadrao.create()
 
             process.env[imutavel.toUpperCase().replace(' ', '_')] = novoPadrao.id  

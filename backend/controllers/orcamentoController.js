@@ -26,13 +26,13 @@ exports.create = async (req, res) => {
             return res.status(400).json({name: 'Validation Error', message: "Valor do frete inválido"})
         }
 
-        valorFrete = parseFloat(valorFrete).toFixed(2)
+        valorFrete = parseFloat(valorFrete)
 
         if(!eNumerico(valorInstalacao) || parseFloat(valorInstalacao) < 0){
             return res.status(400).json({name: 'Validation Error', message: "Valor de instalação inválido"})
         }
 
-        valorInstalacao = parseFloat(valorInstalacao).toFixed(2)
+        valorInstalacao = parseFloat(valorInstalacao)
 
         itens = itens.map((item) => {
             let {idAmbiente, idMaterial, quantidadeItem, comprimentoItem, larguraItem} = item
@@ -110,7 +110,7 @@ exports.getById = async (req, res) => {
             return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
         }
 
-        const result = await orcamentoService.getOrcamentoById()
+        const result = await orcamentoService.getOrcamentoById(id)
 
         return res.status(200).json({result})
     }catch(error){
@@ -153,13 +153,13 @@ exports.update = async (req, res) => {
             return res.status(400).json({name: 'Validation Error', message: "Valor do frete inválido"})
         }
 
-        valorFrete = parseFloat(valorFrete).toFixed(2)
+        valorFrete = parseFloat(valorFrete)
 
         if(!eNumerico(valorInstalacao) || parseFloat(valorInstalacao) < 0){
             return res.status(400).json({name: 'Validation Error', message: "Valor de instalação inválido"})
         }
 
-        valorInstalacao = parseFloat(valorInstalacao).toFixed(2)
+        valorInstalacao = parseFloat(valorInstalacao)
 
         itens = itens.map((item) => {
             let {idAmbiente, idMaterial, quantidadeItem, comprimentoItem, larguraItem} = item

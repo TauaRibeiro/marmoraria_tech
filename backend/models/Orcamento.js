@@ -21,7 +21,7 @@ class Orcamento{
 
     static async findById(id){
         try{
-            const orcamento = await Orcamento.database.findById(id.trim())
+            const orcamento = await Orcamento.database.findById(id)
     
             if(!orcamento){
                 return null

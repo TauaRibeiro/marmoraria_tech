@@ -1,6 +1,6 @@
 const Ambiente = require('../models/Ambiente')
 const DataError = require('../models/DataError')
-
+const ItemOrcamento = require('../models/ItemOrcamento')
 
 exports.criarAmbiente = async (nome) => {
     try{
@@ -65,7 +65,11 @@ exports.deleteAmbiente = async (id) => {
         if(!ambiente){
             throw new DataError('Not Found', 404, 'Ambiente não encontrado')
         }
-
+        
+        if((await ItemOrcamento.findManyBy({idAmbiente: ambiente.id})).length > 0){
+            throw new DataError('Dependecy Error', 400, 'O ambiente é utilizado em pelo menos um orçamento')
+        }
+        
         await ambiente.delete()
     }catch(error){
         throw error

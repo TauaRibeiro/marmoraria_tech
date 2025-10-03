@@ -148,25 +148,21 @@ exports.updateMaterial = async (data) => {
         }
         
         let precoMaterial = (await PrecoMaterial.findCurrentPrices({idMaterial: id}))[0]
-        
-        console.log(valorMaterial)
-        console.log(precoMaterial)
 
         material.idTipo = idTipo
         material.nome = nome
         material.estoqueMin = estoqueMin
         material.estoqueMax = estoqueMax
         material.estoque = estoque
-        
+
         if(precoMaterial.valorMaterial != valorMaterial){
             const novoPreco = new PrecoMaterial(id, valorMaterial, new Date())
 
             await novoPreco.create()
-            
-            const itens = await ItemOrcamento.findManyBy({idPreco: novoPreco.id})
+            const itens = await ItemOrcamento.findManyBy({idMaterial: material.id})
 
             itens.map(async (item) => {
-                const orcamento = (await Orcamento.findManyBy({id: item.idOrcamento}))[0]
+                const orcamento = (await Orcamento.findById(item.idOrcamento))
                 const status = await Status.findById(orcamento.idStatus)
 
                 if(status.eMutavel){
@@ -190,7 +186,6 @@ exports.updateMaterial = async (data) => {
         const status = await Status.findById(material.idStatus)
 
         await material.update()
-
 
         return{
             id: material.id,

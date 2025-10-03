@@ -19,18 +19,21 @@ exports.createOrcamento = async (data) => {
 
         const status = await Status.findById(idStatus)
         
+        //console.log('Tipo de valorFrete: ', typeof(valorFrete))
+        //console.log('Tipo de valorIntalacao: ', typeof(valorInstalacao))
         if(!status){
             throw new DataError('Not Found', 404, 'Status não encontrado')
         }
 
-        const novoOrcamento = new Orcamento(idCliente, idStatus, valorPagamento, valorFrete, valorInstalacao)
+        const novoOrcamento = new Orcamento(idCliente, idStatus, valorFrete, valorInstalacao)
         await novoOrcamento.create()
 
-        itens = itens.map(async (item) => {
-            const { idAmbiente, idMaterial, quantidadeItem, comprimentoItem, larguraItem } = item
-            
+        const novosItens = []
+        for(let i = 0; i < itens.length; i++){
+            const { idAmbiente, idMaterial, quantidadeItem, comprimentoItem, larguraItem } = itens[i]
+
             const ambiente = await Ambiente.findById(idAmbiente)
-            
+
             if(!ambiente){
                 throw new DataError('Not Found', 404, 'Ambiente não encontrado')
             }
@@ -48,7 +51,7 @@ exports.createOrcamento = async (data) => {
 
             valorPagamento += comprimentoItem*larguraItem*preco.valorMaterial*quantidadeItem
 
-            return {
+            novosItens.push({
                 ambiente: ambiente.nome,
                 material: material.nome,
                 valorMaterial: preco.valorMaterial,
@@ -56,16 +59,17 @@ exports.createOrcamento = async (data) => {
                 comprimentoItem,
                 larguraItem,
                 subTotal: comprimentoItem*larguraItem*preco.valorMaterial*quantidadeItem
-            }
-        })
+            })
+        }
 
         novoOrcamento.valorPagamento = valorPagamento
         await novoOrcamento.update()
 
         return {
+            id: novoOrcamento.id,
             cliente: cliente.nome,
             status: status.nome, 
-            itens, 
+            itens: novosItens, 
             valorPagamento,
             valorFrete,
             valorInstalacao,
@@ -79,40 +83,45 @@ exports.createOrcamento = async (data) => {
 exports.getOrcamento = async () => {
     try{
         const orcamentos = await Orcamento.findAll()
-        const itens = orcamentos.map(async (orcamento) => {
-            const resultado = await ItemOrcamento.findManyBy({idOrcamento: orcamento.id})
+        let valorPagamento = 0
+        let itens = []
+        
+        for(let i = 0; i < orcamentos.length; i++){
+            const resultado = await ItemOrcamento.findManyBy({idOrcamento: orcamentos[i].id})
 
-            return resultado.map(async (item) => {
-                const ambiente = await Ambiente.findById(item.idAmbiente)
-                const material = await Material.findById(item.idMaterial)
-                const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: item.idMaterial}))[0]
-                
-                return {
+            for(let p = 0; p < resultado.length; p++){
+                const ambiente = await Ambiente.findById(resultado[p].idAmbiente)
+                const material = await Material.findById(resultado[p].idMaterial)
+                const preco = await PrecoMaterial.findById(resultado[p].idPreco)
+
+                valorPagamento += resultado[p].comprimentoItem*resultado[p].larguraItem*preco.valorMaterial*resultado[p].quantidadeItem
+
+                itens.push({
                     ambiente: ambiente.nome,
                     material: material.nome,
                     valorMaterial: preco.valorMaterial,
-                    quantidadeItem: item.quantidadeItem,
-                    comprimentoItem: item.comprimentoItem,
-                    larguraItem: item.larguraItem,
-                    subTotal: item.comprimentoItem*item.larguraItem*preco.valorMaterial*item.quantidadeItem
-                }
-            })
-        })
+                    quantidadeItem: resultado[p].quantidadeItem,
+                    comprimentoItem: resultado[p].comprimentoItem,
+                    larguraItem: resultado[p].larguraItem,
+                    subTotal: resultado[p].comprimentoItem*resultado[p].larguraItem*preco.valorMaterial*resultado[p].quantidadeItem
+                })
+            }
+        }
 
         const result = []
-
         for(let i = 0; i < orcamentos.length; i++){
             const cliente = await Cliente.findById(orcamentos[i].idCliente)
             const status = await Status.findById(orcamentos[i].idStatus)
 
             result.push({
+                id: orcamentos[i].id,
                 cliente: cliente.nome,
                 status: status.nome, 
                 itens, 
-                valorPagamento: orcamentos[i].valorPagamento,
+                valorPagamento,
                 valorFrete: orcamentos[i].valorFrete,
                 valorInstalacao: orcamentos[i].valorInstalacao,
-                valorTotal: orcamentos[i].valorPagamento + orcamentos[i].valorFrete + orcamentos[i].valorInstalacao
+                valorTotal: valorPagamento + orcamentos[i].valorFrete + orcamentos[i].valorInstalacao
             })
         }
 
@@ -130,35 +139,42 @@ exports.getOrcamentoById = async (id) => {
             throw new DataError('Not Found', 404, 'Orçamento não encontrado')
         }
 
-        let itens = await ItemOrcamento.findManyBy({idOrcamento: orcamento.id})
+        const itens = await ItemOrcamento.findManyBy({idOrcamento: orcamento.id})
+        let valorPagamento = 0
+        let resultado = []
 
-        itens = itens.map(async (item) => {
-            const ambiente = await Ambiente.findById(item.idAmbiente)
-            const material = await Material.findById(item.idMaterial)
-            const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: item.idMaterial}))[0]
-            
-            return {
+        for(let p = 0; p < itens.length; p++){
+            const ambiente = await Ambiente.findById(itens[p].idAmbiente)
+            const material = await Material.findById(itens[p].idMaterial)
+            const preco = await PrecoMaterial.findById(itens[p].idPreco)
+
+            console.log(preco)
+
+            valorPagamento += itens[p].comprimentoItem*itens[p].larguraItem*preco.valorMaterial*itens[p].quantidadeItem
+
+            resultado.push({
                 ambiente: ambiente.nome,
                 material: material.nome,
                 valorMaterial: preco.valorMaterial,
-                quantidadeItem: item.quantidadeItem,
-                comprimentoItem: item.comprimentoItem,
-                larguraItem: item.larguraItem,
-                subTotal: item.comprimentoItem*item.larguraItem*preco.valorMaterial*item.quantidadeItem
-            }
-        })
+                quantidadeItem: itens[p].quantidadeItem,
+                comprimentoItem: itens[p].comprimentoItem,
+                larguraItem: itens[p].larguraItem,
+                subTotal: itens[p].comprimentoItem*itens[p].larguraItem*preco.valorMaterial*itens[p].quantidadeItem
+            })
+        }
 
-        const cliente = await Cliente.findById(orcamentos[i].idCliente)
-        const status = await Status.findById(orcamentos[i].idStatus)
+        const cliente = await Cliente.findById(orcamento.idCliente)
+        const status = await Status.findById(orcamento.idStatus)
         
         return {
+            id: orcamento.id,
             cliente: cliente.nome,
             status: status.nome, 
-            itens,
-            valorPagamento: orcamento.valorPagamento,
+            itens: resultado,
+            valorPagamento: valorPagamento,
             valorFrete: orcamento.valorFrete,
             valorInstalacao: orcamento.valorInstalacao,
-            valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + orcamento.valorPagamento
+            valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + valorPagamento
         }
     }catch(error){
         throw error
@@ -180,12 +196,11 @@ exports.updateOrcamento = async (data) => {
         const cliente = await Cliente.findById(idCliente)
 
         let valorPagamento = 0
-
         const itensAntigos = await ItemOrcamento.findManyBy({idOrcamento: orcamento.id})
 
-        itens = Promise.all(itens.map(async (item) => {
-            const { idAmbiente, idMaterial, quantidadeItem, comprimentoItem, larguraItem } = item
-
+        for(let i = 0; i < itens.length; i++){
+            const { idAmbiente, idMaterial, quantidadeItem, comprimentoItem, larguraItem } = itens[i]
+            
             if(!(await Ambiente.findById(idAmbiente))){
                 throw new DataError('Not Found', 404, 'Ambiente não encontrado')
             }
@@ -198,44 +213,50 @@ exports.updateOrcamento = async (data) => {
 
             valorPagamento += quantidadeItem*comprimentoItem*larguraItem*preco.valorMaterial
 
-            return new ItemOrcamento(orcamento.id, idAmbiente, idMaterial, preco.id, quantidadeItem, comprimentoItem, larguraItem)
-        }))
+            itens[i] = new ItemOrcamento(orcamento.id, idAmbiente, idMaterial, preco.id, quantidadeItem, comprimentoItem, larguraItem)
+        }
 
         if(!statusAntigo.eMutavel){
             orcamento.idStatus = status.id
-
+            
             await orcamento.update()
-
+            
             valorPagamento = 0
             
-            Promise.all(itensAntigos.map(async (item) => {
-                const preco = await PrecoMaterial.findById(item.idPreco)
-
+            for(let i = 0; i < itensAntigos.length; i++){
+                const preco = await PrecoMaterial.findById(itensAntigos[i].idPreco)
+                
                 valorPagamento += preco.valorMaterial
-            }))
+            }
+            
+            let resultado = []
+            
+            for(let i = 0; i < itensAntigos.length; i++){
+                const ambiente = await Ambiente.findById(itensAntigos[i].idAmbiente)
+                const material = await Material.findById(itensAntigos[i].idMaterial)
+                const preco = await PrecoMaterial.findById(itensAntigos[i].idPreco)
+                
+                resultado.push({
+                    ambiente: ambiente.nome,
+                    material: material.nome,
+                    valorMaterial: preco.valorMaterial,
+                    quantidadeItem: itensAntigos[i].quantidadeItem,
+                    comprimentoItem: itensAntigos[i].comprimentoItem,
+                    larguraItem: itensAntigos[i].larguraItem,
+                    subTotal: itensAntigos[i].comprimentoItem*itensAntigos[i].larguraItem*preco.valorMaterial*itensAntigos[i].quantidadeItem
+                })
+            }
+
+            const clienteAntigo = await Cliente.findById(orcamento.idCliente)
             
             return {
-                cliente: cliente.nome,
+                cliente: clienteAntigo.nome,
                 status: status.nome, 
-                itens: Promise.all(itens.map(async (item) => {
-                    const ambiente = await Ambiente.findById(item.idAmbiente)
-                    const material = await Material.findById(item.idMaterial)
-                    const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: item.idMaterial}))[0]
-                    
-                    return {
-                        ambiente: ambiente.nome,
-                        material: material.nome,
-                        valorMaterial: preco.valorMaterial,
-                        quantidadeItem: item.quantidadeItem,
-                        comprimentoItem: item.comprimentoItem,
-                        larguraItem: item.larguraItem,
-                        subTotal: item.comprimentoItem*item.larguraItem*preco.valorMaterial*item.quantidadeItem
-                    }
-                })),
+                itens: resultado,
                 valorPagamento,
                 valorFrete: orcamento.valorFrete,
                 valorInstalacao: orcamento.valorInstalacao,
-                valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + orcamento.valorPagamento
+                valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + valorPagamento
             }
         }
 
@@ -245,7 +266,7 @@ exports.updateOrcamento = async (data) => {
             let achou = false
 
             for(let p = 0; p < itens.length; p++){
-                if(itensAntigos[i].idMaterial === itens[p].idMaterial){
+                if(itensAntigos[i].idMaterial.toString() === itens[p].idMaterial.toString()){
                     achou = true
 
                     if(itensAntigos[i].quantidadeItem !== itens[p].quantidadeItem){
@@ -257,6 +278,10 @@ exports.updateOrcamento = async (data) => {
                         }
 
                         listaUpdate.push(material)
+                        itensAntigos[i].quantidadeItem = itens[p].quantidadeItem
+                        itensAntigos[i].comprimentoItem = itens[p].comprimentoItem
+                        itensAntigos[i].larguraItem = itens[p].larguraItem
+                        await itensAntigos[i].update()
                         break
                     }
                 }
@@ -267,6 +292,7 @@ exports.updateOrcamento = async (data) => {
 
                 material.estoque += itensAntigos[i].quantidadeItem
 
+                await itensAntigos[i].delete()
                 listaUpdate.push(material)
             }
         }
@@ -275,7 +301,7 @@ exports.updateOrcamento = async (data) => {
             let achou = false
 
             for(let p = 0; p < itensAntigos.length; p++){
-                if(itens[i].idMaterial === itensAntigos[p].idMaterial){
+                if(itens[i].idMaterial.toString() === itensAntigos[p].idMaterial.toString()){
                     achou = true
                     break
                 }
@@ -291,37 +317,45 @@ exports.updateOrcamento = async (data) => {
                 await itens[i].create()
                 await material.update()
             }
-        }
+        }  
 
-        Promise.all(listaUpdate.map(async (item) => await item.update()))    
+        //Promise.all(listaUpdate.map(async (item) => await item.update())) 
+        for(let i = 0; i < listaUpdate.length; i++){
+            await listaUpdate[i].update()
+        }   
 
         orcamento.idCliente = idCliente
         orcamento.idStatus = idStatus
         orcamento.valorFrete = valorFrete
         orcamento.valorInstalacao = valorInstalacao
 
-        return {
-            cliente: cliente.nome,
-            status: status.nome, 
-            itens: Promise.all(itens.map(async (item) => {
-                const ambiente = await Ambiente.findById(item.idAmbiente)
-                const material = await Material.findById(item.idMaterial)
-                const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: item.idMaterial}))[0]
+        let resultado = []
+
+        for(let i = 0; i < itens.length; i++){
+            const ambiente = await Ambiente.findById(itens[i].idAmbiente)
+                const material = await Material.findById(itens[i].idMaterial)
+                const preco = (await PrecoMaterial.findCurrentPrices({idMaterial: itens[i].idMaterial}))[0]
                 
-                return {
+                resultado.push({
                     ambiente: ambiente.nome,
                     material: material.nome,
                     valorMaterial: preco.valorMaterial,
-                    quantidadeItem: item.quantidadeItem,
-                    comprimentoItem: item.comprimentoItem,
-                    larguraItem: item.larguraItem,
-                    subTotal: item.comprimentoItem*item.larguraItem*preco.valorMaterial*item.quantidadeItem
-                }
-            })),
+                    quantidadeItem: itens[i].quantidadeItem,
+                    comprimentoItem: itens[i].comprimentoItem,
+                    larguraItem: itens[i].larguraItem,
+                    subTotal: itens[i].comprimentoItem*itens[i].larguraItem*preco.valorMaterial*itens[i].quantidadeItem
+                })
+        }
+
+        await orcamento.update()
+        return {
+            cliente: cliente.nome,
+            status: status.nome, 
+            itens: resultado,
             valorPagamento,
             valorFrete: orcamento.valorFrete,
             valorInstalacao: orcamento.valorInstalacao,
-            valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + orcamento.valorPagamento
+            valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + valorPagamento
         }
     }catch(error){
         throw error
