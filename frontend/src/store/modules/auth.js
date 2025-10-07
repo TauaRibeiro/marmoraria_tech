@@ -24,8 +24,8 @@ const mutations = {
 const actions = {
   async login({ commit }, credencials) {
     try {
-      const response = await api.post('/auth', {
-        login: credencials.login,
+      const response = await api.post('/auth/', {
+        email: credencials.login,
         senha: credencials.senha,
       })
 

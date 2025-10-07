@@ -1,41 +1,53 @@
 <template>
-    <main class="min-vh-100 d-flex justify-content-center align-items-center">
-      <div class="card p-4 shadow" style="max-width: 400px; width: 100%">
-        <div class="card-body">
-          <h3 class="fs-2 fw-bold mb-1 text-center">Marmoraria Tech</h3>
-          <p class="text-muted text-center mb-4">Faça seu login abaixo</p>
-          <form @submit.prevent="handleLogin">
-            <div class="mb-3">
-              <InputComponent 
-                type="email" 
-                placeholder="Digite seu email" 
-                id="email" 
-                :required= true>Email</InputComponent>
-            </div>
-            <div class="mb-3">
-              <InputComponent 
-                type="password" 
-                placeholder="Digite sua senha" 
-                id="senha" 
-                :required= true>Senha</InputComponent>
-            </div>
-            <div class="d-grid">
-              <ButtonComponent type="submit" cls="btn btn-primary" :disabled= "loading">Entrar</ButtonComponent>
-            </div> 
-          </form>
-        </div>
+  <div class="login-page d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="login-container card shadow border-danger" style="max-width: 400px; width: 100%;">
+      <div class="card-body text-center p-4">
+        
+        <header class="login-header mb-4">
+          <h1 class="h4 mb-2 text-dark">Marmoraria Tech</h1>
+          <p class="text-muted mb-0">Área restrita para colaboradores da empresa</p>
+        </header>
+
+        <form @submit.prevent="handleLogin" class="login-form">
+          <div class="mb-3 text-start">
+            <DefaultInput
+              type="email"
+              id="login"
+              placeholder="seu@email.com"
+              :required= true
+              v-model="credentials.login"
+              >Email</DefaultInput>
+          </div>
+
+          <div class="mb-3 text-start">
+            <DefaultInput 
+              type="password"
+              id="senha"
+              :required=true
+              v-model="credentials.senha"
+            >Senha</DefaultInput>
+          </div>
+
+          <SubmitButton :disabled=loading>Entrar</SubmitButton>
+        </form>
+
+        <footer class="login-footer mt-4">
+          <p class="text-muted small mb-0">© 2025 Marmoraria Tech. Todos os direitos reservados.</p>
+        </footer>
       </div>
-      </main>
+    </div>
+  </div>
 </template>
 
 <script>
-    import InputComponent from '@/components/Input.vue'
-    import ButtonComponent from '@/components/Button.vue'
+    import DefaultInput from '@/components/Input.vue'
+    import SubmitButton from '@/components/SubmitButton.vue'
+    import store from '@/store';
 
     export default{
         components:{
-            InputComponent,
-            ButtonComponent,
+            DefaultInput,
+            SubmitButton,
         },
         data(){
             return {
@@ -52,7 +64,8 @@
                 this.loading = true
                 this.error = ""
 
-                const result = await this.$store.dispatch('auth/login', this.credentials)
+                console.log(this.credentials)
+                const result = await store.dispatch('auth/login', this.credentials)
 
                 console.log("Resultado do store: ", result)
                 if(result.success){
@@ -67,5 +80,7 @@
     }
 </script>
 
-<style>
+<style scoped>
+
 </style>
+      
