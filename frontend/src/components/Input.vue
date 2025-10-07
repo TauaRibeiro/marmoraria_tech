@@ -1,11 +1,9 @@
 <template>
   <div class="input-container">
-    <spam>
-      <label class="form-label" :for="id">
-        <slot></slot>
-        <input :type :placeholder :class="form-control" :id :required/>
-      </label>
-    </spam>
+    <label class="form-label" :for="id">
+      <h4><slot></slot></h4>
+      <input :type :placeholder class="form-control" :id :required autocomplete="off"/>
+    </label>
   </div>
 </template>
 

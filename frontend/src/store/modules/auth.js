@@ -29,6 +29,7 @@ const actions = {
         senha: credencials.senha,
       })
 
+      console.log('Resposta do login: ', response)
       const status = response.status
 
       if (status !== 200) {

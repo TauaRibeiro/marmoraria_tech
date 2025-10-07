@@ -4,24 +4,24 @@
         <div class="card-body">
           <h3 class="fs-2 fw-bold mb-1 text-center">Marmoraria Tech</h3>
           <p class="text-muted text-center mb-4">Faça seu login abaixo</p>
-          <form>
+          <form @submit.prevent="handleLogin">
             <div class="mb-3">
               <InputComponent 
                 type="email" 
                 placeholder="Digite seu email" 
                 id="email" 
-                required="true">Email</InputComponent>
+                :required= true>Email</InputComponent>
             </div>
             <div class="mb-3">
               <InputComponent 
                 type="password" 
                 placeholder="Digite sua senha" 
                 id="senha" 
-                required="true">Senha</InputComponent>
+                :required= true>Senha</InputComponent>
             </div>
             <div class="d-grid">
-              <ButtonComponent type="submit" cls="btn btn-primary">Entrar</ButtonComponent>
-            </div>
+              <ButtonComponent type="submit" cls="btn btn-primary" :disabled= "loading">Entrar</ButtonComponent>
+            </div> 
           </form>
         </div>
       </div>
@@ -52,8 +52,9 @@
                 this.loading = true
                 this.error = ""
 
-                const result = await this.$store.dispathc('auth/login', this.credentials)
+                const result = await this.$store.dispatch('auth/login', this.credentials)
 
+                console.log("Resultado do store: ", result)
                 if(result.success){
                     this.$router.push('/home')
                 }else{
