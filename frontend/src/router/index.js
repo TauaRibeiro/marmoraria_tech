@@ -1,4 +1,5 @@
 import store from '@/store'
+import HomePage from '@/views/homePage.vue'
 import LoginPage from '@/views/loginPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -7,7 +8,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/login',
+      redirect: '/dashboard',
     },
     {
       path: '/login',
@@ -15,6 +16,12 @@ const router = createRouter({
       component: LoginPage,
       meta: { requiresGuest: true },
     },
+    {
+      path: '/dashboard',
+      name: 'dash-module',
+      component: HomePage,
+      meta: {requiresGuest: true}
+    }
   ],
 })
 
