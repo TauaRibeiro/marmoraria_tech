@@ -100,11 +100,12 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
     
     .layout { 
       display: flex; 
-      min-height: 100vh; 
+      min-height: 100vh;
+      min-width: 100vh;
       background: #f6f6f6; 
       justify-content: space-between;
-      width: 183%;
-      }
+      width: 100cqmax;
+    }
     
     /* --- Sidebar --- */
     .sidebar { width: 280px; background: #fff; padding-top: 20px; padding-bottom: 20px; display: flex; flex-direction: column; border-right: 1px solid #eee; }
@@ -126,6 +127,7 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
     .content {
       flex: 1;
       padding: 20px 40px;
+      width: 100vh;
       margin: 0 auto; /* Centraliza no espaço disponível */
       }
     .content__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
