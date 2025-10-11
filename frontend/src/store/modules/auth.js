@@ -13,7 +13,7 @@ const mutations = {
     localStorage.setItem('token', token)
   },
   CLEAR_TOKEN(state) {
-    ;(state.token = null), (state.isAuthenticated = false)
+    (state.token = null), (state.isAuthenticated = false)
     localStorage.removeItem('token')
   },
   SET_USER(state, user) {
