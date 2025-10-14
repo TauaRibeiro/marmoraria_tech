@@ -1,8 +1,8 @@
 const Status = require('../models/Status')
 
 module.exports = async () => {
-    const statusMutaveis = ['Estoque Baixo', 'Ok', 'Em Aberto', 'Estoque Cheio']
-    const statusImutaveis = ['Aguardando Pagamento', 'Cancelado', 'Orçamento Fechado']
+    const statusMutaveis = ['Estoque Baixo', 'Ok', 'Em Andamento','Aberto', 'Estoque Cheio']
+    const statusImutaveis = ['Cancelado', 'Finalizado']
     
     statusMutaveis.map(async (mutavel) => {
         let result = await Status.database.findOne({nome: mutavel})
