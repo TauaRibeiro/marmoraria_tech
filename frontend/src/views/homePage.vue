@@ -1,7 +1,6 @@
 Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
 <template>
     <div class="layout">
-      <!-- Sidebar -->
       <aside class="sidebar">
         <h2 class="sidebar__title">Marmoraria Tech</h2>
         <hr>
@@ -17,34 +16,31 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
         <button class="btn-logout btn">Sair</button>
       </aside>
   
-      <!-- Main Content -->
       <main class="content">
         <header class="content__header">
           <h1>Dashboard</h1>
           <button class="btn primary-btn">Novo Orçamento</button>
         </header>
   
-        <!-- Cards -->
         <div class="cards">
           <div class="card">
             <span class="card__label">Orçamentos Abertos</span>
-            <span class="card__value">2</span>
+            <span class="card__value">{{ numOrcamentosAbertos }}</span>
           </div>
           <div class="card">
             <span class="card__label">Em Andamento</span>
-            <span class="card__value">1</span>
+            <span class="card__value">{{ numOrcamentosEmAndamento }}</span>
           </div>
           <div class="card">
             <span class="card__label">Finalizados</span>
-            <span class="card__value">1</span>
+            <span class="card__value">{{ numOrcamentosFinalizados }}</span>
           </div>
           <div class="card">
             <span class="card__label">Total de Orçamentos</span>
-            <span class="card__value">4</span>
+            <span class="card__value">{{ numOrcamentosTotal }}</span>
           </div>
         </div>
   
-        <!-- Tabela -->
         <section class="table-section">
             <h2>Orçamentos Recentes</h2>
             <table class="table">
@@ -59,8 +55,10 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in data" :key="item.id">
-                <td>#{{ item.id }}</td>
+              <tr v-if="loading" class="loading"><td colspan="6">Carregando</td></tr>
+              <tr v-else-if="orcamentos.length === 0" class="empty"><td colspan="6">Nenhum Orcamento...</td></tr>
+              <tr v-else v-for="item in orcamentos" :key="item.id">
+                <td>{{ item.id }}</td>
                 <td>{{ item.cliente }}</td>
                 <td>{{ item.data }}</td>
                 <td><span>{{ item.status }}</span></td>
@@ -80,17 +78,48 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
   </template>
   
   <script>
+import router from '@/router';
+import store from '@/store';
+
     export default {
       data() {
         return {
-          data: [
-            { id: 1, cliente: 'João Silva', data: '2023-10-15', status: 'Aberto', statusClass: 'open', valor: '2.500,00' },
-            { id: 2, cliente: 'Maria Oliveira', data: '2023-10-14', status: 'Em Andamento', statusClass: 'progress', valor: '3.200,00' },
-            { id: 3, cliente: 'Carlos Santos', data: '2023-10-12', status: 'Finalizado', statusClass: 'done', valor: '1.800,00' },
-            { id: 4, cliente: 'Ana Ferreira', data: '2023-10-10', status: 'Aberto', statusClass: 'open', valor: '4.100,00' },
-          ],
-        };
+          
+        }
       },
+      computed: {
+        loading(){
+          return store.getters.loading
+        },
+        orcamentos(){
+          return store.getters.orcamentos
+        },
+        error(){
+          return store.getters.error
+        },
+        numOrcamentosAbertos(){
+          return this.orcamentos.reduce((orcamento, qtdAberto) => orcamento.status === 'Aberto' ? ++qtdAberto : qtdAberto, 0)
+        },
+        numOrcamentosFinalizados(){
+          return this.orcamentos.reduce((orcamento, qtdFinalizado) => orcamento.status === 'Finalizado' ? ++qtdFinalizado : qtdFinalizado, 0)
+        },
+        numOrcamentosEmAndamento(){
+          return this.orcamentos.reduce((orcamento, qtdEmAndamento) => orcamento.status === 'Em andamento' ? ++qtdEmAndamento : qtdEmAndamento, 0)
+        },
+        numOrcamentosTotal(){
+          return this.orcamentos.length
+        },
+      },
+      async mounted(){
+        await store.dispatch('fetchOrcamentos')
+      },
+      methods:{
+        logout(){
+          store.dispatch('auth/logout')
+          router.push('login')
+        },
+
+      }
     };
     </script>
     
@@ -210,11 +239,12 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
       border-color: rgba(212, 211, 211);
       border-style: solid;
     }
-    .table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
-    .table th, .table td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
-    .status { padding: 3px 8px; border-radius: 12px; font-size: 12px; }
-    .status--open { background: #fff3cd; color: #856404; }
-    .status--progress { background: #cce5ff; color: #004085; }
-    .status--done { background: #d4edda; color: #155724; }
+    
+    .loading, .empty{
+      margin: auto;
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
   </style>
   

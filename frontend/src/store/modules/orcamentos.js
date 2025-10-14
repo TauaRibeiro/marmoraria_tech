@@ -70,7 +70,12 @@ const actions = {
     },
     async fetchOrcamentos({ commit }){
         try{
-            const response = await api.get('/orcamento')
+            console.log(`Bearer ${localStorage.getItem('token')}`)
+            const response = await api.get('/orcamento', {
+                Headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            })
 
             if(response.status !== 200){
                 return {success: true, message: response.data.message}
@@ -109,9 +114,9 @@ const actions = {
 }
 
 const getters = {
-    orcamentos: (state) => {state.orcamentos},
-    error: (state) => {state.error},
-    loading: (state) => {state.loading},
+    orcamentos: (state) => {return state.orcamentos},
+    error: (state) => {return state.error},
+    loading: (state) => {return state.loading},
 }
 
 export default {

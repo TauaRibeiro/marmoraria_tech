@@ -24,15 +24,15 @@ const mutations = {
 const actions = {
   async login({ commit }, credencials) {
     try {
-      const response = await api.post('/auth/', {
+      const response = await api.post('/auth', {
         email: credencials.login,
         senha: credencials.senha,
       })
 
-      console.log('Resposta do login: ', response)
       const status = response.status
 
       if (status !== 200) {
+        console.log(response)
         return { success: false, message: 'Login ou senha inválidos' }
       }
 

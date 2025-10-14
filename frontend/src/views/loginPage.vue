@@ -69,9 +69,10 @@
 
                 console.log("Resultado do store: ", result)
                 if(result.success){
+                  console.log('Chamei o redirecionamento')
                     this.$router.push('/home')
                 }else{
-                    this.error = result.message
+                    alert(result.message)
                 }
 
                 this.loading = false
@@ -81,6 +82,13 @@
 </script>
 
 <style scoped>
-
+    .login-page { 
+      display: flex; 
+      min-height: 100vh;
+      min-width: 100vh;
+      background: #f6f6f6; 
+      justify-content: space-between;
+      width: 100cqmax;
+    }
 </style>
       

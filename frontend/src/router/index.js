@@ -8,7 +8,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/dashboard',
+      redirect: '/home',
     },
     {
       path: '/login',
@@ -17,10 +17,10 @@ const router = createRouter({
       meta: { requiresGuest: true },
     },
     {
-      path: '/dashboard',
+      path: '/home',
       name: 'dash-module',
       component: HomePage,
-      meta: {requiresGuest: true}
+      meta: {requiresAuth: true}
     }
   ],
 })
@@ -29,9 +29,8 @@ router.beforeEach((to, from, next) => {
   const isAuthenticated = store.getters['auth/isAuthenticated']
 
   if (to.meta.requiresAuth && !isAuthenticated) {
+    console.log('Caiu aqui')
     next('/login')
-  } else if (to.meta.requiresGuest && isAuthenticated) {
-    next('')
   } else {
     next()
   }
