@@ -25,19 +25,23 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
         <div class="cards">
           <div class="card">
             <span class="card__label">Orçamentos Abertos</span>
-            <span class="card__value">{{ numOrcamentosAbertos }}</span>
+            <span v-if="loading">-</span>
+            <span v-else class="card__value">{{ numOrcamentosAbertos }}</span>
           </div>
           <div class="card">
             <span class="card__label">Em Andamento</span>
-            <span class="card__value">{{ numOrcamentosEmAndamento }}</span>
+            <span v-if="loading">-</span>
+            <span v-else class="card__value">{{ numOrcamentosEmAndamento }}</span>
           </div>
           <div class="card">
             <span class="card__label">Finalizados</span>
-            <span class="card__value">{{ numOrcamentosFinalizados }}</span>
+            <span v-if="loading">-</span>
+            <span v-else class="card__value">{{ numOrcamentosFinalizados }}</span>
           </div>
           <div class="card">
             <span class="card__label">Total de Orçamentos</span>
-            <span class="card__value">{{ numOrcamentosTotal }}</span>
+            <span v-if="loading">-</span>
+            <span v-else class="card__value">{{ numOrcamentosTotal }}</span>
           </div>
         </div>
   
@@ -55,14 +59,14 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
               </tr>
             </thead>
             <tbody>
-              <tr v-if="loading" class="loading"><td colspan="6">Carregando</td></tr>
+              <tr v-if="loading" class="loading"><td colspan="6">Carregando...</td></tr>
               <tr v-else-if="orcamentos.length === 0" class="empty"><td colspan="6">Nenhum Orcamento...</td></tr>
               <tr v-else v-for="item in orcamentos" :key="item.id">
                 <td>{{ item.id }}</td>
                 <td>{{ item.cliente }}</td>
                 <td>{{ item.data }}</td>
                 <td><span>{{ item.status }}</span></td>
-                <td>R$ {{ item.valor }}</td>
+                <td>R$ {{ parseFloat(item.valorTotal).toFixed(2) }}</td>
                 <td>
                     <div class="options">
                         <button class="btn-options btn">Ver</button>
@@ -98,19 +102,41 @@ import store from '@/store';
           return store.getters.error
         },
         numOrcamentosAbertos(){
-          return this.orcamentos.reduce((orcamento, qtdAberto) => orcamento.status === 'Aberto' ? ++qtdAberto : qtdAberto, 0)
+          let qtd = 0
+          
+          for(let i = 0; i < this.orcamentos.length; i++){
+            if(this.orcamentos[i].status === 'Aberto'){
+              qtd++
+            }
+          }
+          return qtd
         },
         numOrcamentosFinalizados(){
-          return this.orcamentos.reduce((orcamento, qtdFinalizado) => orcamento.status === 'Finalizado' ? ++qtdFinalizado : qtdFinalizado, 0)
+          let qtd = 0
+
+          for(let i = 0; i < this.orcamentos.length; i++){
+            if(this.orcamentos[i].status === 'Finalizado'){
+              qtd++
+            }
+          }
+          return qtd
         },
         numOrcamentosEmAndamento(){
-          return this.orcamentos.reduce((orcamento, qtdEmAndamento) => orcamento.status === 'Em andamento' ? ++qtdEmAndamento : qtdEmAndamento, 0)
+          let qtd = 0
+
+          for(let i = 0; i < this.orcamentos.length; i++){
+            if(this.orcamentos[i].status === 'Em andamento'){
+              qtd++
+            }
+          }
+          return qtd
         },
         numOrcamentosTotal(){
           return this.orcamentos.length
         },
       },
       async mounted(){
+        console.log(this.loading)
         await store.dispatch('fetchOrcamentos')
       },
       methods:{

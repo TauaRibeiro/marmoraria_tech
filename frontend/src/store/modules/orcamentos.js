@@ -51,13 +51,11 @@ const actions = {
             const response = await api.post('/orcamento', {...orcamento})
 
             if(response.status === 400){
-                console.log(response)
                 commit('SET_ERROR', response.data.message)
                 return { success: false}
             }
 
             commit('ADD_ORCAMENTO', orcamento)
-
 
             return { success: true}
         }catch(error){
@@ -70,9 +68,11 @@ const actions = {
     },
     async fetchOrcamentos({ commit }){
         try{
-            console.log(`Bearer ${localStorage.getItem('token')}`)
+            commit('SET_LOADING', true)
+            commit('SET_ERROR', null)
+
             const response = await api.get('/orcamento', {
-                Headers: {
+                headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             })
@@ -87,6 +87,8 @@ const actions = {
         }catch(error){
             console.error(error)
             return {success: false, message: error.response?.data?.message || "Erro ao get dos orcamentos"}
+        }finally{
+            commit('SET_LOADING', false)
         }
     },
     async updateOrcamento({ commit }, orcamento){

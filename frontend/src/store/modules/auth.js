@@ -3,7 +3,7 @@ import api from '@/service/api'
 const state = {
   token: localStorage.getItem('token') || null,
   user: null,
-  isAuthenticated: false,
+  isAuthenticated: (localStorage.getItem('token')) ? true : false,
 }
 
 const mutations = {

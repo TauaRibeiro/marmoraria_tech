@@ -14,7 +14,7 @@ const router = createRouter({
       path: '/login',
       name: 'login-module',
       component: LoginPage,
-      meta: { requiresGuest: true },
+      meta: { requiresAuth: false },
     },
     {
       path: '/home',
@@ -28,10 +28,11 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   const isAuthenticated = store.getters['auth/isAuthenticated']
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    console.log('Caiu aqui')
+  if(!isAuthenticated && to.meta.requiresAuth){
     next('/login')
-  } else {
+  }else if(isAuthenticated && (to.fullPath === '/login')){
+    next('/home')
+  }else{
     next()
   }
 })
