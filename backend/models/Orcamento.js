@@ -14,7 +14,7 @@ const orcamentoSchema = new database.Schema({
     },
     valorFrete: {type: Number, default: 0},
     valorInstalacao: {type: Number, default: 0}
-});
+}, { timestamps: true});
 
 class Orcamento{
     static database = database.model('Orcamento', orcamentoSchema)

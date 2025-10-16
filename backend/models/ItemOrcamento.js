@@ -25,7 +25,7 @@ const itemOrcamentoSchema = new database.Schema({
     quantidadeItem: {type:Number, required: true},
     comprimentoItem: {type:Number, required: true},
     larguraItem: {type: Number, required: true},
-});
+}, {timestamps: true});
 
 class ItemOrcamento{
     static database = database.model('ItemOrcamento', itemOrcamentoSchema)

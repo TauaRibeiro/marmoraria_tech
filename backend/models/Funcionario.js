@@ -9,7 +9,7 @@ const funcionarioSchema = new database.Schema({
     email: {type: String, required: true, unique: true},
     senha: {type:String, required: true},
     eADM: {type: Boolean, required: true}
-});
+}, {timestamps: true});
 
 class Funcionario{
     static database = database.model('Funcionario', funcionarioSchema)
