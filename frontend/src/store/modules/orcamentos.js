@@ -72,8 +72,11 @@ const actions = {
                 }
             })
 
+            if(response.status === 401 || response.status === 403){
+                return {success: false, status: response.status, message: response.data.message}
+            }
             if(response.status !== 200){
-                return {success: true, message: response.data.message}
+                return {success: true, status: response.status, message: response.data.message}
             }
 
             commit('SET_ORCAMENTOS', response.data.result)
@@ -81,7 +84,7 @@ const actions = {
             return {success: true}
         }catch(error){
             console.error(error)
-            return {success: false, message: error.response?.data?.message || "Erro ao get dos orcamentos"}
+            return {success: false, status: error.response?.status || 500, message: error.response?.data?.message || "Erro ao get dos orcamentos"}
         }finally{
             commit('SET_LOADING', false)
         }
