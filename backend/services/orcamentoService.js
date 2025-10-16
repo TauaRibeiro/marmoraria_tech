@@ -152,8 +152,6 @@ exports.getOrcamentoById = async (id) => {
             const material = await Material.findById(itens[p].idMaterial)
             const preco = await PrecoMaterial.findById(itens[p].idPreco)
 
-            console.log(preco)
-
             valorPagamento += itens[p].comprimentoItem*itens[p].larguraItem*preco.valorMaterial*itens[p].quantidadeItem
 
             resultado.push({
