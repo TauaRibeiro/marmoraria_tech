@@ -73,7 +73,9 @@ exports.createOrcamento = async (data) => {
             valorPagamento,
             valorFrete,
             valorInstalacao,
-            valorTotal: novoOrcamento.valorPagamento + novoOrcamento.valorFrete + novoOrcamento.valorInstalacao
+            valorTotal: novoOrcamento.valorPagamento + novoOrcamento.valorFrete + novoOrcamento.valorInstalacao,
+            createdAt: novoOrcamento.createdAt,
+            updatedAt: novoOrcamento.updatedAt
         }
     } catch (error) {
         throw error
@@ -121,7 +123,9 @@ exports.getOrcamento = async () => {
                 valorPagamento,
                 valorFrete: orcamentos[i].valorFrete,
                 valorInstalacao: orcamentos[i].valorInstalacao,
-                valorTotal: valorPagamento + orcamentos[i].valorFrete + orcamentos[i].valorInstalacao
+                valorTotal: valorPagamento + orcamentos[i].valorFrete + orcamentos[i].valorInstalacao,
+                createdAt: orcamentos[i].createdAt,
+                updatedAt: orcamentos[i].updatedAt,
             })
         }
 
@@ -174,7 +178,9 @@ exports.getOrcamentoById = async (id) => {
             valorPagamento: valorPagamento,
             valorFrete: orcamento.valorFrete,
             valorInstalacao: orcamento.valorInstalacao,
-            valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + valorPagamento
+            valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + valorPagamento,
+            createdAt: orcamento.createdAt,
+            updatedAt: orcamento.updatedAt
         }
     }catch(error){
         throw error
@@ -355,7 +361,9 @@ exports.updateOrcamento = async (data) => {
             valorPagamento,
             valorFrete: orcamento.valorFrete,
             valorInstalacao: orcamento.valorInstalacao,
-            valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + valorPagamento
+            valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + valorPagamento,
+            createdAt: orcamento[i].createdAt,
+            updatedAt: orcamento[i].updatedAt,
         }
     }catch(error){
         throw error
