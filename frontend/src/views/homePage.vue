@@ -1,4 +1,3 @@
-Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
 <template>
     <div class="layout">
       <aside class="sidebar">
@@ -44,7 +43,7 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
             <span v-else class="card__value">{{ numOrcamentosTotal }}</span>
           </div>
         </div>
-  
+
         <section class="table-section">
             <h2>Orçamentos Recentes</h2>
             <table class="table">
@@ -73,9 +72,6 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
                         <button class="btn-options btn">Editar</button>
                     </div>
                 </td>
-                <div>
-
-                </div>
               </tr>
             </tbody>
           </table>
@@ -140,7 +136,14 @@ import store from '@/store';
       },
       async mounted(){
         console.log(this.loading)
-        await store.dispatch('fetchOrcamentos')
+        const result = await store.dispatch('fetchOrcamentos')
+
+        if(result.status === 401 || result.status === 403){
+          alert(result.message)
+          store.dispatch('auth/logout')
+          router.push('login')
+        }
+
       },
       methods:{
         logout(){
