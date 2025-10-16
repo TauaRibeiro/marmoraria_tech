@@ -1,90 +1,88 @@
 const Status = require('../models/Status')
+const Material = require('../models/Material')
+const Orcamento = require('../models/Orcamento')
+const DataError = require('../models/DataError')
 
-exports.criarStatus = async (nome) => {
+exports.criarStatus = async (nome, eMutavel) => {
     try{
-        if(nome.trim().length === 0 || nome.length < 3){
-            return {status: 400, message: "Nome inválido"}
-        }
-    
-        const result = await Status.create({nome})
+        const novoStatus = new Status(nome, eMutavel)
+        await novoStatus.create()
 
-        return {status: 201}
+        return JSON.parse(JSON.stringify(novoStatus))
     }catch(error){
-        console.error(`Erro ao criar status ${nome}: ${error}`);
-        return {status: 500, message: `Erro ao criar status ${nome}`}
+        throw error
     }
 }
 
-exports.getStatus = async () => {
+exports.getAllStatus = async () => {
     try{
-        const result = await Status.find();
-
-        return {status: 200, result}
-    }catch(err){
-        console.error('Erro ao pegar todos os status')
-
-        return {status: 500, message: "Erro ao pegar todos os status"}
+        const resultado = await Status.findAll()
+        
+        return resultado.map((status) => JSON.parse(JSON.stringify(status)))
+    }catch(error){
+        throw error
     }
 }
 
 exports.getStatusByID = async (id) => {
     try{
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
-            return {status: 400, message: "Id inválido"}
+        const resultado = await Status.findById(id)
+        
+        if(!resultado){
+            throw new DataError('Not Found', 404, 'Status não encontrado')
         }
-        const result = await Status.findById(id);
-
-        if(!result){
-            return {status: 404}
-        }
-
-        return {status: 200, result}
+        
+        return JSON.parse(JSON.stringify(resultado))
     }catch(error){
-        console.error(`Erro ao buscar Status com id ${id}: `, error);
-
-        return {status: 500, message: "Erro ao buscar Status"}
+        throw error
     }
 }
 
-exports.updateStatus = async (id, novoNome) => {
-    try {
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
-            return {status: 400, message: "Id inválido"}
+exports.updateStatus = async (id, novoNome, eMutavel) => {
+    try{
+        const statusAntigo = await Status.findById(id)
+        
+        if(!statusAntigo){
+            throw new DataError('Not Found', 404, 'Status não encontrado')
         }
 
-        if(novoNome.trim().length == 0){
-            return {status: 400, message: "Nome inválido"}
-        }
-        
-        const statusAtualizado = await Status.findByIdAndUpdate(id, {nome: novoNome})
-        
-        if(!statusAtualizado){
-            return {status: 404, message: `Status com id ${id} não encontrado`}
+        if(process.env[statusAntigo.nome.toUpperCase().replace(' ', '_')]){
+            throw new DataError('Validation error', 400, 'Não é possível atualizar um status padrão')
         }
 
-        return {status: 200}
-    } catch (error) {
-        console.error(`Erro ao atualizar status: `, error);
-        return {status: 500, message: "Erro ao atualizar status" }
+        statusAntigo.nome = novoNome
+        statusAntigo.eMutavel = eMutavel
+
+        await statusAntigo.update()
+
+        return JSON.parse(JSON.stringify(statusAntigo))
+    }catch(error){
+        throw error
     }
 }
 
 exports.deleteStatus = async (id) => {
-    try {
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
-            return {status: 400, message: "Id inválido"}
-        }
-
-        const statusDeletado = await Status.findByIdAndDelete(id)
+    try{
+        const status = await Status.findById(id)
         
-        if(!statusDeletado){
-            return {status: 404, message: "Status não encontrado"}
+        if(!status){
+            throw new DataError('Not Found', 404, 'Status não encontrado')
         }
 
-        return {status: 200}
-    }catch(error){
-        console.error(`Erro ao deletar os Status: ${id}`)
+        if(process.env[status.nome.toUpperCase().replace(' ', '_')]){
+            throw new DataError('Validation error', 400, 'Não é possível deletar um status padrão')
+        }  
 
-        return {status: 500, message: "Erro ao deletar os status"}
+        if((await Material.findManyBy({idStatus: id})).length > 0){
+            throw new DataError('Dependecy Error', 400, 'Existe pelo menos um material que utiliza esse status')
+        }
+
+        if((await Orcamento.findManyBy({idStatus: id})).length > 0){
+            throw new DataError('Dependecy Error', 400, 'Existe pelo menos um orçamento que utiliza esse status')
+        }
+
+        await status.delete()
+    }catch(error){
+        throw error
     }
 }

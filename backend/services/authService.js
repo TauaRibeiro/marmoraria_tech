@@ -1,34 +1,21 @@
 const jwt = require('jsonwebtoken')
-const Funcionario = require('../models/Funcionario')
 const SECRET = process.env.SECRET
-const validarEmail = require('../utils/validarEmail')
+const DataError = require('../models/DataError')
+const Funcionario = require('../models/Funcionario')
 
 exports.login = async (data) => {
     try{
         const {email, senha} = data
-    
-        if(!email || !senha){
-            return {status: 400, message: "Email e senha são obrigatórios para o login"}
-        }
-    
-        if(!validarEmail(email)){
-            return {status: 400, message: "Email inválido"}
-        }
-    
-        if(senha.length <= 2){
-            return {status: 400, message: "Senha inválida"}
-        }
-    
-        const usuario = await Funcionario.findOne({email, senha})
-    
+        
+        const usuario = (await Funcionario.findBy({email: email, senha: senha}))[0]
         if(!usuario){
-            return {status: 404, message: "Usuario não encontrado"}
+            throw new DataError('Not Found', 404, "Funcionário não encontrado")
         }
 
-        const token = jwt.sign({id: usuario._id, login: usuario.email}, SECRET, { expiresIn: "12h"})
+        const token = jwt.sign({id: usuario.id, eADM: usuario.eADM}, SECRET, { expiresIn: "12h"})
 
-        return {status: 200, result: token}
+        return token
     }catch(error){
-        console.error("Erro ao fazer login do usuario: ", error)
+        throw error
     }
 }

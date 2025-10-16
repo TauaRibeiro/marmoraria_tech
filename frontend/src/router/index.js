@@ -1,23 +1,42 @@
+import store from '@/store'
+import HomePage from '@/views/homePage.vue'
+import LoginPage from '@/views/loginPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView,
+      redirect: '/home',
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      path: '/login',
+      name: 'login-module',
+      component: LoginPage,
+      meta: { requiresAuth: false },
     },
+    {
+      path: '/home',
+      name: 'dash-module',
+      component: HomePage,
+      meta: {requiresAuth: true}
+    }
   ],
+})
+
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = store.getters['auth/isAuthenticated']
+
+  if(!isAuthenticated && to.meta.requiresAuth){
+    next('/login')
+  }else if(isAuthenticated && to.fullPath === '/login'){
+    next('/home')
+  }else if(from.fullPath === '/' && !isAuthenticated){
+    next('/login')
+  }else{
+    next()
+  }
 })
 
 export default router

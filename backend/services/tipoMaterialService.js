@@ -1,89 +1,79 @@
 const TipoMaterial = require('../models/TipoMaterial')
+const Material = require('../models/Material')
+const DataError = require('../models/DataError')
 
 exports.criarTipoMaterial = async (nome) => {
     try{
-        if(nome.trim().length === 0 || nome.length < 3){
-            return {status: 400, message: "Nome inválido"}
-        }
-    
-        const result = await TipoMaterial.create({nome})
+        const novoTipo = new TipoMaterial(nome)
 
-        return {status: 201, result}
+        await novoTipo.create()
+
+        return JSON.parse(JSON.stringify(novoTipo)) 
     }catch(error){
-        console.error(`Erro ao criar TipoMaterial ${nome}: ${error}`);
-        return {status: 500, message: `Erro ao criar status ${nome}`}
+        throw error
     }
 }
 
 exports.getTipoMaterial = async () => {
     try{
-        const result = await TipoMaterial.find();
+        const result = await TipoMaterial.findAll();
 
-        return {status: 200, result}
-    }catch(err){
-        console.error('Erro ao pegar todos os TipoMaterial')
-
-        return {status: 500, message: "Erro ao pegar todos os TipoMaterial"}
+        return result.map((tipo) => {
+            return JSON.parse(JSON.stringify(tipo))
+        })
+    }catch(error){
+        throw error
     }
 }
 
 exports.getTipoMaterialByID = async (id) => {
     try{
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
-            return {status: 400, message: "Id inválido"}
-        }
-        const result = await TipoMaterial.findById(id);
+        const result = await TipoMaterial.findById(id)
 
         if(!result){
-            return {status: 404}
+            throw new DataError('Not Found', 404, 'Tipo de material não encotrado')
         }
 
-        return {status: 200, result}
+        return JSON.parse(JSON.stringify(result))
     }catch(error){
-        console.error(`Erro ao buscar TipoMaterial com id ${id}: `, error);
-
-        return {status: 500, message: "Erro ao buscar TipoMaterial"}
+        throw error
     }
 }
 
 exports.updateTipoMaterial = async (id, novoNome) => {
     try {
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
-            return {status: 400, message: "Id inválido"}
+        const tipo = await TipoMaterial.findById(id)
+
+        if(!tipo){
+            throw new DataError('Not Found', 404, 'Tipo não encotrado')
         }
 
-        if(novoNome.trim().length == 0){
-            return {status: 400, message: "Nome inválido"}
-        }
-        
-        const statusAtualizado = await TipoMaterial.findByIdAndUpdate(id, {nome: novoNome})
-        
-        if(!statusAtualizado){
-            return {status: 404, message: `TipoMaterial com id ${id} não encontrado`}
-        }
+        tipo.nome = novoNome
 
-        return {status: 200}
+        await tipo.update()
+
+        return JSON.parse(JSON.stringify(tipo))
     } catch (error) {
-        console.error(`Erro ao atualizar TipoMaterial: `, error);
-        return {status: 500, message: "Erro ao atualizar TipoMaterial" }
+        throw error
     }
 }
 
 exports.deleteTipoMaterial = async (id) => {
     try {
-        if(id.trim().length === 0 || id.length < 24 || id.length > 24){
-            return {status: 400, message: "Id inválido"}
-        }
-
-        const statusDeletado = await TipoMaterial.findByIdAndDelete(id)
+        const tipo = await TipoMaterial.findById(id)
         
-        if(!statusDeletado){
-            return {status: 404, message: "TipoMaterial não encontrado"}
+        if(!tipo){
+            throw new DataError('Not Found', 404, 'Tipo não encontrado')
         }
 
-        return {status: 200}
+        const materiais = await Material.findManyBy({idTipo: tipo.id})
+
+        if(materiais.length !== 0){
+            throw new DataError('Dependecy Error', 400, 'Existe pelo menos um material que utiliza este tipo')
+        }
+
+        await tipo.delete()
     }catch(error){
-        console.error(`Erro ao deletar TipoMaterial ${id}`)
-        return {status: 500, message: "Erro ao deletar TipoMaterial"}
+        throw error
     }
 }

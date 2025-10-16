@@ -90,7 +90,7 @@ PORT = 3000
 SECRET = "<STRING_CHAVE_PRIVADA>"
 ~~~~
 
-* Após a criação do arquivo basta rodar o seguinte comando `npm run backend`, e o servidor será inicializado no seguinte endereço `http://127.0.0.1:3000/`
+* Após a criação do arquivo basta rodar o seguinte comando `npm run dev`, e o servidor será inicializado no seguinte endereço `http://127.0.0.1:3000/`
 
 * Caso o comando acima dê errado, por favor verifique se o node está na versão `v22.17.0` e o npm na `10.9.2`.
 

@@ -1,82 +1,133 @@
 const statusService = require('../services/statusService')
+const validarIdMongoose = require('../utils/validarIdMongoose')
+const eNumerico = require('../utils/eNumerico')
 
-exports.getAll = async (req, res) => {
-    const resultService = await statusService.getStatus();
+exports.getAll = async (_, res) => {
+    try{
+        const result = await statusService.getAllStatus()
 
-    if(resultService.status === 200){
-        return res.status(200).json({result: resultService.result})
+        return res.status(200).json({result})
+    }catch(error){
+        if(!error.status){
+            console.error(error)
+            return res.status(500).json({name: "Uncaugth Error", message: "Erro interno não tratado"})
+        }
+
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    console.log('Deu erro!!')
-    console.log(resultService)
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.getById = async (req, res) => {
-    const {id} = req.params
+    try{
+        const id = req.params.id.trim()
 
-    if(!id){
-        return res.status(400).json({message: "O id é necessário"})
-    }
+        if(!validarIdMongoose(id)){
+            return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
+        }
 
-    const resultService = await statusService.getStatusByID(id)
+        const result = await statusService.getStatusByID(id)
 
-    if(resultService.status === 200){
-        return res.status(200).json({result: resultService.result})
-    }
+        return res.status(200).json({result})
+    }catch(error){
+        if(!error.status){
+            console.error(error)
+            return res.status(500).json({name: "Uncaugth Error", message: "Erro interno não tratado"})
+        }
 
-    if(resultService.status === 404){
-        return res.status(404).json({message: "Id não encontrado"})
-    }
-
-    return res.status(resultService.status).json({message: resultService.message})
+        return res.status(error.status).json({name: error.name, message: error.message})
+    }    
 }
 
 exports.create = async (req, res) => {
-    const {nome} = req.body;
+    try{
+        let {nome, eMutavel} = req.body
+        
+        if(!nome || !eMutavel){
+            return res.status(400).json({name: "Parameter Error", message: "Nome e eMutável são obrigatórios"})
+        }
 
-    if(!nome){
-        return res.status(400).json({message: "Nome é necessário"})
+        nome = nome.trim()
+        eMutavel = (typeof(eMutavel) === 'number') ? eMutavel.toString() : eMutavel.trim()
+
+        if(nome.length === 0){
+            return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
+        }
+
+        if(!eNumerico(eMutavel) || (eMutavel != '1' && eMutavel != '0')){
+            return res.status(400).json({name: "Validation Error", message: "Valor de eMutavel inválido"})
+        }
+
+        eMutavel = (eMutavel == '1') ? true : false
+
+        const result = await statusService.criarStatus(nome, eMutavel)
+
+        return res.status(201).json({result})
+    }catch(error){
+        if(!error.status){
+            console.error(error)
+            return res.status(500).json({name: "Uncaugth Error", message: "Erro interno não tratado"})
+        }
+
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    const resultService = await statusService.criarStatus(nome)
-
-    if(resultService.status === 201){
-        return res.sendStatus(201)
-    }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.update = async (req, res) => {
-    const {id} = req.params
-    const {nome} = req.body
+    try{
+        const id = req.params.id.trim()
+        let {nome, eMutavel} = req.body
+    
+        if(!validarIdMongoose(id)){
+            return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
+        }
+        
+        if(!nome || !eMutavel){
+            return res.status(400).json({name: "Parameter Error", message: "Nome e eMutável são obrigatórios"})
+        }
 
-    if(!id || !nome){
-        return res.status(400).json({message: "id e nome são necessários"})
+        nome = nome.trim()
+        eMutavel = (typeof(eMutavel) === 'number') ? eMutavel.toString() : eMutavel.trim()
+
+        if(nome.length === 0){
+            return res.status(400).json({name: "Validation Error", message: "Nome inválido"})
+        }
+
+        if(!eNumerico(eMutavel) || (eMutavel != '1' && eMutavel != '0')){
+            return res.status(400).json({name: "Validation Error", message: "Valor de eMutavel inválido"})
+        }
+
+        eMutavel = (eMutavel == '1') ? true : false
+    
+        const result = await statusService.updateStatus(id, nome, eMutavel)
+    
+        return res.status(200).json({result})
+    }catch(error){
+        if(!error.status){
+            console.error(error)
+            return res.status(500).json({name: "Uncaugth Error", message: "Erro interno não tratado"})
+        }
+
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    const resultService = await statusService.updateStatus(id, nome)
-
-    if(resultService.status === 200){
-       return res.sendStatus(200)
-    }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }
 
 exports.delete = async (req, res) => {
-    const {id} = req.params
+    try{
+        const id = req.params.id.trim()
 
-    if(!id){
-        return res.status(400).json({message: "id é necessário"})
+        if(!validarIdMongoose(id)){
+            return res.status(400).json({name: "Invalid Id", message: "Id inválido"})
+        }
+
+        await statusService.deleteStatus(id)
+
+        return res.sendStatus(200)
+    }catch(error){
+        if(!error.status){
+            console.error(error)
+            return res.status(500).json({name: "Uncaugth Error", message: "Erro interno não tratado"})
+        }
+
+        return res.status(error.status).json({name: error.name, message: error.message})
     }
-
-    const resultService = await statusService.deleteStatus(id)
-
-    if(!resultService.status === 200){
-        return res.sendStatus(200);
-    }
-
-    return res.status(resultService.status).json({message: resultService.message})
 }

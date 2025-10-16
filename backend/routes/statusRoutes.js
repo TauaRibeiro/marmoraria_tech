@@ -6,7 +6,7 @@ const autenticarToken = require('../middleware/auth')
 router.get('/', autenticarToken, statusController.getAll)
 router.get('/:id', autenticarToken, statusController.getById)
 router.post('/', autenticarToken, statusController.create)
-router.patch('/:id', autenticarToken, statusController.update)
+router.put('/:id', autenticarToken, statusController.update)
 router.delete('/:id', autenticarToken, statusController.delete)
 
 module.exports = router
