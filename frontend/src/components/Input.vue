@@ -28,6 +28,8 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+  input {
+    border: 1px solid rgb(77, 76, 76);
+  }
 </style>
