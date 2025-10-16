@@ -1,7 +1,7 @@
 import api from '@/service/api'
 
 const state = {
-    orcamentos: localStorage.getItem('orcamentos') || [],
+    orcamentos: [],
     error: null,
     loading: false,
 }
@@ -9,15 +9,12 @@ const state = {
 const mutations = {
     SET_ORCAMENTOS(state, orcamentos){
         state.orcamentos = orcamentos
-        localStorage.setItem('orcamentos', orcamentos)
     },
     ADD_ORCAMENTO(state, orcamento){
         state.orcamentos.push(orcamento)
-        localStorage.setItem('orcamentos', state.orcamentos)
     },
     REMOVE_ORCAMENTO(state, orcamento){
         state.orcamentos = state.orcamentos.filter((o) => o.id !== orcamento.id)
-        localStorage.setItem('orcamentos', state.orcamentos)
     },
     UPDATE_ORCAMENTO(state, orcamento){
         state.orcamentos = state.orcamentos.map((o) => {
@@ -28,11 +25,9 @@ const mutations = {
             return o
         })
 
-        localStorage.setItem('orcamentos', state.orcamentos)
     },
     CLEAR_ORCAMENTOS(state){
         state.orcamentos = []
-        localStorage.removeItem('orcamentos')
     },
     SET_ERROR(state, error){
         state.error = error

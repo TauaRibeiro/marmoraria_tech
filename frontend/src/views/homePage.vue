@@ -13,7 +13,7 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
             <button class="sidebar-btn btn">Funcionarios</button>
         </nav>
         <hr>
-        <button class="btn-logout btn">Sair</button>
+        <button @click="logout" class="btn-logout btn">Sair</button>
       </aside>
   
       <main class="content">
@@ -61,18 +61,21 @@ Poderia recriar essa página para utilizar bootstrap ao invés de CSS padrão?
             <tbody>
               <tr v-if="loading" class="loading"><td colspan="6">Carregando...</td></tr>
               <tr v-else-if="orcamentos.length === 0" class="empty"><td colspan="6">Nenhum Orcamento...</td></tr>
-              <tr v-else v-for="item in orcamentos" :key="item.id">
-                <td>{{ item.id }}</td>
-                <td>{{ item.cliente }}</td>
-                <td>{{ item.data }}</td>
-                <td><span>{{ item.status }}</span></td>
-                <td>R$ {{ parseFloat(item.valorTotal).toFixed(2) }}</td>
-                <td>
+              <tr v-else v-for="(item, index) in orcamentos" :key="item.id">
+                <td v-if="index < 5">{{ item.id }}</td>
+                <td v-if="index < 5">{{ item.cliente }}</td>
+                <td v-if="index < 5">{{ new Date(item.updatedAt).toLocaleDateString() }}</td>
+                <td v-if="index < 5"><span>{{ item.status }}</span></td>
+                <td v-if="index < 5">R$ {{ parseFloat(item.valorTotal).toFixed(2)}}</td>
+                <td v-if="index < 5">
                     <div class="options">
                         <button class="btn-options btn">Ver</button>
                         <button class="btn-options btn">Editar</button>
                     </div>
                 </td>
+                <div>
+
+                </div>
               </tr>
             </tbody>
           </table>
