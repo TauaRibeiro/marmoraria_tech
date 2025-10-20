@@ -8,7 +8,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/home',
+      redirect: '/login',
     },
     {
       path: '/login',
@@ -32,11 +32,10 @@ router.beforeEach((to, from, next) => {
     next('/login')
   }else if(isAuthenticated && to.fullPath === '/login'){
     next('/home')
-  }else if(from.fullPath === '/' && !isAuthenticated){
-    next('/login')
   }else{
     next()
   }
 })
+
 
 export default router
