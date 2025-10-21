@@ -1,6 +1,7 @@
 import store from '@/store'
 import HomePage from '@/views/homePage.vue'
 import LoginPage from '@/views/loginPage.vue'
+import orcamentosPage from '@/views/orcamentosPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -8,7 +9,7 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/login',
+      redirect: '/home',
     },
     {
       path: '/login',
@@ -21,6 +22,12 @@ const router = createRouter({
       name: 'dash-module',
       component: HomePage,
       meta: {requiresAuth: true}
+    },
+    {
+      path: '/orcamento',
+      name: 'orcamento-module',
+      component: orcamentosPage,
+      meta: {requiresAuth: false}
     }
   ],
 })
@@ -31,7 +38,7 @@ router.beforeEach((to, from, next) => {
   if(!isAuthenticated && to.meta.requiresAuth){
     next('/login')
   }else if(isAuthenticated && to.fullPath === '/login'){
-    next('/home')
+    next('/orcamento')
   }else{
     next()
   }
