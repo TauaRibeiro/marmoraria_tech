@@ -1,17 +1,14 @@
 <template>
   <div class="input-container">
-    <label class="form-label fw-semibold w-100" :for="id">
-      <h2><slot></slot></h2>
       <input 
         :type 
         :placeholder 
-        class="form-control" 
+        :class="'form-control '+ 'cls'" 
         :id 
         :required 
         autocomplete="off"
         @input="$emit('update:modelValue', $event.target.value)"
       />
-    </label>
   </div>
 </template>
 
@@ -20,10 +17,17 @@ export default {
   name: 'DefaultInput',
   props: {
     type: String,
-    placeholder: String,
+    placeholder: { 
+      type: String, 
+      default: ''
+    },
     id: String,
     required: Boolean,
     modelValue: String,
+    cls: {
+      type: String,
+      default: ''
+    }
   },
 }
 </script>
