@@ -10,22 +10,30 @@
 
         <form @submit.prevent="handleLogin" class="login-form">
           <div class="mb-3 text-start">
-            <DefaultInput
-              type="email"
-              id="login"
-              placeholder="seu@email.com"
-              :required= true
-              v-model="credentials.login"
-              >Email</DefaultInput>
+            <label for="login" class="form-label w-100">
+              <h2>Login</h2>
+              <DefaultInput
+                type="email"
+                id="login"
+                placeholder="seu@email.com"
+                :required= true
+                v-model="credentials.login"
+                cls="w-100"
+                />
+            </label>
           </div>
 
           <div class="mb-3 text-start">
-            <DefaultInput 
-              type="password"
-              id="senha"
-              :required=true
-              v-model="credentials.senha"
-            >Senha</DefaultInput>
+            <label for="senha" class="form-label w-100">
+              <h2>Senha</h2>
+              <DefaultInput 
+                type="password"
+                id="senha"
+                :required=true
+                v-model="credentials.senha"
+                cls="w-100"
+              />
+            </label>
           </div>
 
           <SubmitButton :disabled=loading>Entrar</SubmitButton>
