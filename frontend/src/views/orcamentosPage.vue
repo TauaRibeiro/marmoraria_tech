@@ -39,14 +39,14 @@
               </datalist>
             </label>
             
-            <label for="cliente">
-              <b>Cliente:</b> 
-              <input type="text" id="cliente" name="cliente">
+            <label for="nome">
+              <b>Nome do clinte:</b> 
+              <input type="text" id="nome" name="nome">
             </label>
   
-            <label for="data">
-              <b>Data:</b> 
-              <input type="Date" id="data" name="data">
+            <label for="cpf">
+              <b>CPF:</b> 
+              <input type="text" id="cpf" name="cpf">
             </label>
           </div>
 
@@ -76,10 +76,44 @@
 </template>
 
 <script>
+import router from '@/router';
+import store from '@/store';
+
 export default {
   name: 'orcamentoPage',  
   data(){
   
+  },
+  computed: {
+    loading(){
+      return store.getters.loading
+    },
+    error(){
+      return store.getters.error
+    },
+    status(){
+      return store.getters.status
+    },
+  },
+  async mounted(){
+    const resultStatus = await store.dispatch('fetchStatus')
+
+    if(resultStatus.status === 401 || resultStatus.status === 403){
+      alert(resultStatus.message)
+      store.dispatch('auth/logout')
+      router.push('login')
+    }
+
+    const resultOrcamento = await store.dispatch('fetchOrcamentos')
+
+    if(resultOrcamento.status === 401 || resultOrcamento.status === 403){
+      alert(resultOrcamento.message)
+      store.dispatch('auth/logout')
+      router.push('login')
+    }
+  },
+  methods: {
+    async buscarOrcamentos(){}
   },
 }
 </script>
