@@ -22,14 +22,14 @@
         </header>
 
         <div class="search-bar d-flex flex-row justify-content-between">
-          <div class="search-filds">
-            <label for="id">
-              <b>Id:</b> 
+          <div class="search-filds d-flex flex-row">
+            <label for="id" id="idLabel">
+              <b>Id:</b><br>
               <input type="text" id="id" name="id">
             </label>
             
             <label for="status">
-              <b>Status:</b> 
+              <b>Status:</b><br> 
               <input type="text" id="status" list="tipos-status" name="status">
               <datalist id="tipos-status">
                 <option value="Em andamento"></option>
@@ -40,14 +40,24 @@
             </label>
             
             <label for="nome">
-              <b>Nome do clinte:</b> 
+              <b>Nome do clinte:</b> <br>
               <input type="text" id="nome" name="nome">
             </label>
   
             <label for="cpf">
-              <b>CPF:</b> 
+              <b>CPF:</b> <br>
               <input type="text" id="cpf" name="cpf">
             </label>
+
+            <label for="email">
+            <b>Email:</b><br>
+            <input type="email" id="email" name="email">
+          </label>
+
+          <label for="telefone">
+            <b>Telefone:</b><br>
+            <input type="text" id="telefone" name="telefone">
+          </label>
           </div>
 
           <button class="btn btn-primary">Pesquisar</button>
@@ -230,6 +240,7 @@ export default {
     border-color: rgba(212, 211, 211);
     border-width: 1px;
     margin-bottom: 30px;
+    row-gap: 10px;
   }
 
   input {
@@ -237,10 +248,16 @@ export default {
     border-style: solid;
     border-color: rgb(59, 59, 59);
     border-width: 1px;
-    margin-right: 20px;
-    margin-left: 10px;
     padding: 3px;
   }
+
+  .search-filds {
+    column-gap: 20px;
+  }
+
+  /* b {
+    margin-left: 10px;
+  } */
 
   /* ORÇAMENTOS LIST */
   .orcamentos-list {
