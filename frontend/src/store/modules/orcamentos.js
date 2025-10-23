@@ -63,6 +63,10 @@ const actions = {
     },
     async fetchOrcamentos({ commit }){
         try{
+            if(state.orcamentos.length > 0){
+                return {success: true}
+            }
+            
             commit('SET_LOADING', true)
             commit('SET_ERROR', null)
 
