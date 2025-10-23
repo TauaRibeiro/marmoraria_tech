@@ -18,43 +18,69 @@
       <main class="content">
         <header class="content__header">
           <h1>Orçamentos</h1>
-          <button class="btn primary-btn">Novo Orçamento +</button>
+          <button class="btn btn-primary">Novo Orçamento +</button>
         </header>
 
-        <div class="search-bar">
-          <b>Id: </b> 
-          <input type="text">
+        <div class="search-bar d-flex flex-row justify-content-between">
+          <div class="search-filds">
+            <label for="id">
+              <b>Id:</b> 
+              <input type="text" id="id" name="id">
+            </label>
+            
+            <label for="status">
+              <b>Status:</b> 
+              <input type="text" id="status" list="tipos-status" name="status">
+              <datalist id="tipos-status">
+                <option value="Em andamento"></option>
+                <option value="Finalizado"></option>
+                <option value="Cancelado"></option>
+                <option value="Aguardando pagamento"></option>
+              </datalist>
+            </label>
+            
+            <label for="cliente">
+              <b>Cliente:</b> 
+              <input type="text" id="cliente" name="cliente">
+            </label>
+  
+            <label for="data">
+              <b>Data:</b> 
+              <input type="Date" id="data" name="data">
+            </label>
+          </div>
+
+          <button class="btn btn-primary">Pesquisar</button>
         </div>
 
         <div class="orcamentos-list">
-          <div>teste</div>
-          <div>teste</div>
-          <div>teste</div>
-          <div>teste</div> 
-          <div>teste</div> 
-          <div>teste</div> 
-          <div>teste</div> 
-          <div>teste</div> 
-          <div>teste</div> 
-          <div>teste</div> 
-          <div>teste</div> 
-          <div>teste</div>
-          <div>teste</div>
+          <div class="card">
+            <div class="card-header">
+              <h2>9289328302923892</h2>
+            </div>
+            <div class="card-body">
+              <p><b>Cliente:</b> João</p>
+              <p><b>Status:</b> Em andamento</p>
+              <p><b>Valor Total:</b> R$ 2.500,00</p>
+              <p><b>Data orçamento:</b> 06/05/2020</p>
+            </div>
+            <div class="card-footer">
+              <button class="btn btn-primary">Ver</button>
+              <button class="btn btn-primary">Editar</button>
+              <button class="btn btn-danger">Deletar</button>
+            </div>
+          </div>
         </div>
       </main>
     </div>
 </template>
 
 <script>
-import Input from '@/components/Input.vue';
 export default {
   name: 'orcamentoPage',  
   data(){
   
   },
-  components: {
-    Input,
-  }
 }
 </script>
 
@@ -116,8 +142,8 @@ export default {
   }
   
   .btn {
-    border-radius: 5px;
-    padding: 10px;
+    /* border-radius: 5px;
+    padding: 10px; */
     text-align: left;
   }
   
@@ -177,6 +203,9 @@ export default {
     border-style: solid;
     border-color: rgb(59, 59, 59);
     border-width: 1px;
+    margin-right: 20px;
+    margin-left: 10px;
+    padding: 3px;
   }
 
   /* ORÇAMENTOS LIST */
@@ -188,8 +217,17 @@ export default {
     border-style: solid;
     border-color: rgba(212, 211, 211);
     border-width: 1px;
-    max-height: 300px;
+    max-height: 500px;
     overflow-y: auto;
+  }
+
+  .card-body {
+    font-size: large;
+  }
+
+  .card-footer {
+    display: flex;
+    gap: 10px;
   }
 
 </style>
