@@ -25,12 +25,12 @@
           <div class="search-filds d-flex flex-row">
             <label for="id" id="idLabel">
               <b>Id:</b><br>
-              <input type="text" id="id" name="id">
+              <input type="text" id="id" name="id" v-model="search.idOrcamento">
             </label>
             
             <label for="status">
               <b>Status:</b><br> 
-              <input type="text" id="status" list="tipos-status" name="status">
+              <input type="text" id="status" list="tipos-status" name="status" v-model="search.statusOrcamento">
               <datalist id="tipos-status">
                 <option value="Em andamento"></option>
                 <option value="Finalizado"></option>
@@ -41,26 +41,26 @@
             
             <label for="nome">
               <b>Nome do clinte:</b> <br>
-              <input type="text" id="nome" name="nome">
+              <input type="text" id="nome" name="nome" v-model="search.nomeCliente">
             </label>
   
             <label for="cpf">
               <b>CPF:</b> <br>
-              <input type="text" id="cpf" name="cpf">
+              <input type="text" id="cpf" name="cpf" v-model="search.cpfCliente">
             </label>
 
             <label for="email">
             <b>Email:</b><br>
-            <input type="email" id="email" name="email">
+            <input type="email" id="email" name="email" v-model="search.emailCliente">
           </label>
 
           <label for="telefone">
             <b>Telefone:</b><br>
-            <input type="text" id="telefone" name="telefone">
+            <input type="text" id="telefone" name="telefone" v-model="search.telefoneCliente">
           </label>
           </div>
 
-          <button class="btn btn-primary">Pesquisar</button>
+          <button class="btn btn-primary" @click="setarFiltro">Pesquisar</button>
         </div>
 
         <div class="orcamentos-list">
@@ -92,7 +92,16 @@ import store from '@/store';
 export default {
   name: 'orcamentoPage',  
   data(){
-  
+    return {
+      search: {
+        idOrcamento: "",
+        statusOrcamento: "",
+        nomeCliente: "",
+        cpfCliente: "",
+        emailCliente: "",
+        telefoneCliente: "",
+      }
+    }
   },
   computed: {
     loading(){
@@ -123,7 +132,9 @@ export default {
     }
   },
   methods: {
-    async buscarOrcamentos(){}
+    async setarFiltro(){
+      
+    }
   },
 }
 </script>

@@ -86,18 +86,13 @@
   export default {
     data() {
       return {
-        
+        loading: false,
+        error: "",
       }
     },
     computed: {
-      loading(){
-        return store.getters.loading
-      },
       orcamentos(){
         return store.getters.orcamentos
-      },
-      error(){
-        return store.getters.error
       },
       numOrcamentosAbertos(){
         let qtd = 0
@@ -134,15 +129,17 @@
       },
     },
     async mounted(){
-      console.log(this.loading)
+      this.loading = true
       const result = await store.dispatch('fetchOrcamentos')
 
       if(result.status === 401 || result.status === 403){
-        alert(result.message)
+        this.error = result.message
+        alert(this.error)
         store.dispatch('auth/logout')
         router.push('login')
       }
 
+      this.loading = false
     },
     methods:{
       logout(){
