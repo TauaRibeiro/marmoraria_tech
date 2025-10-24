@@ -2,8 +2,6 @@ import api from '@/service/api'
 
 const state = {
     orcamentos: [],
-    error: null,
-    loading: false,
 }
 
 const mutations = {
@@ -29,24 +27,14 @@ const mutations = {
     CLEAR_ORCAMENTOS(state){
         state.orcamentos = []
     },
-    SET_ERROR(state, error){
-        state.error = error
-    },
-    SET_LOADING(state, loading){
-        state.loading = loading
-    }
 }
 
 const actions = {
     async cadastrarOrcamento({ commit }, orcamento){
-        commit("SET_ERROR", null)
-        commit("SET_LOADING", false)
-
         try{
             const response = await api.post('/orcamento', {...orcamento})
 
             if(response.status === 400){
-                commit('SET_ERROR', response.data.message)
                 return { success: false}
             }
 
@@ -55,10 +43,7 @@ const actions = {
             return { success: true}
         }catch(error){
             console.error(error)
-            commit('SET_ERROR', error.response?.data?.message || "Erro ao fazer o cadastro do orcamento")
             return {success: false, message: error.response?.data?.message || "Erro ao fazer o cadastro do orcamento"}
-        }finally{
-            commit('SET_LOADING', false)
         }
     },
     async fetchOrcamentos({ commit }){
@@ -66,9 +51,6 @@ const actions = {
             if(state.orcamentos.length > 0){
                 return {success: true}
             }
-            
-            commit('SET_LOADING', true)
-            commit('SET_ERROR', null)
 
             const response = await api.get('/orcamento', {
                 headers: {
@@ -89,8 +71,6 @@ const actions = {
         }catch(error){
             console.error(error)
             return {success: false, status: error.response?.status || 500, message: error.response?.data?.message || "Erro ao get dos orcamentos"}
-        }finally{
-            commit('SET_LOADING', false)
         }
     },
     async updateOrcamento({ commit }, orcamento){
@@ -119,8 +99,6 @@ const actions = {
 
 const getters = {
     orcamentos: (state) => {return state.orcamentos},
-    error: (state) => {return state.error},
-    loading: (state) => {return state.loading},
 }
 
 export default {
