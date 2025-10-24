@@ -29,6 +29,8 @@ exports.createOrcamento = async (data) => {
         await novoOrcamento.create()
 
         const novosItens = []
+        const atualizarMateriais = []
+
         for(let i = 0; i < itens.length; i++){
             const { idAmbiente, idMaterial, quantidadeItem, comprimentoItem, larguraItem } = itens[i]
 
@@ -43,6 +45,12 @@ exports.createOrcamento = async (data) => {
             if(!material){
                 throw new DataError('Not Found', 404, 'Material não encontrado')
             }
+
+            if(material.estoque < (comprimentoItem*larguraItem*quantidadeItem)){
+                throw new DataError('Validation Error', 400, 'Não possui estoque para este material')
+            }
+
+            atualizarMateriais.push(material)
 
             const preco = (await PrecoMaterial.findCurrentPrices({idMaterial}))[0]
 
@@ -65,9 +73,16 @@ exports.createOrcamento = async (data) => {
         novoOrcamento.valorPagamento = valorPagamento
         await novoOrcamento.update()
 
+        for(let i = 0 ; i < updateMateriais.length; i++){
+            await updateMateriais[i].update()
+        }
+
         return {
             id: novoOrcamento.id,
             cliente: cliente.nome,
+            cpf: cliente.cpf,
+            email: cliente.email,
+            telefone: cliente.telefone
             status: status.nome, 
             itens: novosItens, 
             valorPagamento,
@@ -118,6 +133,9 @@ exports.getOrcamento = async () => {
             result.push({
                 id: orcamentos[i].id,
                 cliente: cliente.nome,
+                cpf: cliente.cpf,
+                email: cliente.email,
+                telefone; cliente.telefone,
                 status: status.nome, 
                 itens, 
                 valorPagamento,
@@ -171,6 +189,9 @@ exports.getOrcamentoById = async (id) => {
         return {
             id: orcamento.id,
             cliente: cliente.nome,
+            cpf: cliente.cpf,
+            email: cliente.email,
+            telefone: cliente.telefone,
             status: status.nome, 
             itens: resultado,
             valorPagamento: valorPagamento,
@@ -220,50 +241,6 @@ exports.updateOrcamento = async (data) => {
             itens[i] = new ItemOrcamento(orcamento.id, idAmbiente, idMaterial, preco.id, quantidadeItem, comprimentoItem, larguraItem)
         }
 
-        if(!statusAntigo.eMutavel){
-            orcamento.idStatus = status.id
-            
-            await orcamento.update()
-            
-            valorPagamento = 0
-            
-            for(let i = 0; i < itensAntigos.length; i++){
-                const preco = await PrecoMaterial.findById(itensAntigos[i].idPreco)
-                
-                valorPagamento += preco.valorMaterial
-            }
-            
-            let resultado = []
-            
-            for(let i = 0; i < itensAntigos.length; i++){
-                const ambiente = await Ambiente.findById(itensAntigos[i].idAmbiente)
-                const material = await Material.findById(itensAntigos[i].idMaterial)
-                const preco = await PrecoMaterial.findById(itensAntigos[i].idPreco)
-                
-                resultado.push({
-                    ambiente: ambiente.nome,
-                    material: material.nome,
-                    valorMaterial: preco.valorMaterial,
-                    quantidadeItem: itensAntigos[i].quantidadeItem,
-                    comprimentoItem: itensAntigos[i].comprimentoItem,
-                    larguraItem: itensAntigos[i].larguraItem,
-                    subTotal: itensAntigos[i].comprimentoItem*itensAntigos[i].larguraItem*preco.valorMaterial*itensAntigos[i].quantidadeItem
-                })
-            }
-
-            const clienteAntigo = await Cliente.findById(orcamento.idCliente)
-            
-            return {
-                cliente: clienteAntigo.nome,
-                status: status.nome, 
-                itens: resultado,
-                valorPagamento,
-                valorFrete: orcamento.valorFrete,
-                valorInstalacao: orcamento.valorInstalacao,
-                valorTotal: orcamento.valorFrete + orcamento.valorInstalacao + valorPagamento
-            }
-        }
-
         const listaUpdate = []
 
         for(let i = 0; i < itensAntigos.length; i++){
@@ -271,11 +248,14 @@ exports.updateOrcamento = async (data) => {
 
             for(let p = 0; p < itens.length; p++){
                 if(itensAntigos[i].idMaterial.toString() === itens[p].idMaterial.toString()){
+                    const qtdMaterialAntigo = itensAntigos[i].quantidadeItem * itensAntigos[i].comprimentoItem * itensAntigos[i].larguraItem
+                    const qtdMaterial = itens[p].quantidadeItem * itens[p].comprimentoItem * itensAntigos[p].larguraItem
+
                     achou = true
 
-                    if(itensAntigos[i].quantidadeItem !== itens[p].quantidadeItem){
+                    if(qtdMaterialAntigo !== qtdMaterial){
                         const material = await Material.findById(itensAntigos[i].idMaterial)
-                        material.estoque += itensAntigos[i].quantidadeItem - itens[p].quantidadeItem
+                        material.estoque += qtdMaterialAntigo - qtdMaterial
 
                         if(material.estoque < 0){
                             throw new DataError('Validation Error', 400, `Não há quantidade suficiente em estoque para o item: ${material.nome}`)
@@ -313,8 +293,9 @@ exports.updateOrcamento = async (data) => {
 
             if(!achou){
                 const material = await Material.findById(itens[i].idMaterial)
-                
-                if(material.estoque - itens[i].quantidadeItem < 0){
+                const qtdMaterial = itens[p].quantidadeItem * itens[p].comprimentoItem * itensAntigos[p].larguraItem
+
+                if(material.estoque - qtdMaterial < 0){
                     throw new DataError('Validation Error', 400, `Não há estoque suficiente para o item: ${material.nome}`)
                 }
 
@@ -354,6 +335,9 @@ exports.updateOrcamento = async (data) => {
         await orcamento.update()
         return {
             cliente: cliente.nome,
+            cpf: cliente.cpf,
+            email: cliente.email,
+            telefone: cliente.telefone,
             status: status.nome, 
             itens: resultado,
             valorPagamento,
