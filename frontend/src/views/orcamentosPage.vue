@@ -63,16 +63,16 @@
           <button class="btn btn-primary" @click="setarFiltro">Pesquisar</button>
         </div>
 
-        <div class="orcamentos-list">
-          <div class="card">
+        <div class="orcamentos-list" v-for="orcamento in orcamentos">
+          <div class="card" v-if="validarFiltro(orcamento)">
             <div class="card-header">
-              <h2>9289328302923892</h2>
+              <h2>{{ orcamento.id }}</h2>
             </div>
             <div class="card-body">
-              <p><b>Cliente:</b> João</p>
-              <p><b>Status:</b> Em andamento</p>
-              <p><b>Valor Total:</b> R$ 2.500,00</p>
-              <p><b>Data orçamento:</b> 06/05/2020</p>
+              <p><b>Cliente:</b> {{ orcamento.cliente }}</p>
+              <p><b>Status:</b> {{ orcamento.status }}</p>
+              <p><b>Valor Total:</b> R$ {{ parseFloat(orcamento.valorTotal).toFixed(2) }}</p>
+              <p><b>Data última alteração:</b> {{ new Date(orcamento.updatedAt).toLocaleDateString() }}</p>
             </div>
             <div class="card-footer">
               <button class="btn btn-primary">Ver</button>
@@ -88,6 +88,7 @@
 <script>
 import router from '@/router';
 import store from '@/store';
+import orcamentos from '@/store/modules/orcamentos';
 
 export default {
   name: 'orcamentoPage',  
@@ -100,15 +101,14 @@ export default {
         cpfCliente: "",
         emailCliente: "",
         telefoneCliente: "",
-      }
+      },
+      loading: false,
+      error: null,
     }
   },
   computed: {
-    loading(){
-      return store.getters.loading
-    },
-    error(){
-      return store.getters.error
+    orcamentos(){
+      return store.getters.orcamentos
     },
     status(){
       return store.getters.status
@@ -132,8 +132,28 @@ export default {
     }
   },
   methods: {
-    async setarFiltro(){
-      
+    validarFiltro(orcamento){
+      if(this.search.idOrcamento.trim() && orcamento.id.indexOf(this.search.idOrcamento.trim()) === -1){
+        return false
+      }
+
+      if(this.search.cpfCliente.trim() && orcamento.cpf !== this.search.cpfCliente.trim()){
+        return false
+      }
+
+      if(this.search.emailCliente.trim().toLowerCase() && orcamento.email.toLowerCase() !== this.search.emailCliente.trim().toLowerCase()){
+        return false
+      }
+
+      if(this.search.nomeCliente.trim().toLowerCase() && orcamento.cliente.toLowerCase() !== this.search.nomeCliente.trim().toLowerCase()){
+        return false
+      }
+
+      if(this.search.statusOrcamento.trim().toLowerCase() && orcamento.status.toLowerCase() !== this.search.statusOrcamento.trim().toLowerCase()){
+        return false
+      }
+
+      return true
     }
   },
 }
