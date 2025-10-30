@@ -1,0 +1,44 @@
+name: Node.js CI
+run-name: "${{ github.actor }} Está subindo uma alteração"
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+
+    steps:
+    - name: Clone do repositório no runner
+      uses: actions/checkout@v4
+    
+    - name: Utilizando o Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Configurando o backend
+      run: |
+        cd backend/
+        
+        echo "Configurando varável de ambiente"
+        touch .env
+        echo -e "DATABASE_URL=${{ secrets.DATABASE_URL}}\nPORT=3000\nSECRET=marmoraria_show" >> .env
+
+        echo "Instalando dependências"
+        npm ci
+      
+    - name: Configurando o frontend
+      run: |
+        cd frontend/
+
+        echo "Intalando as depedências"
+        npm ci
+
+        echo "Criando buil do projeto"
+        npm run build --if-present
