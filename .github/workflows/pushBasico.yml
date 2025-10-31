@@ -19,6 +19,13 @@ jobs:
     steps:
     - name: Clone do repositório no runner
       uses: actions/checkout@v4
+      
+    - name: Setup do node no backend
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: backend/package-lock.json
     
     - name: Configurando o backend
       run: |
@@ -31,6 +38,14 @@ jobs:
         echo "Instalando dependências"
         npm ci
       
+
+    - name: Setup do node no frontend
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
     - name: Configurando o frontend
       run: |
         cd frontend/
@@ -46,4 +61,3 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-
