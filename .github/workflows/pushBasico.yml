@@ -54,4 +54,3 @@ jobs:
         npm ci
 
         echo "Criando buil do projeto"
-        npm run build --if-present
