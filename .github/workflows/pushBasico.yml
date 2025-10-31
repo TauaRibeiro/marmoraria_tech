@@ -1,10 +1,10 @@
-name: Node.js CI
+name: Push Básico CI
 run-name: "${{ github.actor }} Está subindo uma alteração"
 
 on: [push]
 
 env: 
-  DATABASE_ULR: ${{ secrets.DATABASE_URL }}
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
   PORT: ${{ secrets.PORT }}
   SECRET: ${{ secrets.SECRET }}
 
@@ -31,9 +31,9 @@ jobs:
       run: |
         cd backend/
         
-        echo "Configurando varável de ambiente"
+        echo "Configurando variável de ambiente"
         touch .env
-        echo -e "DATABASE_URL=${{ env.DATABASE_ULR }}\nPORT=${{ env.PORT }}\nSECRET=${{ env.SECRET }}" >> .env
+        echo -e "DATABASE_URL=${{ env.DATABASE_URL }}\nPORT=${{ env.PORT }}\nSECRET=${{ env.SECRET }}" >> .env
 
         echo "Instalando dependências"
         npm ci
@@ -52,5 +52,3 @@ jobs:
 
         echo "Intalando as depedências"
         npm ci
-
-        echo "Criando buil do projeto"
