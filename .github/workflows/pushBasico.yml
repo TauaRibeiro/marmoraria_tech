@@ -10,7 +10,6 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -21,13 +20,6 @@ jobs:
     - name: Clone do repositório no runner
       uses: actions/checkout@v4
     
-    - name: Utilizando o Node.js ${{ matrix.node-version }}
-      
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-
     - name: Configurando o backend
       run: |
         cd backend/
@@ -48,3 +40,10 @@ jobs:
 
         echo "Criando buil do projeto"
         npm run build --if-present
+
+    - name: Utilizando o Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
