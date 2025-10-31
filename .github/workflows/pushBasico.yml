@@ -3,6 +3,11 @@ run-name: "${{ github.actor }} Está subindo uma alteração"
 
 on: [push]
 
+env: 
+  DATABASE_ULR: ${{ secrets.DATABASE_URL }}
+  PORT: ${{ secrets.PORT }}
+  SECRET: ${{ secrets.SECRET }}
+
 jobs:
   build:
 
@@ -17,6 +22,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Utilizando o Node.js ${{ matrix.node-version }}
+      
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
@@ -28,7 +34,7 @@ jobs:
         
         echo "Configurando varável de ambiente"
         touch .env
-        echo -e "DATABASE_URL=${{ secrets.DATABASE_URL}}\nPORT=3000\nSECRET=marmoraria_show" >> .env
+        echo -e "DATABASE_URL=${{ env.DATABASE_ULR }}\nPORT=${{ env.PORT }}\nSECRET=${{ env.SECRET }}" >> .env
 
         echo "Instalando dependências"
         npm ci
