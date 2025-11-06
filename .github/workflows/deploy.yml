@@ -75,7 +75,7 @@ jobs:
         run: |
           cd frontend/
 
-          vercel --prod org ls
+          vercel org ls --token ${{ secrets.TOKEN_FRONTEND_MARMORARIA }}
 
       - name: Fazendo deploy do frontend na vercel
         run: |
