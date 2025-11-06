@@ -63,14 +63,10 @@ jobs:
 
           curl --request POST \
               --url https://api.render.com/v1/services/${{ secrets.ID_BACKEND_RENDER }}/deploys \
-              --header 'accept: application/json' \
-              --header 'content-type: application/json' \
-              --header 'Authorization: Bearer ${{ secrets.CHAVE_DEPLOY_BACKEND_RENDER }}'
-              --data '
-              {
-                "clearCache": "do_not_clear"
-              }
-              '\
+              -H 'accept: application/json' \
+              -H 'content-type: application/json' \
+              -H 'Authorization: Bearer ${{ secrets.CHAVE_DEPLOY_BACKEND_RENDER }}'
+              -d '{"clearCache": "do_not_clear"}'\
       - name: Instalando o CLI da vercel
         run: |
           npm install -g vercel
