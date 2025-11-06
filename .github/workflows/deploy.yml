@@ -75,7 +75,7 @@ jobs:
           cd frontend/
 
           echo "Fazendo deploy do frontend... "
-          vercel --token ${{secrets.TOKEN_FRONTEND_MARMORARIA}}
+          vercel --token ${{secrets.TOKEN_FRONTEND_MARMORARIA}}\
             --prod \
             --yes \
             --scope ${{ secrets.VERCEL_USER_ID }} \
