@@ -4,7 +4,7 @@ run-name: "Efetuando o deploy nas plataformas"
 on:
   push:
     branches: 
-        [main]
+        [TesteCI-CD]
   pull_request:
     branches: [main]
 
@@ -56,8 +56,35 @@ jobs:
 
           echo "Instalando as depências"
           npm ci
+    
+      - name: Fazendo deploy do backend no reder
+        run: |
+          echo "Fazendo deploy do backend..."
 
-    #   - name: Deploy no frontend na vercel
+          curl --request POST \
+              --url https://api.render.com/v1/services/${{ secrets.ID_BACKEND_RENDER }}/deploys \
+              --header 'accept: application/json' \
+              --header 'content-type: application/json' \
+              --header 'Bearer ${{ secrets.CHAVE_DEPLOY_BACKEND_RENDER }}'
+              --data '
+          {
+            "clearCache": "do_not_clear"
+          }
+          '
+      - name: Instalando o CLI da vercel
+        run: |
+          npm install -g vercel
+      - name: Fazendo deploy do frontend na vercel
+        run: |
+          cd frontend/
+
+          echo "Fazendo deploy do frontend... "
+          vercel --token ${{secrets.TOKEN_FRONTEND_MARMORARIA}}
+            --prod \
+            --yes \
+            --scope ${{ secrets.VERCEL_PROJETO_ID }} \
+            --project ${{ secrets.VERCEL_USER_ID}} \
+
         
       
       
