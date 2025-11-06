@@ -70,6 +70,11 @@ jobs:
       - name: Instalando o CLI da vercel
         run: |
           npm install -g vercel
+          
+      - name: Mostrando o ORG id
+        run: |
+          vercel org ls
+
       - name: Fazendo deploy do frontend na vercel
         run: |
           cd frontend/
