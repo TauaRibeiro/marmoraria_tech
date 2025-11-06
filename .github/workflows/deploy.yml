@@ -67,26 +67,13 @@ jobs:
               -H 'content-type: application/json' \
               -H 'Authorization: Bearer ${{ secrets.CHAVE_DEPLOY_BACKEND_RENDER }}' \
               -d '{"clearCache": "do_not_clear"}'\
-      - name: Instalando o CLI da vercel
-        run: |
-          npm install -g vercel
-
-      - name: Mostrando o ORG id
-        run: |
-          cd frontend/
-
-          vercel org ls --token ${{ secrets.TOKEN_FRONTEND_MARMORARIA }}
 
       - name: Fazendo deploy do frontend na vercel
         run: |
           cd frontend/
 
           echo "Fazendo deploy do frontend... "
-          vercel --token ${{secrets.TOKEN_FRONTEND_MARMORARIA}}\
-            --prod \
-            --yes \
-            --scope ${{ secrets.VERCEL_USER_ID }} \
-            --project ${{ secrets.VERCEL_PROJETO_ID }} \
+          curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_T5EPGTlzud48a2aWHq5hoPzMZ1xk/y5lr1s6x0C
 
         
       
