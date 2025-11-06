@@ -4,7 +4,7 @@ run-name: "Efetuando o deploy nas plataformas"
 on:
   push:
     branches: 
-        [TesteCI-CD]
+        [main]
   pull_request:
     branches: [main]
 
@@ -73,9 +73,7 @@ jobs:
           cd frontend/
 
           echo "Fazendo deploy do frontend... "
-          curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_T5EPGTlzud48a2aWHq5hoPzMZ1xk/y5lr1s6x0C
-
-        
+          curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_T5EPGTlzud48a2aWHq5hoPzMZ1xk/LcZrtlvDrt
       
       
 
