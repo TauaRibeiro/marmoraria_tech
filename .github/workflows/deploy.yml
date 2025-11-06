@@ -74,7 +74,8 @@ jobs:
       - name: Mostrando o ORG id
         run: |
           cd frontend/
-          vercel org ls
+
+          vercel --prod org ls
 
       - name: Fazendo deploy do frontend na vercel
         run: |
