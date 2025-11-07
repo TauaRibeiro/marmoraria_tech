@@ -79,6 +79,9 @@ COMANDO|FUNÇÃO
 * Outra coisa importante a ser mencionado é que não será necessário se preocupar com a criação de um remote para o repositório, visto que ao fazer o `git clone` o remote já virá criado com o nome **origin**
 
 # COMO RODAR O BACKEND
+* Após clonar o repositório acesse a pasta `backend/`.
+  
+* Depois instale rode o comando `npm install` para instalar as dependêcias do backend.
 
 * Antes de rodar o backend do projeto será nessário criar um arquivo chamado `.env` dentro da pasta `backend`.
 
@@ -102,5 +105,8 @@ SECRET = "<STRING_CHAVE_PRIVADA>"
 da banco podem ter acesso à ele. **SOMENTE** o arquivo `.env` deve ser exposto à URL do banco de dados e outros dados sensíves *(chaves privadas, senhas e etc)* e nenhuma outro arquivo deve conter essas informação diretamente neles, eles deverão puxar desse arquivo através do seguinte comando `process.env.<NOME_ITEM>`.
 
 ## COMO RODAR O FRONTEND
+* Após clonar o repositório acesse a pasta `frontend/`.
+  
+* Depois rode o comando `npm install` para instalar as depedências do frontend.
 
 * Para rodar o frontend basta rodar o seguinte comando `npm run dev`
