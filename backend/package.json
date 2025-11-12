@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "dev": "node --env-file=.env app.js || node app.js"
+    "backend": "node --env-file=.env app.js || node app.js"
   },
   "dependencies": {
     "body-parser": "^2.2.0",
