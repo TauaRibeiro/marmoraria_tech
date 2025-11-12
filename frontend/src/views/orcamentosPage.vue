@@ -25,12 +25,12 @@
           <div class="search-filds d-flex flex-row">
             <label for="id" id="idLabel">
               <b>Id:</b><br>
-              <input type="text" id="id" name="id" v-model="search.idOrcamento">
+              <input type="text" id="id" name="id" v-model="idOrcamento">
             </label>
             
             <label for="status">
               <b>Status:</b><br> 
-              <input type="text" id="status" list="tipos-status" name="status" v-model="search.statusOrcamento">
+              <input type="text" id="status" list="tipos-status" name="status" v-model="statusOrcamento">
               <datalist id="tipos-status">
                 <option value="Em andamento"></option>
                 <option value="Finalizado"></option>
@@ -41,32 +41,35 @@
             
             <label for="nome">
               <b>Nome do clinte:</b> <br>
-              <input type="text" id="nome" name="nome" v-model="search.nomeCliente">
+              <input type="text" id="nome" name="nome" v-model="nomeCliente">
             </label>
   
             <label for="cpf">
               <b>CPF:</b> <br>
-              <input type="text" id="cpf" name="cpf" v-model="search.cpfCliente">
+              <input type="text" id="cpf" name="cpf" v-model="cpfCliente">
             </label>
 
             <label for="email">
             <b>Email:</b><br>
-            <input type="email" id="email" name="email" v-model="search.emailCliente">
+            <input type="email" id="email" name="email" v-model="emailCliente">
           </label>
 
           <label for="telefone">
             <b>Telefone:</b><br>
-            <input type="text" id="telefone" name="telefone" v-model="search.telefoneCliente">
+            <input type="text" id="telefone" name="telefone" v-model="telefoneCliente">
           </label>
           </div>
-
-          <button class="btn btn-primary" @click="setarFiltro">Pesquisar</button>
         </div>
 
-        <div class="orcamentos-list" v-for="orcamento in orcamentos">
-          <div class="card" v-if="validarFiltro(orcamento)">
-            <div class="card-header">
-              <h2>{{ orcamento.id }}</h2>
+        <div class="orcamentos-list">
+          <div v-if="orcamentos.length == 0">
+            <p>Carregando...</p>
+          </div>
+          <div v-else class="orcamento"  v-for="orcamento in orcamentos" :key="orcamento.id">
+            <div class="card">
+              <div class="card-header">
+                <h2>{{ orcamento.id }}</h2>
+              </div>
             </div>
             <div class="card-body">
               <p><b>Cliente:</b> {{ orcamento.cliente }}</p>
@@ -88,27 +91,50 @@
 <script>
 import router from '@/router';
 import store from '@/store';
-import orcamentos from '@/store/modules/orcamentos';
 
 export default {
   name: 'orcamentoPage',  
   data(){
     return {
-      search: {
-        idOrcamento: "",
-        statusOrcamento: "",
-        nomeCliente: "",
-        cpfCliente: "",
-        emailCliente: "",
-        telefoneCliente: "",
-      },
+      idOrcamento: "",
+      statusOrcamento: "",
+      nomeCliente: "",
+      cpfCliente: "",
+      emailCliente: "",
+      telefoneCliente: "",
       loading: false,
       error: null,
     }
   },
   computed: {
     orcamentos(){
-      return store.getters.orcamentos
+      let result = store.getters.orcamentos
+      
+      if(this.idOrcamento){
+        result = result.filter((o) => o.id.includes(this.idOrcamento))
+      }
+
+      if(this.statusOrcamento){
+        result = result.filter((o) => o.status.includes(this.statusOrcamento))
+      }
+
+      if(this.nomeCliente){
+        result = result.filter((o) => o.cliente.includes(this.nomeCliente))
+      }
+
+      if(this.cpfCliente){
+        result = result.filter((o) => o.cpf.includes(this.cpfCliente))
+      }
+
+      if(this.emailCliente){
+        result = result.filter((o) => o.email.includes(this.emailCliente))
+      }
+
+      if(this.telefoneCliente){
+        result = result.filter((o) => o.telefone.include(this.telefoneCliente))
+      }
+
+      return result
     },
     status(){
       return store.getters.status
@@ -132,29 +158,6 @@ export default {
     }
   },
   methods: {
-    validarFiltro(orcamento){
-      if(this.search.idOrcamento.trim() && orcamento.id.indexOf(this.search.idOrcamento.trim()) === -1){
-        return false
-      }
-
-      if(this.search.cpfCliente.trim() && orcamento.cpf !== this.search.cpfCliente.trim()){
-        return false
-      }
-
-      if(this.search.emailCliente.trim().toLowerCase() && orcamento.email.toLowerCase() !== this.search.emailCliente.trim().toLowerCase()){
-        return false
-      }
-
-      if(this.search.nomeCliente.trim().toLowerCase() && orcamento.cliente.toLowerCase() !== this.search.nomeCliente.trim().toLowerCase()){
-        return false
-      }
-
-      if(this.search.statusOrcamento.trim().toLowerCase() && orcamento.status.toLowerCase() !== this.search.statusOrcamento.trim().toLowerCase()){
-        return false
-      }
-
-      return true
-    }
   },
 }
 </script>
@@ -299,7 +302,7 @@ export default {
     border-style: solid;
     border-color: rgba(212, 211, 211);
     border-width: 1px;
-    max-height: 500px;
+    max-height: 400px;
     overflow-y: auto;
   }
 
@@ -310,6 +313,18 @@ export default {
   .card-footer {
     display: flex;
     gap: 10px;
+  }
+
+  /* ORÇAMENTO */
+
+  .orcamento{
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #eee;
+    border-radius: 10px;
+    border-color: grey;
+    border-style: solid;
+    border-width: 3px;
   }
 
 </style>
