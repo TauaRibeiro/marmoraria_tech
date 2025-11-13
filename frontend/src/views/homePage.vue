@@ -144,6 +144,7 @@
     methods:{
       logout(){
         store.dispatch('auth/logout')
+        store.dispatch('clear')
         router.push('login')
       },
 

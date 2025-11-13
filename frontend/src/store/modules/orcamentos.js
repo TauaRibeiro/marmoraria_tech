@@ -101,7 +101,10 @@ const actions = {
         commit('DELETE_ORCAMENTO', orcamento)
 
         return {success: true}
-    }
+    },
+    clear({ commit }){
+        commit('CLEAR_ORCAMENTOS')
+    },
 }
 
 const getters = {

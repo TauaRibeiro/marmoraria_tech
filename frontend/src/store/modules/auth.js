@@ -50,7 +50,7 @@ const actions = {
       }
     }
   },
-  async logout({ commit }) {
+  logout({ commit }) {
     commit('CLEAR_TOKEN')
     commit('SET_USER', null)
   },
