@@ -1,18 +1,22 @@
 import api from '@/service/api'
 
 const state = {
-    orcamentos: [],
+    orcamentos: JSON.parse(localStorage.getItem('orcamentos')) || [],
 }
 
 const mutations = {
     SET_ORCAMENTOS(state, orcamentos){
+        console.log(orcamentos)
         state.orcamentos = orcamentos
+        localStorage.setItem("orcamentos", JSON.stringify(orcamentos))
     },
     ADD_ORCAMENTO(state, orcamento){
         state.orcamentos.push(orcamento)
+        localStorage.setItem("orcamentos", JSON.stringify(state.orcamentos))
     },
     REMOVE_ORCAMENTO(state, orcamento){
         state.orcamentos = state.orcamentos.filter((o) => o.id !== orcamento.id)
+        localStorage.setItem("orcamentos", JSON.stringify(state.orcamentos))
     },
     UPDATE_ORCAMENTO(state, orcamento){
         state.orcamentos = state.orcamentos.map((o) => {
@@ -23,9 +27,11 @@ const mutations = {
             return o
         })
 
+        localStorage.orcamentos.setItem("orcamentos", JSON.stringify(state.orcamentos))
     },
     CLEAR_ORCAMENTOS(state){
         state.orcamentos = []
+        localStorage.removeItem("orcamentos")
     },
 }
 
@@ -48,6 +54,7 @@ const actions = {
     },
     async fetchOrcamentos({ commit }){
         try{
+            console.log(localStorage.getItem('orcamentos'))
             if(state.orcamentos.length > 0){
                 return {success: true}
             }
