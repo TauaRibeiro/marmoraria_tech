@@ -1,20 +1,10 @@
 <template>
     <div class="layout">
-      <aside class="sidebar">
-        <h2 class="sidebar__title">Marmoraria Tech</h2>
-        <hr>
-        <nav class="sidebar__menu">
-            <button class="sidebar-btn btn">Dashboard</button>
-            <button class="sidebar-btn btn">Orçamentos</button>
-            <button class="sidebar-btn btn">Clientes</button>
-            <button class="sidebar-btn btn">Materiais</button>
-            <button class="sidebar-btn btn">Status</button>
-            <button class="sidebar-btn btn">Funcionarios</button>
-        </nav>
-        <hr>
-        <button @click="logout" class="btn-logout btn">Sair</button>
-      </aside>
-  
+      <Sidebar 
+        :fields="['Dashboard', 'Orçamentos', 'Clientes', 'Materiais', 'Status', 'Funcionarios']"
+        current="Dashboard"
+      />
+
       <main class="content">
         <header class="content__header">
           <h1>Dashboard</h1>
@@ -82,6 +72,7 @@
 <script>
   import router from '@/router';
   import store from '@/store';
+  import Sidebar from '@/components/Sidebar.vue';
 
   export default {
     data() {
@@ -89,6 +80,9 @@
         loading: false,
         error: "",
       }
+    },
+    components:{
+      Sidebar,
     },
     computed: {
       orcamentos(){
@@ -165,22 +159,6 @@
     width: 100cqmax;
   }
   
-  /* --- Sidebar --- */
-  .sidebar { width: 280px; background: #fff; padding-top: 20px; padding-bottom: 20px; display: flex; flex-direction: column; border-right: 1px solid #eee; }
-  .sidebar__title { margin-bottom: 20px; margin-left: 10px }
-  .sidebar__menu { display: flex; flex-direction: column; gap: 10px; flex: 1; }
-
-  .sidebar-btn-active {
-    background-color: rgba(221, 221, 221, 0.466);
-  }
-
-  .sidebar-btn-active:active {
-    background-color: rgba(221, 221, 221, 0.466);
-  }
-
-  .sidebar__link.active, .sidebar__link:hover { background: #f0f0f0; }
-  .sidebar__logout { margin-top: auto; padding: 8px; background: none; border: none; color: #d9534f; cursor: pointer; }
-  
   /* --- Content --- */
   .content {
     flex: 1;
@@ -196,31 +174,6 @@
     gap: 15px;
   }
   
-  .btn-logout {
-    color: red;
-    width: 100%;
-    border-radius: 0;
-    margin: 0px;
-  }
-
-  .btn-logout:hover {
-    background-color: lightcoral;
-  }
-  
-  .btn {
-    border-radius: 5px;
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .sidebar-btn {
-    border: none;
-    background-color: #fff;
-  }
-
-  .sidebar-btn:hover{
-    background-color: rgba(221, 221, 221, 0.466);
-  }
 
   .btn-options {
     padding-top: 1px;
