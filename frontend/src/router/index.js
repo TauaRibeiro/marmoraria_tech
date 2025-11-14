@@ -24,7 +24,7 @@ const router = createRouter({
       meta: {requiresAuth: true}
     },
     {
-      path: '/orcamento',
+      path: '/orcamentos',
       name: 'orcamento-module',
       component: orcamentosPage,
       meta: {requiresAuth: false}
