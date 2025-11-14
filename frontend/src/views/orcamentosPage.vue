@@ -56,11 +56,15 @@
             <input type="text" id="telefone" name="telefone" v-model="telefoneCliente">
           </label>
           </div>
+          <button class="btn btn-primary" @click="recarregar()">Recarregar</button>
         </div>
 
         <div class="orcamentos-list">
-          <div v-if="orcamentos.length == 0">
+          <div v-if="loading">
             <p>Carregando...</p>
+          </div>
+          <div v-else-if="orcamentos.length == 0">
+            <p>Nenhum orçamento encontrado</p>
           </div>
           <div v-else class="orcamento"  v-for="orcamento in orcamentos" :key="orcamento.id">
             <div class="card">
@@ -69,10 +73,12 @@
               </div>
             </div>
             <div class="card-body">
-              <p><b>Cliente:</b> {{ orcamento.cliente }}</p>
+              {{ console.log(orcamentos) }}
+              <p><b>Nome do cliente:</b> {{ orcamento.cliente }}</p>
+              <p><b>CPF:</b> {{ orcamento.cpf }}</p>
+              <p><b>Email:</b> {{ orcamento.email}}</p>
+              <p><b>Telefone:</b> {{ orcamento.telefone }}</p>
               <p><b>Status:</b> {{ orcamento.status }}</p>
-              <p><b>Valor Total:</b> R$ {{ parseFloat(orcamento.valorTotal).toFixed(2) }}</p>
-              <p><b>Data última alteração:</b> {{ new Date(orcamento.updatedAt).toLocaleDateString() }}</p>
             </div>
             <div class="card-footer">
               <button class="btn btn-primary">Ver</button>
@@ -159,6 +165,17 @@ export default {
     }
   },
   methods: {
+    async recarregar(){
+      this.loading = true
+      const resultOrcamento = await store.dispatch('fetchOrcamentos', true)
+      
+      this.loading = false
+      if(resultOrcamento.status === 401 || resultOrcamento.status === 403){
+        alert(resultOrcamento.message)
+        store.dispatch('auth/logout')
+        router.push('login')
+      }
+    }
   },
 }
 </script>
@@ -267,7 +284,7 @@ export default {
     border-style: solid;
     border-color: rgba(212, 211, 211);
     border-width: 1px;
-    max-height: 400px;
+    max-height: 600px;
     overflow-y: auto;
   }
 

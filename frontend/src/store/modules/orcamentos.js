@@ -6,7 +6,6 @@ const state = {
 
 const mutations = {
     SET_ORCAMENTOS(state, orcamentos){
-        console.log(orcamentos)
         state.orcamentos = orcamentos
         localStorage.setItem("orcamentos", JSON.stringify(orcamentos))
     },
@@ -52,13 +51,14 @@ const actions = {
             return {success: false, message: error.response?.data?.message || "Erro ao fazer o cadastro do orcamento"}
         }
     },
-    async fetchOrcamentos({ commit }){
+    async fetchOrcamentos({ commit }, clear= false){
         try{
-            console.log(localStorage.getItem('orcamentos'))
-            if(state.orcamentos.length > 0){
+            if(!clear && state.orcamentos.length > 0){
                 return {success: true}
             }
 
+            commit('CLEAR_ORCAMENTOS')
+            
             const response = await api.get('/orcamento', {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
