@@ -135,7 +135,7 @@ exports.getOrcamento = async () => {
                 cliente: cliente.nome,
                 cpf: cliente.cpf,
                 email: cliente.email,
-                telefone; cliente.telefone,
+                telefone: cliente.telefone,
                 status: status.nome, 
                 itens, 
                 valorPagamento,
