@@ -1,7 +1,14 @@
 <template>
     <div class="layout">
       <Sidebar 
-        :fields="['Dashboard', 'Orçamentos', 'Clientes', 'Materiais', 'Status', 'Funcionarios']"
+        :fields="[
+          { name: 'Dashboard', destiny: 'home' }, 
+          { name: 'Orçamentos', destiny: 'orcamentos'}, 
+          { name: 'Clientes', destiny: 'clientes' }, 
+          { name: 'Materiais', destiny: 'materiais'}, 
+          { name: 'Status', destiny: 'status'}, 
+          { name: 'Funcionarios', destiny: 'funcionarios'}
+        ]"
         current="Dashboard"
       />
 

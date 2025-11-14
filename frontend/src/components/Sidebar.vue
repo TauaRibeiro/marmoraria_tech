@@ -3,7 +3,12 @@
         <h2 class="sidebar__title">Marmoraria Tech</h2>
         <hr>
         <nav class="sidebar__menu">
-            <button v-for="field in fields" :key="field" :class="(field.includes(current)) ? 'sidebar-btn-active btn':'sidebar-btn btn'">{{ field }}</button>
+            <button 
+                v-for="field in fields" :key="field" :class="(field.name.includes(current)) ? 'sidebar-btn-active btn':'sidebar-btn btn'"
+                @click="redirecionar(field.destiny, current)"
+            >
+                {{ field.name }}
+            </button>
         </nav>
         <hr>
         <button @click="logout" class="btn-logout btn">Sair</button>
@@ -30,6 +35,11 @@
                 store.dispatch('auth/logout')
                 store.dispatch('clear')
                 router.push('login')
+            },
+            redirecionar(destino, atual){
+                if(!atual.includes(destino)){
+                    router.push(destino)
+                }
             },
         },
     }
