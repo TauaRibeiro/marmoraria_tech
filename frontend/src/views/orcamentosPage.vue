@@ -194,7 +194,7 @@ export default {
   .content {
     flex: 1;
     padding: 20px 40px;
-    width: 100vh;
+    width: 100ch;
     margin: 0 auto; /* Centraliza no espaço disponível */
     }
   .content__header { 
@@ -268,6 +268,8 @@ export default {
   }
 
   .search-filds {
+    display: flex;
+    flex-wrap: wrap;
     column-gap: 20px;
   }
 
@@ -284,7 +286,7 @@ export default {
     border-style: solid;
     border-color: rgba(212, 211, 211);
     border-width: 1px;
-    max-height: 600px;
+    max-height: 50vh;
     overflow-y: auto;
   }
 
