@@ -15,7 +15,7 @@
       <main class="content">
         <header class="content__header">
           <h1>Orçamentos</h1>
-          <button class="btn btn-primary">Novo Orçamento +</button>
+          <button class="btn btn-primary" @click="criarOrcamento">Novo Orçamento +</button>
         </header>
 
         <div class="search-bar d-flex flex-row justify-content-between">
@@ -175,6 +175,9 @@ export default {
         store.dispatch('auth/logout')
         router.push('login')
       }
+    },
+    criarOrcamento(){
+      router.push('/orcamentos/novoOrcamento')
     }
   },
 }
