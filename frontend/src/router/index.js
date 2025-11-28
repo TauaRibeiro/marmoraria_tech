@@ -2,6 +2,7 @@ import store from '@/store'
 import HomePage from '@/views/homePage.vue'
 import LoginPage from '@/views/loginPage.vue'
 import orcamentosPage from '@/views/orcamentosPage.vue'
+import newOrcamentoPage from '@/views/newOrcamentoPage.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -27,7 +28,13 @@ const router = createRouter({
       path: '/orcamentos',
       name: 'orcamento-module',
       component: orcamentosPage,
-      meta: {requiresAuth: false}
+      meta: {requiresAuth: true}
+    },
+    {
+      path: '/orcamentos/novoOrcamento',
+      name: 'newOrcamento-module',
+      component: newOrcamentoPage,
+      meta: { requiresAuth: true }
     }
   ],
 })
