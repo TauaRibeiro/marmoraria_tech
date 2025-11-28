@@ -38,7 +38,7 @@
             },
             redirecionar(destino, atual){
                 if(!atual.includes(destino)){
-                    router.push(destino)
+                    router.push(`/${destino}`)
                 }
             },
         },
@@ -47,7 +47,7 @@
 
 <style scoped>
     /* --- Sidebar --- */
-    .sidebar { width: 280px; background: #fff; padding-top: 20px; padding-bottom: 20px; display: flex; flex-direction: column; border-right: 1px solid #eee; }
+    .sidebar { width: 350px; background: #fff; padding-top: 20px; padding-bottom: 20px; display: flex; flex-direction: column; border-right: 1px solid #eee; }
     .sidebar__title { margin-bottom: 20px; margin-left: 10px }
     .sidebar__menu { display: flex; flex-direction: column; gap: 10px; flex: 1; }
 

@@ -12,8 +12,8 @@
         current="Dashboard"
       />
 
-      <main class="content">
-        <header class="content__header">
+      <main class="content w-100 m-3">
+        <header class="d-flex flex-row justify-content-between mb-5">
           <h1>Dashboard</h1>
         </header>
   
@@ -64,8 +64,8 @@
                 <td v-if="index < 5">R$ {{ parseFloat(item.valorTotal).toFixed(2)}}</td>
                 <td v-if="index < 5">
                     <div class="options">
-                        <button class="btn-options btn">Ver</button>
-                        <button class="btn-options btn">Editar</button>
+                        <button class="btn btn-outline-light text-dark">Ver</button>
+                        <button class="btn btn-outline-light text-dark">Editar</button>
                     </div>
                 </td>
               </tr>
@@ -154,9 +154,6 @@
 </script>
     
 <style scoped>
-  /* --- Reset simples --- */
-  /* * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; } */
-  
   .layout { 
     display: flex; 
     min-height: 100vh;
@@ -166,52 +163,6 @@
     width: 100cqmax;
   }
   
-  /* --- Content --- */
-  .content {
-    flex: 1;
-    padding: 20px 40px;
-    width: 100vh;
-    margin: 0 auto; /* Centraliza no espaço disponível */
-    }
-  .content__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-  
-  /*----Options----- */
-  .options {
-    display: flex;
-    gap: 15px;
-  }
-  
-
-  .btn-options {
-    padding-top: 1px;
-    padding-bottom: 1px;
-    padding-left: 5px;
-    padding-right: 5px;
-    border-style: solid;
-    border-color: rgba(221, 221, 221, 0.466);
-  }
-
-  .btn-options:hover {
-    background-color: rgba(221, 221, 221, 0.466);
-  }
-
-  .primary-btn {
-    background-color: rgb(2, 2, 87);
-    color: white;
-  }
-
-  .primary-btn:hover {
-    background-color: rgb(3, 3, 179);
-  }
-
-  .primary-btn:active {
-    color: white;
-    background-color: rgb(2, 2, 87);
-  }
-
-  .btn:active {
-    border-color: transparent;
-  }
   /* --- Cards Dashboard --- */
   .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px; }
   .card { background: white; padding: 15px; border-radius: 8px; display: flex; flex-direction: column; }

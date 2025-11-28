@@ -12,8 +12,8 @@
         current="Orçamentos"
       />
 
-      <main class="content">
-        <header class="content__header">
+      <main class="content w-100 m-3">
+        <header class="d-flex flex-row justify-content-between mb-5">
           <h1>Orçamentos</h1>
           <button class="btn btn-primary" @click="criarOrcamento">Novo Orçamento +</button>
         </header>
@@ -22,12 +22,12 @@
           <div class="search-filds d-flex flex-row">
             <label for="id" id="idLabel">
               <b>Id:</b><br>
-              <input type="text" id="id" name="id" v-model="idOrcamento">
+              <input class="form-control p-1 " type="text" id="id" name="id" v-model="idOrcamento">
             </label>
             
             <label for="status">
               <b>Status:</b><br> 
-              <input type="text" id="status" list="tipos-status" name="status" v-model="statusOrcamento">
+              <input class="form-control p-1 " type="text" id="status" list="tipos-status" name="status" v-model="statusOrcamento">
               <datalist id="tipos-status">
                 <option value="Em andamento"></option>
                 <option value="Finalizado"></option>
@@ -38,22 +38,22 @@
             
             <label for="nome">
               <b>Nome do clinte:</b> <br>
-              <input type="text" id="nome" name="nome" v-model="nomeCliente">
+              <input class="form-control p-1 " type="text" id="nome" name="nome" v-model="nomeCliente">
             </label>
   
             <label for="cpf">
               <b>CPF:</b> <br>
-              <input type="text" id="cpf" name="cpf" v-model="cpfCliente">
+              <input class="form-control p-1 " type="text" id="cpf" name="cpf" v-model="cpfCliente">
             </label>
 
             <label for="email">
             <b>Email:</b><br>
-            <input type="email" id="email" name="email" v-model="emailCliente">
+            <input class="form-control p-1 " type="email" id="email" name="email" v-model="emailCliente">
           </label>
-
+          
           <label for="telefone">
             <b>Telefone:</b><br>
-            <input type="text" id="telefone" name="telefone" v-model="telefoneCliente">
+            <input class="form-control p-1 " type="text" id="telefone" name="telefone" v-model="telefoneCliente">
           </label>
           </div>
           <button class="btn btn-primary" @click="recarregar()">Recarregar</button>
@@ -192,63 +192,6 @@ export default {
     justify-content: space-between;
     width: 100cqmax;
   }
-  
-  /* --- Content --- */
-  .content {
-    flex: 1;
-    padding: 20px 40px;
-    width: 100ch;
-    margin: 0 auto; /* Centraliza no espaço disponível */
-    }
-  .content__header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 20px; 
-  }
-  
-  /*----Options----- */
-  .options {
-    display: flex;
-    gap: 15px;
-  }
-  
-  .btn {
-    /* border-radius: 5px;
-    padding: 10px; */
-    text-align: left;
-  }
-  
-  .btn-options {
-    padding-top: 1px;
-    padding-bottom: 1px;
-    padding-left: 5px;
-    padding-right: 5px;
-    border-style: solid;
-    border-color: rgba(221, 221, 221, 0.466);
-  }
-
-  .btn-options:hover {
-    background-color: rgba(221, 221, 221, 0.466);
-  }
-
-  .primary-btn {
-    background-color: rgb(2, 2, 87);
-    color: white;
-  }
-
-  .primary-btn:hover {
-    background-color: rgb(3, 3, 179);
-  }
-
-  .primary-btn:active {
-    color: white;
-    background-color: rgb(2, 2, 87);
-  }
-
-  .btn:active {
-    border-color: transparent;
-  }
 
   /* SEARCH BAR */
   .search-bar {
@@ -258,16 +201,8 @@ export default {
     border-style: solid;
     border-color: rgba(212, 211, 211);
     border-width: 1px;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
     row-gap: 10px;
-  }
-
-  input {
-    border-radius: 8px;
-    border-style: solid;
-    border-color: rgb(59, 59, 59);
-    border-width: 1px;
-    padding: 3px;
   }
 
   .search-filds {
@@ -276,20 +211,15 @@ export default {
     column-gap: 20px;
   }
 
-  /* b {
-    margin-left: 10px;
-  } */
-
-  /* ORÇAMENTOS LIST */
   .orcamentos-list {
     position: relative;
     background-color: white;
-    padding: 20px 10px 20px 10px;
+    padding: 20px 10px 30px 10px;
     border-radius: 8px;
     border-style: solid;
     border-color: rgba(212, 211, 211);
     border-width: 1px;
-    max-height: 50vh;
+    max-height: 52vh;
     overflow-y: auto;
   }
 
@@ -313,5 +243,4 @@ export default {
     border-style: solid;
     border-width: 3px;
   }
-
 </style>
