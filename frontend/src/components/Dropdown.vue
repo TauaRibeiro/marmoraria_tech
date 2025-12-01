@@ -1,6 +1,6 @@
 <template>
     <div class="drop-container">
-        <label :for="id">
+        <label :for="id" class="mb-2">
             {{ label }}
         </label>
         <select 
