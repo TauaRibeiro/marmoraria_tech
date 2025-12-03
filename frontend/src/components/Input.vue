@@ -1,14 +1,23 @@
 <template>
-  <div class="input-container">
-      <input
-        :type
-        :placeholder
-        :class="`form-control  ${cls}`"
-        :id
-        :required
-        autocomplete="off"
-        @input="$emit('update:modelValue', $event.target.value)"
-      />
+  <div :class="`input-container ${containerClass}`">
+    <label :for="id">
+      <p class="mb-2">{{ label }}</p>
+    </label>
+    <input
+      :type
+      :placeholder
+      :class="`form-control ${cls}`"
+      :id
+      :required
+      autocomplete="off"
+      v-model="internalValue"
+      :min
+      :max
+      :value="modelValue || value"
+      :step
+      :disabled
+    />
+
   </div>
 </template>
 
@@ -27,13 +36,45 @@ export default {
     cls: {
       type: String,
       default: "",
+    },
+    containerClass: {
+      type: String,
+      default: ""
+    },
+    min: {
+      type: Number,
+      default: -Infinity
+    },
+    max: {
+      type: Number,
+      default: Infinity
+    },
+    label: {
+      type: String,
+      default: ""
+    },
+    value: {
+      type: [String, Number]
+    },
+    step: {
+      type: Number
+
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
+  emits: ['update:modelValue'],
+  computed: {
+    internalValue: {
+      get() { return this.modelValue },
+      set(v) { this.$emit('update:modelValue', v) }
+    }
+  }
 }
 </script>
 
 <style scoped>
-  input {
-    border: 1px solid rgb(77, 76, 76);
-  }
+
 </style>

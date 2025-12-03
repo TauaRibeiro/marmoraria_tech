@@ -3,7 +3,7 @@
         <h2 class="sidebar__title">Marmoraria Tech</h2>
         <hr>
         <nav class="sidebar__menu">
-            <button 
+            <button
                 v-for="field in fields" :key="field" :class="(field.name.includes(current)) ? 'sidebar-btn-active btn':'sidebar-btn btn'"
                 @click="redirecionar(field.destiny, current)"
             >
@@ -18,7 +18,7 @@
 <script>
     import store from '@/store';
     import router from '@/router';
-    
+
     export default{
         name: 'Sidebar-component',
         props:{
@@ -34,7 +34,7 @@
             logout(){
                 store.dispatch('auth/logout')
                 store.dispatch('clear')
-                router.push('login')
+                router.push('/login')
             },
             redirecionar(destino, atual){
                 if(!atual.includes(destino)){
