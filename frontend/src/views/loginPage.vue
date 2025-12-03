@@ -2,7 +2,7 @@
   <div class="login-page d-flex justify-content-center align-items-center min-vh-100 bg-light">
     <div class="login-container card shadow border-danger" style="max-width: 400px; width: 100%;">
       <div class="card-body text-center p-4">
-        
+
         <header class="login-header mb-4">
           <h1 class="h4 mb-2 text-dark">Marmoraria Tech</h1>
           <p class="text-muted mb-0">Área restrita para colaboradores da empresa</p>
@@ -18,20 +18,18 @@
                 placeholder="seu@email.com"
                 :required= true
                 v-model="credentials.login"
-                cls="w-100"
-                />
+              />
             </label>
           </div>
 
           <div class="mb-3 text-start">
             <label for="senha" class="form-label w-100">
               <h2>Senha</h2>
-              <DefaultInput 
+              <DefaultInput
                 type="password"
                 id="senha"
                 :required=true
                 v-model="credentials.senha"
-                cls="w-100"
               />
             </label>
           </div>
@@ -90,13 +88,12 @@
 </script>
 
 <style scoped>
-    .login-page { 
-      display: flex; 
+    .login-page {
+      display: flex;
       min-height: 100vh;
       min-width: 100vh;
-      background: #f6f6f6; 
+      background: #f6f6f6;
       justify-content: space-between;
       width: 100cqmax;
     }
 </style>
-      
