@@ -13,7 +13,7 @@
       v-model="internalValue"
       :min
       :max
-      :value="modelValue || value"
+      :value="internalValue || value"
       :step
       :disabled
     />
