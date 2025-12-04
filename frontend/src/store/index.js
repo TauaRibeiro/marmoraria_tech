@@ -4,6 +4,7 @@ import orcamentos from './modules/orcamentos'
 import status from './modules/status'
 import materiais from './modules/materiais'
 import clientes from './modules/clientes'
+import ambiente from './modules/ambiente'
 
 export default createStore({
   modules: {
@@ -11,6 +12,7 @@ export default createStore({
     orcamentos,
     status,
     materiais,
-    clientes
+    clientes,
+    ambiente
   },
 })
