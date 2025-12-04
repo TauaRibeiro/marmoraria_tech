@@ -20,7 +20,7 @@ const actions = {
                 return {success: true}
             }
 
-            const response = await api.get('/materiais', {
+            const response = await api.get('/material', {
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem('token')}`
                 }
